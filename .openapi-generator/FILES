@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -15,7 +14,11 @@ model_certificates_archive_409_response.go
 model_certificates_create_200_response.go
 model_certificates_create_409_response.go
 model_create_ephemeral_transaction.go
+model_create_ephemeral_transaction_customer_address.go
 model_create_ephemeral_transaction_success.go
+model_create_ephemeral_transaction_success_line_items_inner.go
+model_create_or_update_transaction.go
+model_create_or_update_transaction_success.go
 model_create_transaction_cannot_compute_tax_amount.go
 model_create_transaction_cannot_update.go
 model_customer_certificate.go
@@ -28,6 +31,7 @@ model_product_id_mappings_add_409_response.go
 model_product_id_mappings_add_request.go
 model_product_id_mappings_list_409_response.go
 model_transaction_line_item.go
+model_transactions_create_or_update_409_response.go
 model_transactions_create_refund_request.go
 model_transactions_void_409_response.go
 model_transactions_void_request.go

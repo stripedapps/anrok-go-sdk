@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,7 +21,7 @@ var _ MappedNullable = &TransactionsVoidRequest{}
 // TransactionsVoidRequest struct for TransactionsVoidRequest
 type TransactionsVoidRequest struct {
 	// The expected transaction version. The void will fail if this is not the latest version of the transaction.
-	TransactionExpectedVersion interface{} `json:"transactionExpectedVersion,omitempty"`
+	TransactionExpectedVersion *int32 `json:"transactionExpectedVersion,omitempty"`
 }
 
 // NewTransactionsVoidRequest instantiates a new TransactionsVoidRequest object
@@ -41,37 +41,36 @@ func NewTransactionsVoidRequestWithDefaults() *TransactionsVoidRequest {
 	return &this
 }
 
-// GetTransactionExpectedVersion returns the TransactionExpectedVersion field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *TransactionsVoidRequest) GetTransactionExpectedVersion() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetTransactionExpectedVersion returns the TransactionExpectedVersion field value if set, zero value otherwise.
+func (o *TransactionsVoidRequest) GetTransactionExpectedVersion() int32 {
+	if o == nil || IsNil(o.TransactionExpectedVersion) {
+		var ret int32
 		return ret
 	}
-	return o.TransactionExpectedVersion
+	return *o.TransactionExpectedVersion
 }
 
 // GetTransactionExpectedVersionOk returns a tuple with the TransactionExpectedVersion field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TransactionsVoidRequest) GetTransactionExpectedVersionOk() (*interface{}, bool) {
+func (o *TransactionsVoidRequest) GetTransactionExpectedVersionOk() (*int32, bool) {
 	if o == nil || IsNil(o.TransactionExpectedVersion) {
 		return nil, false
 	}
-	return &o.TransactionExpectedVersion, true
+	return o.TransactionExpectedVersion, true
 }
 
 // HasTransactionExpectedVersion returns a boolean if a field has been set.
 func (o *TransactionsVoidRequest) HasTransactionExpectedVersion() bool {
-	if o != nil && IsNil(o.TransactionExpectedVersion) {
+	if o != nil && !IsNil(o.TransactionExpectedVersion) {
 		return true
 	}
 
 	return false
 }
 
-// SetTransactionExpectedVersion gets a reference to the given interface{} and assigns it to the TransactionExpectedVersion field.
-func (o *TransactionsVoidRequest) SetTransactionExpectedVersion(v interface{}) {
-	o.TransactionExpectedVersion = v
+// SetTransactionExpectedVersion gets a reference to the given int32 and assigns it to the TransactionExpectedVersion field.
+func (o *TransactionsVoidRequest) SetTransactionExpectedVersion(v int32) {
+	o.TransactionExpectedVersion = &v
 }
 
 func (o TransactionsVoidRequest) MarshalJSON() ([]byte, error) {
@@ -84,7 +83,7 @@ func (o TransactionsVoidRequest) MarshalJSON() ([]byte, error) {
 
 func (o TransactionsVoidRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.TransactionExpectedVersion != nil {
+	if !IsNil(o.TransactionExpectedVersion) {
 		toSerialize["transactionExpectedVersion"] = o.TransactionExpectedVersion
 	}
 	return toSerialize, nil

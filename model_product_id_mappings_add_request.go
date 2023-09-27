@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,21 +21,23 @@ var _ MappedNullable = &ProductIdMappingsAddRequest{}
 // ProductIdMappingsAddRequest struct for ProductIdMappingsAddRequest
 type ProductIdMappingsAddRequest struct {
 	// Source Product ID from billing system.
-	SourceId interface{} `json:"sourceId"`
+	SourceId string `json:"sourceId"`
 	// Target Product ID on Anrok. This product must already exist in Anrok.
-	TargetId interface{} `json:"targetId"`
+	TargetId string `json:"targetId"`
 	// Whether this request should override an existing Source ID mapping
-	ShouldOverwrite interface{} `json:"shouldOverwrite,omitempty"`
+	ShouldOverwrite *bool `json:"shouldOverwrite,omitempty"`
 }
 
 // NewProductIdMappingsAddRequest instantiates a new ProductIdMappingsAddRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewProductIdMappingsAddRequest(sourceId interface{}, targetId interface{}) *ProductIdMappingsAddRequest {
+func NewProductIdMappingsAddRequest(sourceId string, targetId string) *ProductIdMappingsAddRequest {
 	this := ProductIdMappingsAddRequest{}
 	this.SourceId = sourceId
 	this.TargetId = targetId
+	var shouldOverwrite bool = false
+	this.ShouldOverwrite = &shouldOverwrite
 	return &this
 }
 
@@ -44,14 +46,15 @@ func NewProductIdMappingsAddRequest(sourceId interface{}, targetId interface{}) 
 // but it doesn't guarantee that properties required by API are set
 func NewProductIdMappingsAddRequestWithDefaults() *ProductIdMappingsAddRequest {
 	this := ProductIdMappingsAddRequest{}
+	var shouldOverwrite bool = false
+	this.ShouldOverwrite = &shouldOverwrite
 	return &this
 }
 
 // GetSourceId returns the SourceId field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ProductIdMappingsAddRequest) GetSourceId() interface{} {
+func (o *ProductIdMappingsAddRequest) GetSourceId() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -60,24 +63,22 @@ func (o *ProductIdMappingsAddRequest) GetSourceId() interface{} {
 
 // GetSourceIdOk returns a tuple with the SourceId field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ProductIdMappingsAddRequest) GetSourceIdOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.SourceId) {
+func (o *ProductIdMappingsAddRequest) GetSourceIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.SourceId, true
 }
 
 // SetSourceId sets field value
-func (o *ProductIdMappingsAddRequest) SetSourceId(v interface{}) {
+func (o *ProductIdMappingsAddRequest) SetSourceId(v string) {
 	o.SourceId = v
 }
 
 // GetTargetId returns the TargetId field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ProductIdMappingsAddRequest) GetTargetId() interface{} {
+func (o *ProductIdMappingsAddRequest) GetTargetId() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -86,50 +87,48 @@ func (o *ProductIdMappingsAddRequest) GetTargetId() interface{} {
 
 // GetTargetIdOk returns a tuple with the TargetId field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ProductIdMappingsAddRequest) GetTargetIdOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.TargetId) {
+func (o *ProductIdMappingsAddRequest) GetTargetIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.TargetId, true
 }
 
 // SetTargetId sets field value
-func (o *ProductIdMappingsAddRequest) SetTargetId(v interface{}) {
+func (o *ProductIdMappingsAddRequest) SetTargetId(v string) {
 	o.TargetId = v
 }
 
-// GetShouldOverwrite returns the ShouldOverwrite field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ProductIdMappingsAddRequest) GetShouldOverwrite() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetShouldOverwrite returns the ShouldOverwrite field value if set, zero value otherwise.
+func (o *ProductIdMappingsAddRequest) GetShouldOverwrite() bool {
+	if o == nil || IsNil(o.ShouldOverwrite) {
+		var ret bool
 		return ret
 	}
-	return o.ShouldOverwrite
+	return *o.ShouldOverwrite
 }
 
 // GetShouldOverwriteOk returns a tuple with the ShouldOverwrite field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ProductIdMappingsAddRequest) GetShouldOverwriteOk() (*interface{}, bool) {
+func (o *ProductIdMappingsAddRequest) GetShouldOverwriteOk() (*bool, bool) {
 	if o == nil || IsNil(o.ShouldOverwrite) {
 		return nil, false
 	}
-	return &o.ShouldOverwrite, true
+	return o.ShouldOverwrite, true
 }
 
 // HasShouldOverwrite returns a boolean if a field has been set.
 func (o *ProductIdMappingsAddRequest) HasShouldOverwrite() bool {
-	if o != nil && IsNil(o.ShouldOverwrite) {
+	if o != nil && !IsNil(o.ShouldOverwrite) {
 		return true
 	}
 
 	return false
 }
 
-// SetShouldOverwrite gets a reference to the given interface{} and assigns it to the ShouldOverwrite field.
-func (o *ProductIdMappingsAddRequest) SetShouldOverwrite(v interface{}) {
-	o.ShouldOverwrite = v
+// SetShouldOverwrite gets a reference to the given bool and assigns it to the ShouldOverwrite field.
+func (o *ProductIdMappingsAddRequest) SetShouldOverwrite(v bool) {
+	o.ShouldOverwrite = &v
 }
 
 func (o ProductIdMappingsAddRequest) MarshalJSON() ([]byte, error) {
@@ -142,13 +141,9 @@ func (o ProductIdMappingsAddRequest) MarshalJSON() ([]byte, error) {
 
 func (o ProductIdMappingsAddRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.SourceId != nil {
-		toSerialize["sourceId"] = o.SourceId
-	}
-	if o.TargetId != nil {
-		toSerialize["targetId"] = o.TargetId
-	}
-	if o.ShouldOverwrite != nil {
+	toSerialize["sourceId"] = o.SourceId
+	toSerialize["targetId"] = o.TargetId
+	if !IsNil(o.ShouldOverwrite) {
 		toSerialize["shouldOverwrite"] = o.ShouldOverwrite
 	}
 	return toSerialize, nil

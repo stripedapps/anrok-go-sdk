@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -28,10 +28,10 @@ type ApiCertificatesArchiveRequest struct {
 	ctx context.Context
 	ApiService *CustomerCertificatesAPIService
 	certificateId interface{}
-	body *interface{}
+	body *map[string]interface{}
 }
 
-func (r ApiCertificatesArchiveRequest) Body(body interface{}) ApiCertificatesArchiveRequest {
+func (r ApiCertificatesArchiveRequest) Body(body map[string]interface{}) ApiCertificatesArchiveRequest {
 	r.body = &body
 	return r
 }
@@ -234,7 +234,7 @@ func (a *CustomerCertificatesAPIService) CertificatesCreateExecute(r ApiCertific
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v interface{}
+			var v string
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,16 +21,16 @@ var _ MappedNullable = &CustomerCertificateFile{}
 // CustomerCertificateFile struct for CustomerCertificateFile
 type CustomerCertificateFile struct {
 	// File name
-	Name interface{} `json:"name"`
+	Name string `json:"name"`
 	// Base64 encoded certificate image contents
-	ContentsBase64 interface{} `json:"contentsBase64"`
+	ContentsBase64 string `json:"contentsBase64"`
 }
 
 // NewCustomerCertificateFile instantiates a new CustomerCertificateFile object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCustomerCertificateFile(name interface{}, contentsBase64 interface{}) *CustomerCertificateFile {
+func NewCustomerCertificateFile(name string, contentsBase64 string) *CustomerCertificateFile {
 	this := CustomerCertificateFile{}
 	this.Name = name
 	this.ContentsBase64 = contentsBase64
@@ -46,10 +46,9 @@ func NewCustomerCertificateFileWithDefaults() *CustomerCertificateFile {
 }
 
 // GetName returns the Name field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerCertificateFile) GetName() interface{} {
+func (o *CustomerCertificateFile) GetName() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -58,24 +57,22 @@ func (o *CustomerCertificateFile) GetName() interface{} {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateFile) GetNameOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.Name) {
+func (o *CustomerCertificateFile) GetNameOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Name, true
 }
 
 // SetName sets field value
-func (o *CustomerCertificateFile) SetName(v interface{}) {
+func (o *CustomerCertificateFile) SetName(v string) {
 	o.Name = v
 }
 
 // GetContentsBase64 returns the ContentsBase64 field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerCertificateFile) GetContentsBase64() interface{} {
+func (o *CustomerCertificateFile) GetContentsBase64() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -84,16 +81,15 @@ func (o *CustomerCertificateFile) GetContentsBase64() interface{} {
 
 // GetContentsBase64Ok returns a tuple with the ContentsBase64 field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateFile) GetContentsBase64Ok() (*interface{}, bool) {
-	if o == nil || IsNil(o.ContentsBase64) {
+func (o *CustomerCertificateFile) GetContentsBase64Ok() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.ContentsBase64, true
 }
 
 // SetContentsBase64 sets field value
-func (o *CustomerCertificateFile) SetContentsBase64(v interface{}) {
+func (o *CustomerCertificateFile) SetContentsBase64(v string) {
 	o.ContentsBase64 = v
 }
 
@@ -107,12 +103,8 @@ func (o CustomerCertificateFile) MarshalJSON() ([]byte, error) {
 
 func (o CustomerCertificateFile) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Name != nil {
-		toSerialize["name"] = o.Name
-	}
-	if o.ContentsBase64 != nil {
-		toSerialize["contentsBase64"] = o.ContentsBase64
-	}
+	toSerialize["name"] = o.Name
+	toSerialize["contentsBase64"] = o.ContentsBase64
 	return toSerialize, nil
 }
 

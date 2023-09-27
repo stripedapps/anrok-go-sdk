@@ -12,9 +12,10 @@ info:
     Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.
 
     The default rate limit for a seller account is 10 API requests per second.
+  license:
+    name: All rights reserved
   termsOfService: https://www.anrok.com/privacy-terms
   title: Anrok API
-  version: 0.0.1
   x-logo:
     url: https://global-uploads.webflow.com/632add85afcd1ac30aa74675/6357842d130e1f3e0e23d1fe_anrok_logo.svg
 servers:
@@ -80,7 +81,8 @@ paths:
                 missingRequiredProperty:
                   summary: Missing required property
                   value: "Request body: \"customerId\": Required."
-              schema: {}
+              schema:
+                type: string
           description: Bad Request
         "409":
           content:
@@ -204,9 +206,7 @@ paths:
                 accoutingTimeZoneNotSetForSeller:
                   $ref: '#/components/examples/ConflictAccountingTimeZoneNotSetForSeller'
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/CreateTransactionCannotComputeTaxAmount'
-                - $ref: '#/components/schemas/CreateTransactionCannotUpdate'
+                $ref: '#/components/schemas/transactionsCreateOrUpdate_409_response'
           description: Conflict
         "429":
           $ref: '#/components/responses/RateLimit'
@@ -466,7 +466,9 @@ paths:
               - billing_system_id_2: anrok_id_2
               schema:
                 items:
-                  additionalProperties: {}
+                  additionalProperties:
+                    type: string
+                type: array
           description: OK
         "409":
           content:
@@ -503,7 +505,8 @@ paths:
           content:
             application/json:
               example: {}
-              schema: {}
+              schema:
+                type: object
           description: OK
         "409":
           content:
@@ -561,7 +564,8 @@ components:
             emptyExample:
               summary: Empty request body
               value: {}
-          schema: {}
+          schema:
+            type: object
       required: true
     CreateNegation:
       content:
@@ -589,7 +593,8 @@ components:
       content:
         application/json:
           example: {}
-          schema: {}
+          schema:
+            type: object
       description: OK
     CreateTransactionBadRequest:
       content:
@@ -644,44 +649,65 @@ components:
         - If customerId is provided without customerName, that customer object must already exist in Anrok.
         - If both customerId and customerName are provided, the customer object will be created if it is not already present.
         - Customer IDs are unique across the entire seller account.
+      type: string
     CustomerName:
       description: The name of the customer
+      type: string
     CustomerCertificateFile:
       example:
-        contentsBase64: ""
-        name: ""
+        contentsBase64: contentsBase64
+        name: name
       properties:
         name:
           description: File name
+          type: string
         contentsBase64:
           description: Base64 encoded certificate image contents
+          type: string
       required:
       - contentsBase64
       - name
     CustomerCertificateJuris:
+      example:
+        effectiveDateEndi: 2000-01-23
+        notes: notes
+        registrationId: registrationId
+        jurisId: jurisId
       properties:
         jurisId:
           description: ID of jurisdiction
+          type: string
         registrationId:
           description: Registration ID for jurisdiction
+          type: string
         effectiveDateEndi:
           description: Expiration date of certificate in this jurisdiction
           format: date
+          type: string
         notes:
           description: Optional internal notes
+          type: string
       required:
       - jurisId
     CustomerCertificate:
       example:
-        exemptionNumber: ""
-        notes: ""
-        customerId: ""
-        effectiveDateBegin: ""
+        exemptionNumber: exemptionNumber
+        notes: notes
+        customerId: customerId
+        effectiveDateBegin: 2000-01-23
         certificateFile:
-          contentsBase64: ""
-          name: ""
-        jurises: ""
-        customerName: ""
+          contentsBase64: contentsBase64
+          name: name
+        jurises:
+        - effectiveDateEndi: 2000-01-23
+          notes: notes
+          registrationId: registrationId
+          jurisId: jurisId
+        - effectiveDateEndi: 2000-01-23
+          notes: notes
+          registrationId: registrationId
+          jurisId: jurisId
+        customerName: customerName
       properties:
         customerId:
           description: |
@@ -689,40 +715,52 @@ components:
             - If customerId is provided without customerName, that customer object must already exist in Anrok.
             - If both customerId and customerName are provided, the customer object will be created if it is not already present.
             - Customer IDs are unique across the entire seller account.
+          type: string
         customerName:
           description: The name of the customer
+          type: string
         effectiveDateBegin:
           description: Effective date of certificate
           format: date
+          type: string
         exemptionNumber:
           description: Certificate exemption number
+          type: string
         notes:
           description: Optional internal notes
+          type: string
         certificateFile:
           $ref: '#/components/schemas/CustomerCertificateFile'
         jurises:
-          description: Jurisdictions for which certificate applies
           items:
             $ref: '#/components/schemas/CustomerCertificateJuris'
+          type: array
       required:
       - certificateFile
       - customerId
       - effectiveDateBegin
       - jurises
     TransactionLineItem:
+      example:
+        amount: -2147483648
+        productExternalId: productExternalId
+        id: id
       properties:
         id:
           description: "Identifier for the line item. Is saved by Anrok, but not used\
             \ for anything by Anrok."
+          type: string
         productExternalId:
           description: A product ID that has already been defined in the Anrok UI
             (under "Product IDs"). This is used to determine whether the line item
             is taxable.
+          type: string
         amount:
           description: The sale price in the smallest denomination of the currency
             (e.g. cents or pennies)
           maximum: 100000000000
           minimum: -100000000000
+          type: integer
       required:
       - amount
       - productExternalId
@@ -730,18 +768,23 @@ components:
       properties:
         country:
           description: The country's full name or 2-letter ISO code
+          type: string
           nullable: true
         line1:
           description: The "delivery line" of the address
+          type: string
           nullable: true
         city:
           description: City or town name
+          type: string
           nullable: true
         region:
           description: "Other principal subdivision (i.e. province, state, county)"
+          type: string
           nullable: true
         postalCode:
           description: Postal code
+          type: string
           nullable: true
       title: International address format
     CustomerUsAddress:
@@ -755,91 +798,106 @@ components:
         country:
           enum:
           - us
+          type: string
         line1:
           description: The "delivery line" of the address
+          type: string
           nullable: true
         city:
           description: The standard USPS format
+          type: string
           nullable: true
         state:
           description: The standard USPS format
+          type: string
           nullable: true
         zipCode:
           description: The standard USPS format
+          type: string
           nullable: true
       required:
       - country
       title: US address format
     CustomerTaxId:
       description: The customer VAT registration number for a non-US country
+      example:
+        type: genericVatNumber
+        value: value
       properties:
         type:
           description: This setting is purely metadata and does not affect tax calculation.
           enum:
           - genericVatNumber
           - euVrn
+          type: string
         value:
           description: The customer VAT registration number for a non-US country
+          type: string
       required:
       - type
       - value
     CreateEphemeralTransaction:
       example:
-        lineItems: ""
-        customerAddress: ""
+        lineItems:
+        - amount: -2147483648
+          productExternalId: productExternalId
+          id: id
+        - amount: -2147483648
+          productExternalId: productExternalId
+          id: id
+        customerAddress: null
         accountingDate: 2017-07-21
-        accountingTimeZone: ""
-        customerId: ""
-        customerTaxIds: ""
+        accountingTimeZone: UTC
+        customerId: customerId
+        customerTaxIds:
+        - type: genericVatNumber
+          value: value
+        - type: genericVatNumber
+          value: value
         accountingTime: 2017-07-21T17:32:28Z
-        currencyCode: ""
+        currencyCode: currencyCode
         taxDate: 2017-07-21
-        customerName: ""
+        customerName: customerName
       properties:
         lineItems:
-          description: The line items in the transaction.
           items:
             $ref: '#/components/schemas/TransactionLineItem'
+          type: array
         currencyCode:
           description: Three letter ISO currency code (case insensitive).
           maxLength: 3
           minLength: 3
+          type: string
         customerAddress:
-          anyOf:
-          - $ref: '#/components/schemas/CustomerInternationalAddress'
-          - $ref: '#/components/schemas/CustomerUsAddress'
-          description: "The address where the product will be delivered or used. This\
-            \ address determines the taxing jurisdictions and rates for destination-based\
-            \ sourcing. For SaaS companies, this is typically the billing address.\
-            \ All address fields are optional: fields can be omitted or have null\
-            \ value, but empty strings are not allowed. Anrok will return an error\
-            \ if the address does not have enough information to determine the top-level\
-            \ taxing jurisdiction with high confidence. International is a premium\
-            \ feature. Please contact support@anrok.com for more information."
+          $ref: '#/components/schemas/CreateEphemeralTransaction_customerAddress'
         customerId:
           description: |
             The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate.
             - If customerId is provided without customerName, that customer object must already exist in Anrok.
             - If both customerId and customerName are provided, the customer object will be created if it is not already present.
             - Customer IDs are unique across the entire seller account.
+          type: string
         customerName:
           description: The name of the customer
+          type: string
         customerTaxIds:
-          description: Tax IDs for the customer receiving the product
           items:
             $ref: '#/components/schemas/CustomerTaxId'
+          type: array
         accountingDate:
           description: "The date that this transaction occurred, for accounting purposes.\
             \ Accounting date will typically correspond to the invoice date. This\
             \ is used to determine which tax return the transaction belongs to."
           example: 2017-07-21
           format: date
+          type: string
         accountingTime:
           description: "The time that this transaction occurred, for accounting purposes.\
             \ If accountingDate is not provided, accountingTime is required to compute\
             \ an accounting date for the transaction."
           example: 2017-07-21T17:32:28Z
           format: date-time
+          type: string
         accountingTimeZone:
           description: "A “tz database” string used to compute an accounting date\
             \ from the request's accountingTime. The request cannot provide both an\
@@ -854,11 +912,13 @@ components:
           - America/Los_Angeles
           - America/Anchorage
           - Pacific/Honolulu
+          type: string
         taxDate:
           description: "The date to use for tax calculations. If omitted, Anrok will\
             \ use the the minimum of the accounting date and two days in the future."
           example: 2017-07-21
           format: date
+          type: string
       required:
       - currencyCode
       - customerAddress
@@ -871,26 +931,25 @@ components:
             description: The ID of the new transaction. This must be unique across
               the entire seller account. This is typically the billing system's invoice
               ID with some prefix to disambiguate different systems.
+            type: string
         required:
         - id
     CreateEphemeralTransactionSuccess:
       example:
-        lineItems: ""
-        taxAmountToCollect: ""
+        lineItems:
+        - taxAmountToCollect: 6
+        - taxAmountToCollect: 6
+        taxAmountToCollect: 0
       properties:
         taxAmountToCollect:
           description: "The total tax amount to collect from the customer, in the\
             \ smallest denomination of the currency (e.g. cents or pennies)"
           format: int64
+          type: integer
         lineItems:
-          description: The tax amount to collect for each line item. The order is
-            the same as the lineItems property of the request.
           items:
-            properties:
-              taxAmountToCollect:
-                description: "The tax amount to collect for the line item, in the\
-                  \ smallest denomination of the currency (e.g. cents or pennies)"
-                format: int64
+            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner'
+          type: array
     CreateOrUpdateTransactionSuccess:
       allOf:
       - $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
@@ -898,6 +957,7 @@ components:
           version:
             description: The transaction version
             format: int32
+            type: integer
     CreateTransactionCannotComputeTaxAmount:
       description: Error computing tax amount to be collected
       properties:
@@ -913,18 +973,22 @@ components:
           - customerIdNotFound
           - taxDateTooFarInPast
           - currencyCodeNotSupported
+          - transactionFrozenForFiling
+          type: string
     CreateTransactionCannotUpdate:
       description: Error updating transaction
       properties:
         type:
           enum:
           - transactionFrozenForFiling
+          type: string
     certificatesCreate_200_response:
       example:
-        id: ""
+        id: id
       properties:
         id:
           description: Certificate ID
+          type: string
     certificatesCreate_409_response:
       properties:
         type:
@@ -932,21 +996,30 @@ components:
           - duplicateJurisIds
           - fileBadFormat
           - customerIdNotFound
+          type: string
     certificatesArchive_409_response:
       properties:
         type:
           enum:
           - certificateIdNotFound
+          type: string
+    transactionsCreateOrUpdate_409_response:
+      oneOf:
+      - $ref: '#/components/schemas/CreateTransactionCannotComputeTaxAmount'
+      - $ref: '#/components/schemas/CreateTransactionCannotUpdate'
     transactionsCreateRefund_request:
       properties:
         originalTransactionId:
           description: The ID of the transaction you want to create a refund of
+          type: string
         newTransactionId:
           description: The ID for the new transaction
+          type: string
         originalTransactionExpectedVersion:
           description: The expected transaction version. The refund will fail if this
             is not the latest version of the transaction.
           format: int32
+          type: integer
       required:
       - newTransactionId
       - originalTransactionId
@@ -956,6 +1029,7 @@ components:
           description: The expected transaction version. The void will fail if this
             is not the latest version of the transaction.
           format: int32
+          type: integer
     transactionsVoid_409_response:
       properties:
         type:
@@ -963,22 +1037,27 @@ components:
           - transactionIdNotFound
           - transactionExpectedVersionMismatch
           - transactionFrozenForFiling
+          type: string
     productIdMappingsList_409_response:
       properties:
         type:
           enum:
           - integrationIdNotFound
+          type: string
     productIdMappingsAdd_request:
       properties:
         sourceId:
           description: Source Product ID from billing system.
+          type: string
         targetId:
           description: Target Product ID on Anrok. This product must already exist
             in Anrok.
+          type: string
         shouldOverwrite:
           default: false
           description: Whether this request should override an existing Source ID
             mapping
+          type: boolean
       required:
       - sourceId
       - targetId
@@ -989,6 +1068,28 @@ components:
           - integrationIdNotFound
           - sourceIdAlreadyMapped
           - targetIdNotFound
+          type: string
+    CreateEphemeralTransaction_customerAddress:
+      anyOf:
+      - $ref: '#/components/schemas/CustomerInternationalAddress'
+      - $ref: '#/components/schemas/CustomerUsAddress'
+      description: "The address where the product will be delivered or used. This\
+        \ address determines the taxing jurisdictions and rates for destination-based\
+        \ sourcing. For SaaS companies, this is typically the billing address. All\
+        \ address fields are optional: fields can be omitted or have null value, but\
+        \ empty strings are not allowed. Anrok will return an error if the address\
+        \ does not have enough information to determine the top-level taxing jurisdiction\
+        \ with high confidence. International is a premium feature. Please contact\
+        \ support@anrok.com for more information."
+    CreateEphemeralTransactionSuccess_lineItems_inner:
+      example:
+        taxAmountToCollect: 6
+      properties:
+        taxAmountToCollect:
+          description: "The tax amount to collect for the line item, in the smallest\
+            \ denomination of the currency (e.g. cents or pennies)"
+          format: int64
+          type: integer
   securitySchemes:
     http:
       description: "The Anrok API uses API keys to authenticate requests. You can\

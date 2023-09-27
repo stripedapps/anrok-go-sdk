@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,9 +21,8 @@ var _ MappedNullable = &CreateEphemeralTransactionSuccess{}
 // CreateEphemeralTransactionSuccess struct for CreateEphemeralTransactionSuccess
 type CreateEphemeralTransactionSuccess struct {
 	// The total tax amount to collect from the customer, in the smallest denomination of the currency (e.g. cents or pennies)
-	TaxAmountToCollect interface{} `json:"taxAmountToCollect,omitempty"`
-	// The tax amount to collect for each line item. The order is the same as the lineItems property of the request.
-	LineItems interface{} `json:"lineItems,omitempty"`
+	TaxAmountToCollect *int64 `json:"taxAmountToCollect,omitempty"`
+	LineItems []CreateEphemeralTransactionSuccessLineItemsInner `json:"lineItems,omitempty"`
 }
 
 // NewCreateEphemeralTransactionSuccess instantiates a new CreateEphemeralTransactionSuccess object
@@ -43,43 +42,42 @@ func NewCreateEphemeralTransactionSuccessWithDefaults() *CreateEphemeralTransact
 	return &this
 }
 
-// GetTaxAmountToCollect returns the TaxAmountToCollect field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CreateEphemeralTransactionSuccess) GetTaxAmountToCollect() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetTaxAmountToCollect returns the TaxAmountToCollect field value if set, zero value otherwise.
+func (o *CreateEphemeralTransactionSuccess) GetTaxAmountToCollect() int64 {
+	if o == nil || IsNil(o.TaxAmountToCollect) {
+		var ret int64
 		return ret
 	}
-	return o.TaxAmountToCollect
+	return *o.TaxAmountToCollect
 }
 
 // GetTaxAmountToCollectOk returns a tuple with the TaxAmountToCollect field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateEphemeralTransactionSuccess) GetTaxAmountToCollectOk() (*interface{}, bool) {
+func (o *CreateEphemeralTransactionSuccess) GetTaxAmountToCollectOk() (*int64, bool) {
 	if o == nil || IsNil(o.TaxAmountToCollect) {
 		return nil, false
 	}
-	return &o.TaxAmountToCollect, true
+	return o.TaxAmountToCollect, true
 }
 
 // HasTaxAmountToCollect returns a boolean if a field has been set.
 func (o *CreateEphemeralTransactionSuccess) HasTaxAmountToCollect() bool {
-	if o != nil && IsNil(o.TaxAmountToCollect) {
+	if o != nil && !IsNil(o.TaxAmountToCollect) {
 		return true
 	}
 
 	return false
 }
 
-// SetTaxAmountToCollect gets a reference to the given interface{} and assigns it to the TaxAmountToCollect field.
-func (o *CreateEphemeralTransactionSuccess) SetTaxAmountToCollect(v interface{}) {
-	o.TaxAmountToCollect = v
+// SetTaxAmountToCollect gets a reference to the given int64 and assigns it to the TaxAmountToCollect field.
+func (o *CreateEphemeralTransactionSuccess) SetTaxAmountToCollect(v int64) {
+	o.TaxAmountToCollect = &v
 }
 
-// GetLineItems returns the LineItems field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CreateEphemeralTransactionSuccess) GetLineItems() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetLineItems returns the LineItems field value if set, zero value otherwise.
+func (o *CreateEphemeralTransactionSuccess) GetLineItems() []CreateEphemeralTransactionSuccessLineItemsInner {
+	if o == nil || IsNil(o.LineItems) {
+		var ret []CreateEphemeralTransactionSuccessLineItemsInner
 		return ret
 	}
 	return o.LineItems
@@ -87,25 +85,24 @@ func (o *CreateEphemeralTransactionSuccess) GetLineItems() interface{} {
 
 // GetLineItemsOk returns a tuple with the LineItems field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreateEphemeralTransactionSuccess) GetLineItemsOk() (*interface{}, bool) {
+func (o *CreateEphemeralTransactionSuccess) GetLineItemsOk() ([]CreateEphemeralTransactionSuccessLineItemsInner, bool) {
 	if o == nil || IsNil(o.LineItems) {
 		return nil, false
 	}
-	return &o.LineItems, true
+	return o.LineItems, true
 }
 
 // HasLineItems returns a boolean if a field has been set.
 func (o *CreateEphemeralTransactionSuccess) HasLineItems() bool {
-	if o != nil && IsNil(o.LineItems) {
+	if o != nil && !IsNil(o.LineItems) {
 		return true
 	}
 
 	return false
 }
 
-// SetLineItems gets a reference to the given interface{} and assigns it to the LineItems field.
-func (o *CreateEphemeralTransactionSuccess) SetLineItems(v interface{}) {
+// SetLineItems gets a reference to the given []CreateEphemeralTransactionSuccessLineItemsInner and assigns it to the LineItems field.
+func (o *CreateEphemeralTransactionSuccess) SetLineItems(v []CreateEphemeralTransactionSuccessLineItemsInner) {
 	o.LineItems = v
 }
 
@@ -119,10 +116,10 @@ func (o CreateEphemeralTransactionSuccess) MarshalJSON() ([]byte, error) {
 
 func (o CreateEphemeralTransactionSuccess) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.TaxAmountToCollect != nil {
+	if !IsNil(o.TaxAmountToCollect) {
 		toSerialize["taxAmountToCollect"] = o.TaxAmountToCollect
 	}
-	if o.LineItems != nil {
+	if !IsNil(o.LineItems) {
 		toSerialize["lineItems"] = o.LineItems
 	}
 	return toSerialize, nil

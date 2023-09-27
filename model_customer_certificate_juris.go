@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,20 +21,20 @@ var _ MappedNullable = &CustomerCertificateJuris{}
 // CustomerCertificateJuris struct for CustomerCertificateJuris
 type CustomerCertificateJuris struct {
 	// ID of jurisdiction
-	JurisId interface{} `json:"jurisId"`
+	JurisId string `json:"jurisId"`
 	// Registration ID for jurisdiction
-	RegistrationId interface{} `json:"registrationId,omitempty"`
+	RegistrationId *string `json:"registrationId,omitempty"`
 	// Expiration date of certificate in this jurisdiction
-	EffectiveDateEndi interface{} `json:"effectiveDateEndi,omitempty"`
+	EffectiveDateEndi *string `json:"effectiveDateEndi,omitempty"`
 	// Optional internal notes
-	Notes interface{} `json:"notes,omitempty"`
+	Notes *string `json:"notes,omitempty"`
 }
 
 // NewCustomerCertificateJuris instantiates a new CustomerCertificateJuris object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCustomerCertificateJuris(jurisId interface{}) *CustomerCertificateJuris {
+func NewCustomerCertificateJuris(jurisId string) *CustomerCertificateJuris {
 	this := CustomerCertificateJuris{}
 	this.JurisId = jurisId
 	return &this
@@ -49,10 +49,9 @@ func NewCustomerCertificateJurisWithDefaults() *CustomerCertificateJuris {
 }
 
 // GetJurisId returns the JurisId field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerCertificateJuris) GetJurisId() interface{} {
+func (o *CustomerCertificateJuris) GetJurisId() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -61,116 +60,112 @@ func (o *CustomerCertificateJuris) GetJurisId() interface{} {
 
 // GetJurisIdOk returns a tuple with the JurisId field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateJuris) GetJurisIdOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.JurisId) {
+func (o *CustomerCertificateJuris) GetJurisIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.JurisId, true
 }
 
 // SetJurisId sets field value
-func (o *CustomerCertificateJuris) SetJurisId(v interface{}) {
+func (o *CustomerCertificateJuris) SetJurisId(v string) {
 	o.JurisId = v
 }
 
-// GetRegistrationId returns the RegistrationId field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerCertificateJuris) GetRegistrationId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetRegistrationId returns the RegistrationId field value if set, zero value otherwise.
+func (o *CustomerCertificateJuris) GetRegistrationId() string {
+	if o == nil || IsNil(o.RegistrationId) {
+		var ret string
 		return ret
 	}
-	return o.RegistrationId
+	return *o.RegistrationId
 }
 
 // GetRegistrationIdOk returns a tuple with the RegistrationId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateJuris) GetRegistrationIdOk() (*interface{}, bool) {
+func (o *CustomerCertificateJuris) GetRegistrationIdOk() (*string, bool) {
 	if o == nil || IsNil(o.RegistrationId) {
 		return nil, false
 	}
-	return &o.RegistrationId, true
+	return o.RegistrationId, true
 }
 
 // HasRegistrationId returns a boolean if a field has been set.
 func (o *CustomerCertificateJuris) HasRegistrationId() bool {
-	if o != nil && IsNil(o.RegistrationId) {
+	if o != nil && !IsNil(o.RegistrationId) {
 		return true
 	}
 
 	return false
 }
 
-// SetRegistrationId gets a reference to the given interface{} and assigns it to the RegistrationId field.
-func (o *CustomerCertificateJuris) SetRegistrationId(v interface{}) {
-	o.RegistrationId = v
+// SetRegistrationId gets a reference to the given string and assigns it to the RegistrationId field.
+func (o *CustomerCertificateJuris) SetRegistrationId(v string) {
+	o.RegistrationId = &v
 }
 
-// GetEffectiveDateEndi returns the EffectiveDateEndi field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerCertificateJuris) GetEffectiveDateEndi() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetEffectiveDateEndi returns the EffectiveDateEndi field value if set, zero value otherwise.
+func (o *CustomerCertificateJuris) GetEffectiveDateEndi() string {
+	if o == nil || IsNil(o.EffectiveDateEndi) {
+		var ret string
 		return ret
 	}
-	return o.EffectiveDateEndi
+	return *o.EffectiveDateEndi
 }
 
 // GetEffectiveDateEndiOk returns a tuple with the EffectiveDateEndi field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateJuris) GetEffectiveDateEndiOk() (*interface{}, bool) {
+func (o *CustomerCertificateJuris) GetEffectiveDateEndiOk() (*string, bool) {
 	if o == nil || IsNil(o.EffectiveDateEndi) {
 		return nil, false
 	}
-	return &o.EffectiveDateEndi, true
+	return o.EffectiveDateEndi, true
 }
 
 // HasEffectiveDateEndi returns a boolean if a field has been set.
 func (o *CustomerCertificateJuris) HasEffectiveDateEndi() bool {
-	if o != nil && IsNil(o.EffectiveDateEndi) {
+	if o != nil && !IsNil(o.EffectiveDateEndi) {
 		return true
 	}
 
 	return false
 }
 
-// SetEffectiveDateEndi gets a reference to the given interface{} and assigns it to the EffectiveDateEndi field.
-func (o *CustomerCertificateJuris) SetEffectiveDateEndi(v interface{}) {
-	o.EffectiveDateEndi = v
+// SetEffectiveDateEndi gets a reference to the given string and assigns it to the EffectiveDateEndi field.
+func (o *CustomerCertificateJuris) SetEffectiveDateEndi(v string) {
+	o.EffectiveDateEndi = &v
 }
 
-// GetNotes returns the Notes field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerCertificateJuris) GetNotes() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetNotes returns the Notes field value if set, zero value otherwise.
+func (o *CustomerCertificateJuris) GetNotes() string {
+	if o == nil || IsNil(o.Notes) {
+		var ret string
 		return ret
 	}
-	return o.Notes
+	return *o.Notes
 }
 
 // GetNotesOk returns a tuple with the Notes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerCertificateJuris) GetNotesOk() (*interface{}, bool) {
+func (o *CustomerCertificateJuris) GetNotesOk() (*string, bool) {
 	if o == nil || IsNil(o.Notes) {
 		return nil, false
 	}
-	return &o.Notes, true
+	return o.Notes, true
 }
 
 // HasNotes returns a boolean if a field has been set.
 func (o *CustomerCertificateJuris) HasNotes() bool {
-	if o != nil && IsNil(o.Notes) {
+	if o != nil && !IsNil(o.Notes) {
 		return true
 	}
 
 	return false
 }
 
-// SetNotes gets a reference to the given interface{} and assigns it to the Notes field.
-func (o *CustomerCertificateJuris) SetNotes(v interface{}) {
-	o.Notes = v
+// SetNotes gets a reference to the given string and assigns it to the Notes field.
+func (o *CustomerCertificateJuris) SetNotes(v string) {
+	o.Notes = &v
 }
 
 func (o CustomerCertificateJuris) MarshalJSON() ([]byte, error) {
@@ -183,16 +178,14 @@ func (o CustomerCertificateJuris) MarshalJSON() ([]byte, error) {
 
 func (o CustomerCertificateJuris) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.JurisId != nil {
-		toSerialize["jurisId"] = o.JurisId
-	}
-	if o.RegistrationId != nil {
+	toSerialize["jurisId"] = o.JurisId
+	if !IsNil(o.RegistrationId) {
 		toSerialize["registrationId"] = o.RegistrationId
 	}
-	if o.EffectiveDateEndi != nil {
+	if !IsNil(o.EffectiveDateEndi) {
 		toSerialize["effectiveDateEndi"] = o.EffectiveDateEndi
 	}
-	if o.Notes != nil {
+	if !IsNil(o.Notes) {
 		toSerialize["notes"] = o.Notes
 	}
 	return toSerialize, nil

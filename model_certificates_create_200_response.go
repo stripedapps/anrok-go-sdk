@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,7 +21,7 @@ var _ MappedNullable = &CertificatesCreate200Response{}
 // CertificatesCreate200Response struct for CertificatesCreate200Response
 type CertificatesCreate200Response struct {
 	// Certificate ID
-	Id interface{} `json:"id,omitempty"`
+	Id *string `json:"id,omitempty"`
 }
 
 // NewCertificatesCreate200Response instantiates a new CertificatesCreate200Response object
@@ -41,37 +41,36 @@ func NewCertificatesCreate200ResponseWithDefaults() *CertificatesCreate200Respon
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CertificatesCreate200Response) GetId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *CertificatesCreate200Response) GetId() string {
+	if o == nil || IsNil(o.Id) {
+		var ret string
 		return ret
 	}
-	return o.Id
+	return *o.Id
 }
 
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CertificatesCreate200Response) GetIdOk() (*interface{}, bool) {
+func (o *CertificatesCreate200Response) GetIdOk() (*string, bool) {
 	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Id, true
 }
 
 // HasId returns a boolean if a field has been set.
 func (o *CertificatesCreate200Response) HasId() bool {
-	if o != nil && IsNil(o.Id) {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given interface{} and assigns it to the Id field.
-func (o *CertificatesCreate200Response) SetId(v interface{}) {
-	o.Id = v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *CertificatesCreate200Response) SetId(v string) {
+	o.Id = &v
 }
 
 func (o CertificatesCreate200Response) MarshalJSON() ([]byte, error) {
@@ -84,7 +83,7 @@ func (o CertificatesCreate200Response) MarshalJSON() ([]byte, error) {
 
 func (o CertificatesCreate200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Id != nil {
+	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
 	return toSerialize, nil

@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,16 +21,16 @@ var _ MappedNullable = &CustomerTaxId{}
 // CustomerTaxId The customer VAT registration number for a non-US country
 type CustomerTaxId struct {
 	// This setting is purely metadata and does not affect tax calculation.
-	Type interface{} `json:"type"`
+	Type string `json:"type"`
 	// The customer VAT registration number for a non-US country
-	Value interface{} `json:"value"`
+	Value string `json:"value"`
 }
 
 // NewCustomerTaxId instantiates a new CustomerTaxId object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCustomerTaxId(type_ interface{}, value interface{}) *CustomerTaxId {
+func NewCustomerTaxId(type_ string, value string) *CustomerTaxId {
 	this := CustomerTaxId{}
 	this.Type = type_
 	this.Value = value
@@ -46,10 +46,9 @@ func NewCustomerTaxIdWithDefaults() *CustomerTaxId {
 }
 
 // GetType returns the Type field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerTaxId) GetType() interface{} {
+func (o *CustomerTaxId) GetType() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -58,24 +57,22 @@ func (o *CustomerTaxId) GetType() interface{} {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerTaxId) GetTypeOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.Type) {
+func (o *CustomerTaxId) GetTypeOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Type, true
 }
 
 // SetType sets field value
-func (o *CustomerTaxId) SetType(v interface{}) {
+func (o *CustomerTaxId) SetType(v string) {
 	o.Type = v
 }
 
 // GetValue returns the Value field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerTaxId) GetValue() interface{} {
+func (o *CustomerTaxId) GetValue() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -84,16 +81,15 @@ func (o *CustomerTaxId) GetValue() interface{} {
 
 // GetValueOk returns a tuple with the Value field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerTaxId) GetValueOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.Value) {
+func (o *CustomerTaxId) GetValueOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Value, true
 }
 
 // SetValue sets field value
-func (o *CustomerTaxId) SetValue(v interface{}) {
+func (o *CustomerTaxId) SetValue(v string) {
 	o.Value = v
 }
 
@@ -107,12 +103,8 @@ func (o CustomerTaxId) MarshalJSON() ([]byte, error) {
 
 func (o CustomerTaxId) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Type != nil {
-		toSerialize["type"] = o.Type
-	}
-	if o.Value != nil {
-		toSerialize["value"] = o.Value
-	}
+	toSerialize["type"] = o.Type
+	toSerialize["value"] = o.Value
 	return toSerialize, nil
 }
 

@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -36,7 +36,7 @@ func (r ApiProductIdMappingsAddRequest) ProductIdMappingsAddRequest(productIdMap
 	return r
 }
 
-func (r ApiProductIdMappingsAddRequest) Execute() (interface{}, *http.Response, error) {
+func (r ApiProductIdMappingsAddRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.ProductIdMappingsAddExecute(r)
 }
 
@@ -58,13 +58,13 @@ func (a *ProductMappingsAPIService) ProductIdMappingsAdd(ctx context.Context, in
 }
 
 // Execute executes the request
-//  @return interface{}
-func (a *ProductMappingsAPIService) ProductIdMappingsAddExecute(r ApiProductIdMappingsAddRequest) (interface{}, *http.Response, error) {
+//  @return map[string]interface{}
+func (a *ProductMappingsAPIService) ProductIdMappingsAddExecute(r ApiProductIdMappingsAddRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  interface{}
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductMappingsAPIService.ProductIdMappingsAdd")
@@ -153,15 +153,15 @@ type ApiProductIdMappingsListRequest struct {
 	ctx context.Context
 	ApiService *ProductMappingsAPIService
 	integrationId interface{}
-	body *interface{}
+	body *map[string]interface{}
 }
 
-func (r ApiProductIdMappingsListRequest) Body(body interface{}) ApiProductIdMappingsListRequest {
+func (r ApiProductIdMappingsListRequest) Body(body map[string]interface{}) ApiProductIdMappingsListRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiProductIdMappingsListRequest) Execute() (interface{}, *http.Response, error) {
+func (r ApiProductIdMappingsListRequest) Execute() ([]map[string]string, *http.Response, error) {
 	return r.ApiService.ProductIdMappingsListExecute(r)
 }
 
@@ -183,13 +183,13 @@ func (a *ProductMappingsAPIService) ProductIdMappingsList(ctx context.Context, i
 }
 
 // Execute executes the request
-//  @return interface{}
-func (a *ProductMappingsAPIService) ProductIdMappingsListExecute(r ApiProductIdMappingsListRequest) (interface{}, *http.Response, error) {
+//  @return []map[string]string
+func (a *ProductMappingsAPIService) ProductIdMappingsListExecute(r ApiProductIdMappingsListRequest) ([]map[string]string, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  interface{}
+		localVarReturnValue  []map[string]string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductMappingsAPIService.ProductIdMappingsList")
