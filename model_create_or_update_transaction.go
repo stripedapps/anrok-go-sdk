@@ -16,11 +16,11 @@ import (
 	"time"
 )
 
-// checks if the CreateEphemeralTransaction type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateEphemeralTransaction{}
+// checks if the CreateOrUpdateTransaction type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateOrUpdateTransaction{}
 
-// CreateEphemeralTransaction struct for CreateEphemeralTransaction
-type CreateEphemeralTransaction struct {
+// CreateOrUpdateTransaction struct for CreateOrUpdateTransaction
+type CreateOrUpdateTransaction struct {
 	LineItems []TransactionLineItem `json:"lineItems"`
 	// Three letter ISO currency code (case insensitive).
 	CurrencyCode string `json:"currencyCode"`
@@ -38,30 +38,33 @@ type CreateEphemeralTransaction struct {
 	AccountingTimeZone *string `json:"accountingTimeZone,omitempty"`
 	// The date to use for tax calculations. If omitted, Anrok will use the the minimum of the accounting date and two days in the future.
 	TaxDate *string `json:"taxDate,omitempty"`
+	// The ID of the new transaction. This must be unique across the entire seller account. This is typically the billing system's invoice ID with some prefix to disambiguate different systems.
+	Id string `json:"id"`
 }
 
-// NewCreateEphemeralTransaction instantiates a new CreateEphemeralTransaction object
+// NewCreateOrUpdateTransaction instantiates a new CreateOrUpdateTransaction object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateEphemeralTransaction(lineItems []TransactionLineItem, currencyCode string, customerAddress CreateEphemeralTransactionCustomerAddress) *CreateEphemeralTransaction {
-	this := CreateEphemeralTransaction{}
+func NewCreateOrUpdateTransaction(lineItems []TransactionLineItem, currencyCode string, customerAddress CreateEphemeralTransactionCustomerAddress, id string) *CreateOrUpdateTransaction {
+	this := CreateOrUpdateTransaction{}
 	this.LineItems = lineItems
 	this.CurrencyCode = currencyCode
 	this.CustomerAddress = customerAddress
+	this.Id = id
 	return &this
 }
 
-// NewCreateEphemeralTransactionWithDefaults instantiates a new CreateEphemeralTransaction object
+// NewCreateOrUpdateTransactionWithDefaults instantiates a new CreateOrUpdateTransaction object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateEphemeralTransactionWithDefaults() *CreateEphemeralTransaction {
-	this := CreateEphemeralTransaction{}
+func NewCreateOrUpdateTransactionWithDefaults() *CreateOrUpdateTransaction {
+	this := CreateOrUpdateTransaction{}
 	return &this
 }
 
 // GetLineItems returns the LineItems field value
-func (o *CreateEphemeralTransaction) GetLineItems() []TransactionLineItem {
+func (o *CreateOrUpdateTransaction) GetLineItems() []TransactionLineItem {
 	if o == nil {
 		var ret []TransactionLineItem
 		return ret
@@ -72,7 +75,7 @@ func (o *CreateEphemeralTransaction) GetLineItems() []TransactionLineItem {
 
 // GetLineItemsOk returns a tuple with the LineItems field value
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetLineItemsOk() ([]TransactionLineItem, bool) {
+func (o *CreateOrUpdateTransaction) GetLineItemsOk() ([]TransactionLineItem, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -80,12 +83,12 @@ func (o *CreateEphemeralTransaction) GetLineItemsOk() ([]TransactionLineItem, bo
 }
 
 // SetLineItems sets field value
-func (o *CreateEphemeralTransaction) SetLineItems(v []TransactionLineItem) {
+func (o *CreateOrUpdateTransaction) SetLineItems(v []TransactionLineItem) {
 	o.LineItems = v
 }
 
 // GetCurrencyCode returns the CurrencyCode field value
-func (o *CreateEphemeralTransaction) GetCurrencyCode() string {
+func (o *CreateOrUpdateTransaction) GetCurrencyCode() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -96,7 +99,7 @@ func (o *CreateEphemeralTransaction) GetCurrencyCode() string {
 
 // GetCurrencyCodeOk returns a tuple with the CurrencyCode field value
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetCurrencyCodeOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetCurrencyCodeOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -104,12 +107,12 @@ func (o *CreateEphemeralTransaction) GetCurrencyCodeOk() (*string, bool) {
 }
 
 // SetCurrencyCode sets field value
-func (o *CreateEphemeralTransaction) SetCurrencyCode(v string) {
+func (o *CreateOrUpdateTransaction) SetCurrencyCode(v string) {
 	o.CurrencyCode = v
 }
 
 // GetCustomerAddress returns the CustomerAddress field value
-func (o *CreateEphemeralTransaction) GetCustomerAddress() CreateEphemeralTransactionCustomerAddress {
+func (o *CreateOrUpdateTransaction) GetCustomerAddress() CreateEphemeralTransactionCustomerAddress {
 	if o == nil {
 		var ret CreateEphemeralTransactionCustomerAddress
 		return ret
@@ -120,7 +123,7 @@ func (o *CreateEphemeralTransaction) GetCustomerAddress() CreateEphemeralTransac
 
 // GetCustomerAddressOk returns a tuple with the CustomerAddress field value
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetCustomerAddressOk() (*CreateEphemeralTransactionCustomerAddress, bool) {
+func (o *CreateOrUpdateTransaction) GetCustomerAddressOk() (*CreateEphemeralTransactionCustomerAddress, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -128,12 +131,12 @@ func (o *CreateEphemeralTransaction) GetCustomerAddressOk() (*CreateEphemeralTra
 }
 
 // SetCustomerAddress sets field value
-func (o *CreateEphemeralTransaction) SetCustomerAddress(v CreateEphemeralTransactionCustomerAddress) {
+func (o *CreateOrUpdateTransaction) SetCustomerAddress(v CreateEphemeralTransactionCustomerAddress) {
 	o.CustomerAddress = v
 }
 
 // GetCustomerId returns the CustomerId field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetCustomerId() string {
+func (o *CreateOrUpdateTransaction) GetCustomerId() string {
 	if o == nil || IsNil(o.CustomerId) {
 		var ret string
 		return ret
@@ -143,7 +146,7 @@ func (o *CreateEphemeralTransaction) GetCustomerId() string {
 
 // GetCustomerIdOk returns a tuple with the CustomerId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetCustomerIdOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetCustomerIdOk() (*string, bool) {
 	if o == nil || IsNil(o.CustomerId) {
 		return nil, false
 	}
@@ -151,7 +154,7 @@ func (o *CreateEphemeralTransaction) GetCustomerIdOk() (*string, bool) {
 }
 
 // HasCustomerId returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasCustomerId() bool {
+func (o *CreateOrUpdateTransaction) HasCustomerId() bool {
 	if o != nil && !IsNil(o.CustomerId) {
 		return true
 	}
@@ -160,12 +163,12 @@ func (o *CreateEphemeralTransaction) HasCustomerId() bool {
 }
 
 // SetCustomerId gets a reference to the given string and assigns it to the CustomerId field.
-func (o *CreateEphemeralTransaction) SetCustomerId(v string) {
+func (o *CreateOrUpdateTransaction) SetCustomerId(v string) {
 	o.CustomerId = &v
 }
 
 // GetCustomerName returns the CustomerName field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetCustomerName() string {
+func (o *CreateOrUpdateTransaction) GetCustomerName() string {
 	if o == nil || IsNil(o.CustomerName) {
 		var ret string
 		return ret
@@ -175,7 +178,7 @@ func (o *CreateEphemeralTransaction) GetCustomerName() string {
 
 // GetCustomerNameOk returns a tuple with the CustomerName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetCustomerNameOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetCustomerNameOk() (*string, bool) {
 	if o == nil || IsNil(o.CustomerName) {
 		return nil, false
 	}
@@ -183,7 +186,7 @@ func (o *CreateEphemeralTransaction) GetCustomerNameOk() (*string, bool) {
 }
 
 // HasCustomerName returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasCustomerName() bool {
+func (o *CreateOrUpdateTransaction) HasCustomerName() bool {
 	if o != nil && !IsNil(o.CustomerName) {
 		return true
 	}
@@ -192,12 +195,12 @@ func (o *CreateEphemeralTransaction) HasCustomerName() bool {
 }
 
 // SetCustomerName gets a reference to the given string and assigns it to the CustomerName field.
-func (o *CreateEphemeralTransaction) SetCustomerName(v string) {
+func (o *CreateOrUpdateTransaction) SetCustomerName(v string) {
 	o.CustomerName = &v
 }
 
 // GetCustomerTaxIds returns the CustomerTaxIds field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetCustomerTaxIds() []CustomerTaxId {
+func (o *CreateOrUpdateTransaction) GetCustomerTaxIds() []CustomerTaxId {
 	if o == nil || IsNil(o.CustomerTaxIds) {
 		var ret []CustomerTaxId
 		return ret
@@ -207,7 +210,7 @@ func (o *CreateEphemeralTransaction) GetCustomerTaxIds() []CustomerTaxId {
 
 // GetCustomerTaxIdsOk returns a tuple with the CustomerTaxIds field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetCustomerTaxIdsOk() ([]CustomerTaxId, bool) {
+func (o *CreateOrUpdateTransaction) GetCustomerTaxIdsOk() ([]CustomerTaxId, bool) {
 	if o == nil || IsNil(o.CustomerTaxIds) {
 		return nil, false
 	}
@@ -215,7 +218,7 @@ func (o *CreateEphemeralTransaction) GetCustomerTaxIdsOk() ([]CustomerTaxId, boo
 }
 
 // HasCustomerTaxIds returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasCustomerTaxIds() bool {
+func (o *CreateOrUpdateTransaction) HasCustomerTaxIds() bool {
 	if o != nil && !IsNil(o.CustomerTaxIds) {
 		return true
 	}
@@ -224,12 +227,12 @@ func (o *CreateEphemeralTransaction) HasCustomerTaxIds() bool {
 }
 
 // SetCustomerTaxIds gets a reference to the given []CustomerTaxId and assigns it to the CustomerTaxIds field.
-func (o *CreateEphemeralTransaction) SetCustomerTaxIds(v []CustomerTaxId) {
+func (o *CreateOrUpdateTransaction) SetCustomerTaxIds(v []CustomerTaxId) {
 	o.CustomerTaxIds = v
 }
 
 // GetAccountingDate returns the AccountingDate field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetAccountingDate() string {
+func (o *CreateOrUpdateTransaction) GetAccountingDate() string {
 	if o == nil || IsNil(o.AccountingDate) {
 		var ret string
 		return ret
@@ -239,7 +242,7 @@ func (o *CreateEphemeralTransaction) GetAccountingDate() string {
 
 // GetAccountingDateOk returns a tuple with the AccountingDate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetAccountingDateOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetAccountingDateOk() (*string, bool) {
 	if o == nil || IsNil(o.AccountingDate) {
 		return nil, false
 	}
@@ -247,7 +250,7 @@ func (o *CreateEphemeralTransaction) GetAccountingDateOk() (*string, bool) {
 }
 
 // HasAccountingDate returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasAccountingDate() bool {
+func (o *CreateOrUpdateTransaction) HasAccountingDate() bool {
 	if o != nil && !IsNil(o.AccountingDate) {
 		return true
 	}
@@ -256,12 +259,12 @@ func (o *CreateEphemeralTransaction) HasAccountingDate() bool {
 }
 
 // SetAccountingDate gets a reference to the given string and assigns it to the AccountingDate field.
-func (o *CreateEphemeralTransaction) SetAccountingDate(v string) {
+func (o *CreateOrUpdateTransaction) SetAccountingDate(v string) {
 	o.AccountingDate = &v
 }
 
 // GetAccountingTime returns the AccountingTime field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetAccountingTime() time.Time {
+func (o *CreateOrUpdateTransaction) GetAccountingTime() time.Time {
 	if o == nil || IsNil(o.AccountingTime) {
 		var ret time.Time
 		return ret
@@ -271,7 +274,7 @@ func (o *CreateEphemeralTransaction) GetAccountingTime() time.Time {
 
 // GetAccountingTimeOk returns a tuple with the AccountingTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetAccountingTimeOk() (*time.Time, bool) {
+func (o *CreateOrUpdateTransaction) GetAccountingTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.AccountingTime) {
 		return nil, false
 	}
@@ -279,7 +282,7 @@ func (o *CreateEphemeralTransaction) GetAccountingTimeOk() (*time.Time, bool) {
 }
 
 // HasAccountingTime returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasAccountingTime() bool {
+func (o *CreateOrUpdateTransaction) HasAccountingTime() bool {
 	if o != nil && !IsNil(o.AccountingTime) {
 		return true
 	}
@@ -288,12 +291,12 @@ func (o *CreateEphemeralTransaction) HasAccountingTime() bool {
 }
 
 // SetAccountingTime gets a reference to the given time.Time and assigns it to the AccountingTime field.
-func (o *CreateEphemeralTransaction) SetAccountingTime(v time.Time) {
+func (o *CreateOrUpdateTransaction) SetAccountingTime(v time.Time) {
 	o.AccountingTime = &v
 }
 
 // GetAccountingTimeZone returns the AccountingTimeZone field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetAccountingTimeZone() string {
+func (o *CreateOrUpdateTransaction) GetAccountingTimeZone() string {
 	if o == nil || IsNil(o.AccountingTimeZone) {
 		var ret string
 		return ret
@@ -303,7 +306,7 @@ func (o *CreateEphemeralTransaction) GetAccountingTimeZone() string {
 
 // GetAccountingTimeZoneOk returns a tuple with the AccountingTimeZone field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetAccountingTimeZoneOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetAccountingTimeZoneOk() (*string, bool) {
 	if o == nil || IsNil(o.AccountingTimeZone) {
 		return nil, false
 	}
@@ -311,7 +314,7 @@ func (o *CreateEphemeralTransaction) GetAccountingTimeZoneOk() (*string, bool) {
 }
 
 // HasAccountingTimeZone returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasAccountingTimeZone() bool {
+func (o *CreateOrUpdateTransaction) HasAccountingTimeZone() bool {
 	if o != nil && !IsNil(o.AccountingTimeZone) {
 		return true
 	}
@@ -320,12 +323,12 @@ func (o *CreateEphemeralTransaction) HasAccountingTimeZone() bool {
 }
 
 // SetAccountingTimeZone gets a reference to the given string and assigns it to the AccountingTimeZone field.
-func (o *CreateEphemeralTransaction) SetAccountingTimeZone(v string) {
+func (o *CreateOrUpdateTransaction) SetAccountingTimeZone(v string) {
 	o.AccountingTimeZone = &v
 }
 
 // GetTaxDate returns the TaxDate field value if set, zero value otherwise.
-func (o *CreateEphemeralTransaction) GetTaxDate() string {
+func (o *CreateOrUpdateTransaction) GetTaxDate() string {
 	if o == nil || IsNil(o.TaxDate) {
 		var ret string
 		return ret
@@ -335,7 +338,7 @@ func (o *CreateEphemeralTransaction) GetTaxDate() string {
 
 // GetTaxDateOk returns a tuple with the TaxDate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateEphemeralTransaction) GetTaxDateOk() (*string, bool) {
+func (o *CreateOrUpdateTransaction) GetTaxDateOk() (*string, bool) {
 	if o == nil || IsNil(o.TaxDate) {
 		return nil, false
 	}
@@ -343,7 +346,7 @@ func (o *CreateEphemeralTransaction) GetTaxDateOk() (*string, bool) {
 }
 
 // HasTaxDate returns a boolean if a field has been set.
-func (o *CreateEphemeralTransaction) HasTaxDate() bool {
+func (o *CreateOrUpdateTransaction) HasTaxDate() bool {
 	if o != nil && !IsNil(o.TaxDate) {
 		return true
 	}
@@ -352,11 +355,35 @@ func (o *CreateEphemeralTransaction) HasTaxDate() bool {
 }
 
 // SetTaxDate gets a reference to the given string and assigns it to the TaxDate field.
-func (o *CreateEphemeralTransaction) SetTaxDate(v string) {
+func (o *CreateOrUpdateTransaction) SetTaxDate(v string) {
 	o.TaxDate = &v
 }
 
-func (o CreateEphemeralTransaction) MarshalJSON() ([]byte, error) {
+// GetId returns the Id field value
+func (o *CreateOrUpdateTransaction) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateTransaction) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *CreateOrUpdateTransaction) SetId(v string) {
+	o.Id = v
+}
+
+func (o CreateOrUpdateTransaction) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -364,7 +391,7 @@ func (o CreateEphemeralTransaction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateEphemeralTransaction) ToMap() (map[string]interface{}, error) {
+func (o CreateOrUpdateTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["lineItems"] = o.LineItems
 	toSerialize["currencyCode"] = o.CurrencyCode
@@ -390,41 +417,42 @@ func (o CreateEphemeralTransaction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TaxDate) {
 		toSerialize["taxDate"] = o.TaxDate
 	}
+	toSerialize["id"] = o.Id
 	return toSerialize, nil
 }
 
-type NullableCreateEphemeralTransaction struct {
-	value *CreateEphemeralTransaction
+type NullableCreateOrUpdateTransaction struct {
+	value *CreateOrUpdateTransaction
 	isSet bool
 }
 
-func (v NullableCreateEphemeralTransaction) Get() *CreateEphemeralTransaction {
+func (v NullableCreateOrUpdateTransaction) Get() *CreateOrUpdateTransaction {
 	return v.value
 }
 
-func (v *NullableCreateEphemeralTransaction) Set(val *CreateEphemeralTransaction) {
+func (v *NullableCreateOrUpdateTransaction) Set(val *CreateOrUpdateTransaction) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateEphemeralTransaction) IsSet() bool {
+func (v NullableCreateOrUpdateTransaction) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateEphemeralTransaction) Unset() {
+func (v *NullableCreateOrUpdateTransaction) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateEphemeralTransaction(val *CreateEphemeralTransaction) *NullableCreateEphemeralTransaction {
-	return &NullableCreateEphemeralTransaction{value: val, isSet: true}
+func NewNullableCreateOrUpdateTransaction(val *CreateOrUpdateTransaction) *NullableCreateOrUpdateTransaction {
+	return &NullableCreateOrUpdateTransaction{value: val, isSet: true}
 }
 
-func (v NullableCreateEphemeralTransaction) MarshalJSON() ([]byte, error) {
+func (v NullableCreateOrUpdateTransaction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateEphemeralTransaction) UnmarshalJSON(src []byte) error {
+func (v *NullableCreateOrUpdateTransaction) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

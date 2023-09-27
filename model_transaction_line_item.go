@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,18 +21,18 @@ var _ MappedNullable = &TransactionLineItem{}
 // TransactionLineItem struct for TransactionLineItem
 type TransactionLineItem struct {
 	// Identifier for the line item. Is saved by Anrok, but not used for anything by Anrok.
-	Id interface{} `json:"id,omitempty"`
+	Id *string `json:"id,omitempty"`
 	// A product ID that has already been defined in the Anrok UI (under \"Product IDs\"). This is used to determine whether the line item is taxable.
-	ProductExternalId interface{} `json:"productExternalId"`
+	ProductExternalId string `json:"productExternalId"`
 	// The sale price in the smallest denomination of the currency (e.g. cents or pennies)
-	Amount interface{} `json:"amount"`
+	Amount int32 `json:"amount"`
 }
 
 // NewTransactionLineItem instantiates a new TransactionLineItem object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransactionLineItem(productExternalId interface{}, amount interface{}) *TransactionLineItem {
+func NewTransactionLineItem(productExternalId string, amount int32) *TransactionLineItem {
 	this := TransactionLineItem{}
 	this.ProductExternalId = productExternalId
 	this.Amount = amount
@@ -47,44 +47,42 @@ func NewTransactionLineItemWithDefaults() *TransactionLineItem {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *TransactionLineItem) GetId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *TransactionLineItem) GetId() string {
+	if o == nil || IsNil(o.Id) {
+		var ret string
 		return ret
 	}
-	return o.Id
+	return *o.Id
 }
 
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TransactionLineItem) GetIdOk() (*interface{}, bool) {
+func (o *TransactionLineItem) GetIdOk() (*string, bool) {
 	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Id, true
 }
 
 // HasId returns a boolean if a field has been set.
 func (o *TransactionLineItem) HasId() bool {
-	if o != nil && IsNil(o.Id) {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given interface{} and assigns it to the Id field.
-func (o *TransactionLineItem) SetId(v interface{}) {
-	o.Id = v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *TransactionLineItem) SetId(v string) {
+	o.Id = &v
 }
 
 // GetProductExternalId returns the ProductExternalId field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *TransactionLineItem) GetProductExternalId() interface{} {
+func (o *TransactionLineItem) GetProductExternalId() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -93,24 +91,22 @@ func (o *TransactionLineItem) GetProductExternalId() interface{} {
 
 // GetProductExternalIdOk returns a tuple with the ProductExternalId field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TransactionLineItem) GetProductExternalIdOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.ProductExternalId) {
+func (o *TransactionLineItem) GetProductExternalIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.ProductExternalId, true
 }
 
 // SetProductExternalId sets field value
-func (o *TransactionLineItem) SetProductExternalId(v interface{}) {
+func (o *TransactionLineItem) SetProductExternalId(v string) {
 	o.ProductExternalId = v
 }
 
 // GetAmount returns the Amount field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *TransactionLineItem) GetAmount() interface{} {
+func (o *TransactionLineItem) GetAmount() int32 {
 	if o == nil {
-		var ret interface{}
+		var ret int32
 		return ret
 	}
 
@@ -119,16 +115,15 @@ func (o *TransactionLineItem) GetAmount() interface{} {
 
 // GetAmountOk returns a tuple with the Amount field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *TransactionLineItem) GetAmountOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.Amount) {
+func (o *TransactionLineItem) GetAmountOk() (*int32, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Amount, true
 }
 
 // SetAmount sets field value
-func (o *TransactionLineItem) SetAmount(v interface{}) {
+func (o *TransactionLineItem) SetAmount(v int32) {
 	o.Amount = v
 }
 
@@ -142,15 +137,11 @@ func (o TransactionLineItem) MarshalJSON() ([]byte, error) {
 
 func (o TransactionLineItem) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Id != nil {
+	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if o.ProductExternalId != nil {
-		toSerialize["productExternalId"] = o.ProductExternalId
-	}
-	if o.Amount != nil {
-		toSerialize["amount"] = o.Amount
-	}
+	toSerialize["productExternalId"] = o.ProductExternalId
+	toSerialize["amount"] = o.Amount
 	return toSerialize, nil
 }
 

@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -20,22 +20,22 @@ var _ MappedNullable = &CustomerUsAddress{}
 
 // CustomerUsAddress struct for CustomerUsAddress
 type CustomerUsAddress struct {
-	Country interface{} `json:"country"`
+	Country string `json:"country"`
 	// The \"delivery line\" of the address
-	Line1 interface{} `json:"line1,omitempty"`
+	Line1 *string `json:"line1,omitempty"`
 	// The standard USPS format
-	City interface{} `json:"city,omitempty"`
+	City *string `json:"city,omitempty"`
 	// The standard USPS format
-	State interface{} `json:"state,omitempty"`
+	State *string `json:"state,omitempty"`
 	// The standard USPS format
-	ZipCode interface{} `json:"zipCode,omitempty"`
+	ZipCode *string `json:"zipCode,omitempty"`
 }
 
 // NewCustomerUsAddress instantiates a new CustomerUsAddress object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCustomerUsAddress(country interface{}) *CustomerUsAddress {
+func NewCustomerUsAddress(country string) *CustomerUsAddress {
 	this := CustomerUsAddress{}
 	this.Country = country
 	return &this
@@ -50,10 +50,9 @@ func NewCustomerUsAddressWithDefaults() *CustomerUsAddress {
 }
 
 // GetCountry returns the Country field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *CustomerUsAddress) GetCountry() interface{} {
+func (o *CustomerUsAddress) GetCountry() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -62,149 +61,144 @@ func (o *CustomerUsAddress) GetCountry() interface{} {
 
 // GetCountryOk returns a tuple with the Country field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerUsAddress) GetCountryOk() (*interface{}, bool) {
-	if o == nil || IsNil(o.Country) {
+func (o *CustomerUsAddress) GetCountryOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Country, true
 }
 
 // SetCountry sets field value
-func (o *CustomerUsAddress) SetCountry(v interface{}) {
+func (o *CustomerUsAddress) SetCountry(v string) {
 	o.Country = v
 }
 
-// GetLine1 returns the Line1 field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerUsAddress) GetLine1() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetLine1 returns the Line1 field value if set, zero value otherwise.
+func (o *CustomerUsAddress) GetLine1() string {
+	if o == nil || IsNil(o.Line1) {
+		var ret string
 		return ret
 	}
-	return o.Line1
+	return *o.Line1
 }
 
 // GetLine1Ok returns a tuple with the Line1 field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerUsAddress) GetLine1Ok() (*interface{}, bool) {
+func (o *CustomerUsAddress) GetLine1Ok() (*string, bool) {
 	if o == nil || IsNil(o.Line1) {
 		return nil, false
 	}
-	return &o.Line1, true
+	return o.Line1, true
 }
 
 // HasLine1 returns a boolean if a field has been set.
 func (o *CustomerUsAddress) HasLine1() bool {
-	if o != nil && IsNil(o.Line1) {
+	if o != nil && !IsNil(o.Line1) {
 		return true
 	}
 
 	return false
 }
 
-// SetLine1 gets a reference to the given interface{} and assigns it to the Line1 field.
-func (o *CustomerUsAddress) SetLine1(v interface{}) {
-	o.Line1 = v
+// SetLine1 gets a reference to the given string and assigns it to the Line1 field.
+func (o *CustomerUsAddress) SetLine1(v string) {
+	o.Line1 = &v
 }
 
-// GetCity returns the City field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerUsAddress) GetCity() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetCity returns the City field value if set, zero value otherwise.
+func (o *CustomerUsAddress) GetCity() string {
+	if o == nil || IsNil(o.City) {
+		var ret string
 		return ret
 	}
-	return o.City
+	return *o.City
 }
 
 // GetCityOk returns a tuple with the City field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerUsAddress) GetCityOk() (*interface{}, bool) {
+func (o *CustomerUsAddress) GetCityOk() (*string, bool) {
 	if o == nil || IsNil(o.City) {
 		return nil, false
 	}
-	return &o.City, true
+	return o.City, true
 }
 
 // HasCity returns a boolean if a field has been set.
 func (o *CustomerUsAddress) HasCity() bool {
-	if o != nil && IsNil(o.City) {
+	if o != nil && !IsNil(o.City) {
 		return true
 	}
 
 	return false
 }
 
-// SetCity gets a reference to the given interface{} and assigns it to the City field.
-func (o *CustomerUsAddress) SetCity(v interface{}) {
-	o.City = v
+// SetCity gets a reference to the given string and assigns it to the City field.
+func (o *CustomerUsAddress) SetCity(v string) {
+	o.City = &v
 }
 
-// GetState returns the State field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerUsAddress) GetState() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetState returns the State field value if set, zero value otherwise.
+func (o *CustomerUsAddress) GetState() string {
+	if o == nil || IsNil(o.State) {
+		var ret string
 		return ret
 	}
-	return o.State
+	return *o.State
 }
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerUsAddress) GetStateOk() (*interface{}, bool) {
+func (o *CustomerUsAddress) GetStateOk() (*string, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
-	return &o.State, true
+	return o.State, true
 }
 
 // HasState returns a boolean if a field has been set.
 func (o *CustomerUsAddress) HasState() bool {
-	if o != nil && IsNil(o.State) {
+	if o != nil && !IsNil(o.State) {
 		return true
 	}
 
 	return false
 }
 
-// SetState gets a reference to the given interface{} and assigns it to the State field.
-func (o *CustomerUsAddress) SetState(v interface{}) {
-	o.State = v
+// SetState gets a reference to the given string and assigns it to the State field.
+func (o *CustomerUsAddress) SetState(v string) {
+	o.State = &v
 }
 
-// GetZipCode returns the ZipCode field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerUsAddress) GetZipCode() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetZipCode returns the ZipCode field value if set, zero value otherwise.
+func (o *CustomerUsAddress) GetZipCode() string {
+	if o == nil || IsNil(o.ZipCode) {
+		var ret string
 		return ret
 	}
-	return o.ZipCode
+	return *o.ZipCode
 }
 
 // GetZipCodeOk returns a tuple with the ZipCode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerUsAddress) GetZipCodeOk() (*interface{}, bool) {
+func (o *CustomerUsAddress) GetZipCodeOk() (*string, bool) {
 	if o == nil || IsNil(o.ZipCode) {
 		return nil, false
 	}
-	return &o.ZipCode, true
+	return o.ZipCode, true
 }
 
 // HasZipCode returns a boolean if a field has been set.
 func (o *CustomerUsAddress) HasZipCode() bool {
-	if o != nil && IsNil(o.ZipCode) {
+	if o != nil && !IsNil(o.ZipCode) {
 		return true
 	}
 
 	return false
 }
 
-// SetZipCode gets a reference to the given interface{} and assigns it to the ZipCode field.
-func (o *CustomerUsAddress) SetZipCode(v interface{}) {
-	o.ZipCode = v
+// SetZipCode gets a reference to the given string and assigns it to the ZipCode field.
+func (o *CustomerUsAddress) SetZipCode(v string) {
+	o.ZipCode = &v
 }
 
 func (o CustomerUsAddress) MarshalJSON() ([]byte, error) {
@@ -217,19 +211,17 @@ func (o CustomerUsAddress) MarshalJSON() ([]byte, error) {
 
 func (o CustomerUsAddress) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Country != nil {
-		toSerialize["country"] = o.Country
-	}
-	if o.Line1 != nil {
+	toSerialize["country"] = o.Country
+	if !IsNil(o.Line1) {
 		toSerialize["line1"] = o.Line1
 	}
-	if o.City != nil {
+	if !IsNil(o.City) {
 		toSerialize["city"] = o.City
 	}
-	if o.State != nil {
+	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
-	if o.ZipCode != nil {
+	if !IsNil(o.ZipCode) {
 		toSerialize["zipCode"] = o.ZipCode
 	}
 	return toSerialize, nil

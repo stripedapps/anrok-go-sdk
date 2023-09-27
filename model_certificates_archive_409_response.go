@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -20,7 +20,7 @@ var _ MappedNullable = &CertificatesArchive409Response{}
 
 // CertificatesArchive409Response struct for CertificatesArchive409Response
 type CertificatesArchive409Response struct {
-	Type interface{} `json:"type,omitempty"`
+	Type *string `json:"type,omitempty"`
 }
 
 // NewCertificatesArchive409Response instantiates a new CertificatesArchive409Response object
@@ -40,37 +40,36 @@ func NewCertificatesArchive409ResponseWithDefaults() *CertificatesArchive409Resp
 	return &this
 }
 
-// GetType returns the Type field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CertificatesArchive409Response) GetType() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetType returns the Type field value if set, zero value otherwise.
+func (o *CertificatesArchive409Response) GetType() string {
+	if o == nil || IsNil(o.Type) {
+		var ret string
 		return ret
 	}
-	return o.Type
+	return *o.Type
 }
 
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CertificatesArchive409Response) GetTypeOk() (*interface{}, bool) {
+func (o *CertificatesArchive409Response) GetTypeOk() (*string, bool) {
 	if o == nil || IsNil(o.Type) {
 		return nil, false
 	}
-	return &o.Type, true
+	return o.Type, true
 }
 
 // HasType returns a boolean if a field has been set.
 func (o *CertificatesArchive409Response) HasType() bool {
-	if o != nil && IsNil(o.Type) {
+	if o != nil && !IsNil(o.Type) {
 		return true
 	}
 
 	return false
 }
 
-// SetType gets a reference to the given interface{} and assigns it to the Type field.
-func (o *CertificatesArchive409Response) SetType(v interface{}) {
-	o.Type = v
+// SetType gets a reference to the given string and assigns it to the Type field.
+func (o *CertificatesArchive409Response) SetType(v string) {
+	o.Type = &v
 }
 
 func (o CertificatesArchive409Response) MarshalJSON() ([]byte, error) {
@@ -83,7 +82,7 @@ func (o CertificatesArchive409Response) MarshalJSON() ([]byte, error) {
 
 func (o CertificatesArchive409Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Type != nil {
+	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
 	return toSerialize, nil

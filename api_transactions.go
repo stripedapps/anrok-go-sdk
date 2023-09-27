@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -247,15 +247,15 @@ func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransact
 type ApiTransactionsCreateOrUpdateRequest struct {
 	ctx context.Context
 	ApiService *TransactionsAPIService
-	body *interface{}
+	createOrUpdateTransaction *CreateOrUpdateTransaction
 }
 
-func (r ApiTransactionsCreateOrUpdateRequest) Body(body interface{}) ApiTransactionsCreateOrUpdateRequest {
-	r.body = &body
+func (r ApiTransactionsCreateOrUpdateRequest) CreateOrUpdateTransaction(createOrUpdateTransaction CreateOrUpdateTransaction) ApiTransactionsCreateOrUpdateRequest {
+	r.createOrUpdateTransaction = &createOrUpdateTransaction
 	return r
 }
 
-func (r ApiTransactionsCreateOrUpdateRequest) Execute() (interface{}, *http.Response, error) {
+func (r ApiTransactionsCreateOrUpdateRequest) Execute() (*CreateOrUpdateTransactionSuccess, *http.Response, error) {
 	return r.ApiService.TransactionsCreateOrUpdateExecute(r)
 }
 
@@ -275,13 +275,13 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdate(ctx context.Context)
 }
 
 // Execute executes the request
-//  @return interface{}
-func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransactionsCreateOrUpdateRequest) (interface{}, *http.Response, error) {
+//  @return CreateOrUpdateTransactionSuccess
+func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransactionsCreateOrUpdateRequest) (*CreateOrUpdateTransactionSuccess, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  interface{}
+		localVarReturnValue  *CreateOrUpdateTransactionSuccess
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsAPIService.TransactionsCreateOrUpdate")
@@ -294,8 +294,8 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	if r.createOrUpdateTransaction == nil {
+		return localVarReturnValue, nil, reportError("createOrUpdateTransaction is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -316,7 +316,7 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.createOrUpdateTransaction
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -340,7 +340,7 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v interface{}
+			var v TransactionsCreateOrUpdate409Response
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

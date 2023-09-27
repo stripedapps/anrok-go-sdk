@@ -3,7 +3,7 @@ Anrok API
 
 # API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 0.0.1
+API version: 1.0.0
 Contact: support@anrok.com
 */
 
@@ -21,15 +21,15 @@ var _ MappedNullable = &CustomerInternationalAddress{}
 // CustomerInternationalAddress struct for CustomerInternationalAddress
 type CustomerInternationalAddress struct {
 	// The country's full name or 2-letter ISO code
-	Country interface{} `json:"country,omitempty"`
+	Country *string `json:"country,omitempty"`
 	// The \"delivery line\" of the address
-	Line1 interface{} `json:"line1,omitempty"`
+	Line1 *string `json:"line1,omitempty"`
 	// City or town name
-	City interface{} `json:"city,omitempty"`
+	City *string `json:"city,omitempty"`
 	// Other principal subdivision (i.e. province, state, county)
-	Region interface{} `json:"region,omitempty"`
+	Region *string `json:"region,omitempty"`
 	// Postal code
-	PostalCode interface{} `json:"postalCode,omitempty"`
+	PostalCode *string `json:"postalCode,omitempty"`
 }
 
 // NewCustomerInternationalAddress instantiates a new CustomerInternationalAddress object
@@ -49,169 +49,164 @@ func NewCustomerInternationalAddressWithDefaults() *CustomerInternationalAddress
 	return &this
 }
 
-// GetCountry returns the Country field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerInternationalAddress) GetCountry() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetCountry returns the Country field value if set, zero value otherwise.
+func (o *CustomerInternationalAddress) GetCountry() string {
+	if o == nil || IsNil(o.Country) {
+		var ret string
 		return ret
 	}
-	return o.Country
+	return *o.Country
 }
 
 // GetCountryOk returns a tuple with the Country field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerInternationalAddress) GetCountryOk() (*interface{}, bool) {
+func (o *CustomerInternationalAddress) GetCountryOk() (*string, bool) {
 	if o == nil || IsNil(o.Country) {
 		return nil, false
 	}
-	return &o.Country, true
+	return o.Country, true
 }
 
 // HasCountry returns a boolean if a field has been set.
 func (o *CustomerInternationalAddress) HasCountry() bool {
-	if o != nil && IsNil(o.Country) {
+	if o != nil && !IsNil(o.Country) {
 		return true
 	}
 
 	return false
 }
 
-// SetCountry gets a reference to the given interface{} and assigns it to the Country field.
-func (o *CustomerInternationalAddress) SetCountry(v interface{}) {
-	o.Country = v
+// SetCountry gets a reference to the given string and assigns it to the Country field.
+func (o *CustomerInternationalAddress) SetCountry(v string) {
+	o.Country = &v
 }
 
-// GetLine1 returns the Line1 field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerInternationalAddress) GetLine1() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetLine1 returns the Line1 field value if set, zero value otherwise.
+func (o *CustomerInternationalAddress) GetLine1() string {
+	if o == nil || IsNil(o.Line1) {
+		var ret string
 		return ret
 	}
-	return o.Line1
+	return *o.Line1
 }
 
 // GetLine1Ok returns a tuple with the Line1 field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerInternationalAddress) GetLine1Ok() (*interface{}, bool) {
+func (o *CustomerInternationalAddress) GetLine1Ok() (*string, bool) {
 	if o == nil || IsNil(o.Line1) {
 		return nil, false
 	}
-	return &o.Line1, true
+	return o.Line1, true
 }
 
 // HasLine1 returns a boolean if a field has been set.
 func (o *CustomerInternationalAddress) HasLine1() bool {
-	if o != nil && IsNil(o.Line1) {
+	if o != nil && !IsNil(o.Line1) {
 		return true
 	}
 
 	return false
 }
 
-// SetLine1 gets a reference to the given interface{} and assigns it to the Line1 field.
-func (o *CustomerInternationalAddress) SetLine1(v interface{}) {
-	o.Line1 = v
+// SetLine1 gets a reference to the given string and assigns it to the Line1 field.
+func (o *CustomerInternationalAddress) SetLine1(v string) {
+	o.Line1 = &v
 }
 
-// GetCity returns the City field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerInternationalAddress) GetCity() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetCity returns the City field value if set, zero value otherwise.
+func (o *CustomerInternationalAddress) GetCity() string {
+	if o == nil || IsNil(o.City) {
+		var ret string
 		return ret
 	}
-	return o.City
+	return *o.City
 }
 
 // GetCityOk returns a tuple with the City field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerInternationalAddress) GetCityOk() (*interface{}, bool) {
+func (o *CustomerInternationalAddress) GetCityOk() (*string, bool) {
 	if o == nil || IsNil(o.City) {
 		return nil, false
 	}
-	return &o.City, true
+	return o.City, true
 }
 
 // HasCity returns a boolean if a field has been set.
 func (o *CustomerInternationalAddress) HasCity() bool {
-	if o != nil && IsNil(o.City) {
+	if o != nil && !IsNil(o.City) {
 		return true
 	}
 
 	return false
 }
 
-// SetCity gets a reference to the given interface{} and assigns it to the City field.
-func (o *CustomerInternationalAddress) SetCity(v interface{}) {
-	o.City = v
+// SetCity gets a reference to the given string and assigns it to the City field.
+func (o *CustomerInternationalAddress) SetCity(v string) {
+	o.City = &v
 }
 
-// GetRegion returns the Region field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerInternationalAddress) GetRegion() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetRegion returns the Region field value if set, zero value otherwise.
+func (o *CustomerInternationalAddress) GetRegion() string {
+	if o == nil || IsNil(o.Region) {
+		var ret string
 		return ret
 	}
-	return o.Region
+	return *o.Region
 }
 
 // GetRegionOk returns a tuple with the Region field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerInternationalAddress) GetRegionOk() (*interface{}, bool) {
+func (o *CustomerInternationalAddress) GetRegionOk() (*string, bool) {
 	if o == nil || IsNil(o.Region) {
 		return nil, false
 	}
-	return &o.Region, true
+	return o.Region, true
 }
 
 // HasRegion returns a boolean if a field has been set.
 func (o *CustomerInternationalAddress) HasRegion() bool {
-	if o != nil && IsNil(o.Region) {
+	if o != nil && !IsNil(o.Region) {
 		return true
 	}
 
 	return false
 }
 
-// SetRegion gets a reference to the given interface{} and assigns it to the Region field.
-func (o *CustomerInternationalAddress) SetRegion(v interface{}) {
-	o.Region = v
+// SetRegion gets a reference to the given string and assigns it to the Region field.
+func (o *CustomerInternationalAddress) SetRegion(v string) {
+	o.Region = &v
 }
 
-// GetPostalCode returns the PostalCode field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CustomerInternationalAddress) GetPostalCode() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetPostalCode returns the PostalCode field value if set, zero value otherwise.
+func (o *CustomerInternationalAddress) GetPostalCode() string {
+	if o == nil || IsNil(o.PostalCode) {
+		var ret string
 		return ret
 	}
-	return o.PostalCode
+	return *o.PostalCode
 }
 
 // GetPostalCodeOk returns a tuple with the PostalCode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CustomerInternationalAddress) GetPostalCodeOk() (*interface{}, bool) {
+func (o *CustomerInternationalAddress) GetPostalCodeOk() (*string, bool) {
 	if o == nil || IsNil(o.PostalCode) {
 		return nil, false
 	}
-	return &o.PostalCode, true
+	return o.PostalCode, true
 }
 
 // HasPostalCode returns a boolean if a field has been set.
 func (o *CustomerInternationalAddress) HasPostalCode() bool {
-	if o != nil && IsNil(o.PostalCode) {
+	if o != nil && !IsNil(o.PostalCode) {
 		return true
 	}
 
 	return false
 }
 
-// SetPostalCode gets a reference to the given interface{} and assigns it to the PostalCode field.
-func (o *CustomerInternationalAddress) SetPostalCode(v interface{}) {
-	o.PostalCode = v
+// SetPostalCode gets a reference to the given string and assigns it to the PostalCode field.
+func (o *CustomerInternationalAddress) SetPostalCode(v string) {
+	o.PostalCode = &v
 }
 
 func (o CustomerInternationalAddress) MarshalJSON() ([]byte, error) {
@@ -224,19 +219,19 @@ func (o CustomerInternationalAddress) MarshalJSON() ([]byte, error) {
 
 func (o CustomerInternationalAddress) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Country != nil {
+	if !IsNil(o.Country) {
 		toSerialize["country"] = o.Country
 	}
-	if o.Line1 != nil {
+	if !IsNil(o.Line1) {
 		toSerialize["line1"] = o.Line1
 	}
-	if o.City != nil {
+	if !IsNil(o.City) {
 		toSerialize["city"] = o.City
 	}
-	if o.Region != nil {
+	if !IsNil(o.Region) {
 		toSerialize["region"] = o.Region
 	}
-	if o.PostalCode != nil {
+	if !IsNil(o.PostalCode) {
 		toSerialize["postalCode"] = o.PostalCode
 	}
 	return toSerialize, nil
