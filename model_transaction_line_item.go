@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -13,6 +13,8 @@ package openapi
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TransactionLineItem type satisfies the MappedNullable interface at compile time
@@ -20,13 +22,19 @@ var _ MappedNullable = &TransactionLineItem{}
 
 // TransactionLineItem struct for TransactionLineItem
 type TransactionLineItem struct {
-	// Identifier for the line item. Is saved by Anrok, but not used for anything by Anrok.
+	// Optional identifier for the line item. This is saved by Anrok and returned in the response, but not used for anything by Anrok.
 	Id *string `json:"id,omitempty"`
 	// A product ID that has already been defined in the Anrok UI (under \"Product IDs\"). This is used to determine whether the line item is taxable.
 	ProductExternalId string `json:"productExternalId"`
-	// The sale price in the smallest denomination of the currency (e.g. cents or pennies)
+	// The sale price in the smallest denomination of the currency (e.g. cents or pennies).
 	Amount int32 `json:"amount"`
+	// Whether the line item already includes tax in the amount.
+	IsTaxIncludedInAmount *bool `json:"isTaxIncludedInAmount,omitempty"`
+	// The quantity of the line item, as a string (e.g. `3` or `0.5`).
+	Quantity *string `json:"quantity,omitempty"`
 }
+
+type _TransactionLineItem TransactionLineItem
 
 // NewTransactionLineItem instantiates a new TransactionLineItem object
 // This constructor will assign default values to properties that have it defined,
@@ -127,6 +135,70 @@ func (o *TransactionLineItem) SetAmount(v int32) {
 	o.Amount = v
 }
 
+// GetIsTaxIncludedInAmount returns the IsTaxIncludedInAmount field value if set, zero value otherwise.
+func (o *TransactionLineItem) GetIsTaxIncludedInAmount() bool {
+	if o == nil || IsNil(o.IsTaxIncludedInAmount) {
+		var ret bool
+		return ret
+	}
+	return *o.IsTaxIncludedInAmount
+}
+
+// GetIsTaxIncludedInAmountOk returns a tuple with the IsTaxIncludedInAmount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TransactionLineItem) GetIsTaxIncludedInAmountOk() (*bool, bool) {
+	if o == nil || IsNil(o.IsTaxIncludedInAmount) {
+		return nil, false
+	}
+	return o.IsTaxIncludedInAmount, true
+}
+
+// HasIsTaxIncludedInAmount returns a boolean if a field has been set.
+func (o *TransactionLineItem) HasIsTaxIncludedInAmount() bool {
+	if o != nil && !IsNil(o.IsTaxIncludedInAmount) {
+		return true
+	}
+
+	return false
+}
+
+// SetIsTaxIncludedInAmount gets a reference to the given bool and assigns it to the IsTaxIncludedInAmount field.
+func (o *TransactionLineItem) SetIsTaxIncludedInAmount(v bool) {
+	o.IsTaxIncludedInAmount = &v
+}
+
+// GetQuantity returns the Quantity field value if set, zero value otherwise.
+func (o *TransactionLineItem) GetQuantity() string {
+	if o == nil || IsNil(o.Quantity) {
+		var ret string
+		return ret
+	}
+	return *o.Quantity
+}
+
+// GetQuantityOk returns a tuple with the Quantity field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TransactionLineItem) GetQuantityOk() (*string, bool) {
+	if o == nil || IsNil(o.Quantity) {
+		return nil, false
+	}
+	return o.Quantity, true
+}
+
+// HasQuantity returns a boolean if a field has been set.
+func (o *TransactionLineItem) HasQuantity() bool {
+	if o != nil && !IsNil(o.Quantity) {
+		return true
+	}
+
+	return false
+}
+
+// SetQuantity gets a reference to the given string and assigns it to the Quantity field.
+func (o *TransactionLineItem) SetQuantity(v string) {
+	o.Quantity = &v
+}
+
 func (o TransactionLineItem) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -142,7 +214,51 @@ func (o TransactionLineItem) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["productExternalId"] = o.ProductExternalId
 	toSerialize["amount"] = o.Amount
+	if !IsNil(o.IsTaxIncludedInAmount) {
+		toSerialize["isTaxIncludedInAmount"] = o.IsTaxIncludedInAmount
+	}
+	if !IsNil(o.Quantity) {
+		toSerialize["quantity"] = o.Quantity
+	}
 	return toSerialize, nil
+}
+
+func (o *TransactionLineItem) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"productExternalId",
+		"amount",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTransactionLineItem := _TransactionLineItem{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTransactionLineItem)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionLineItem(varTransactionLineItem)
+
+	return err
 }
 
 type NullableTransactionLineItem struct {

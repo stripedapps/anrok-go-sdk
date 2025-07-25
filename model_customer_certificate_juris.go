@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -13,6 +13,8 @@ package openapi
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the CustomerCertificateJuris type satisfies the MappedNullable interface at compile time
@@ -20,15 +22,17 @@ var _ MappedNullable = &CustomerCertificateJuris{}
 
 // CustomerCertificateJuris struct for CustomerCertificateJuris
 type CustomerCertificateJuris struct {
-	// ID of jurisdiction
+	// Jurisdiction ID for which this exemption should apply (US only).
 	JurisId string `json:"jurisId"`
-	// Registration ID for jurisdiction
+	// Registration ID for jurisdiction. This is used for display purposes only.
 	RegistrationId *string `json:"registrationId,omitempty"`
 	// Expiration date of certificate in this jurisdiction
 	EffectiveDateEndi *string `json:"effectiveDateEndi,omitempty"`
-	// Optional internal notes
+	// Optional internal notes. This is used for display purposes only.
 	Notes *string `json:"notes,omitempty"`
 }
+
+type _CustomerCertificateJuris CustomerCertificateJuris
 
 // NewCustomerCertificateJuris instantiates a new CustomerCertificateJuris object
 // This constructor will assign default values to properties that have it defined,
@@ -189,6 +193,43 @@ func (o CustomerCertificateJuris) ToMap() (map[string]interface{}, error) {
 		toSerialize["notes"] = o.Notes
 	}
 	return toSerialize, nil
+}
+
+func (o *CustomerCertificateJuris) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"jurisId",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varCustomerCertificateJuris := _CustomerCertificateJuris{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCustomerCertificateJuris)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CustomerCertificateJuris(varCustomerCertificateJuris)
+
+	return err
 }
 
 type NullableCustomerCertificateJuris struct {

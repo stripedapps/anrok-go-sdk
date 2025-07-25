@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -14,6 +14,8 @@ package openapi
 import (
 	"encoding/json"
 	"time"
+	"bytes"
+	"fmt"
 )
 
 // checks if the CreateOrUpdateTransaction type satisfies the MappedNullable interface at compile time
@@ -21,32 +23,37 @@ var _ MappedNullable = &CreateOrUpdateTransaction{}
 
 // CreateOrUpdateTransaction struct for CreateOrUpdateTransaction
 type CreateOrUpdateTransaction struct {
+	// The line items in the transaction.
 	LineItems []TransactionLineItem `json:"lineItems"`
 	// Three letter ISO currency code (case insensitive).
 	CurrencyCode string `json:"currencyCode"`
-	CustomerAddress CreateEphemeralTransactionCustomerAddress `json:"customerAddress"`
-	// The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate. - If customerId is provided without customerName, that customer object must already exist in Anrok. - If both customerId and customerName are provided, the customer object will be created if it is not already present. - Customer IDs are unique across the entire seller account. 
-	CustomerId *string `json:"customerId,omitempty"`
-	// The name of the customer
+	CustomerAddress TransactionCustomerAddress `json:"customerAddress"`
+	// The name of the customer. This is used for display purposes only.
 	CustomerName *string `json:"customerName,omitempty"`
+	// Tax IDs for the customer receiving the product
 	CustomerTaxIds []CustomerTaxId `json:"customerTaxIds,omitempty"`
+	ShipFromAddress *TransactionShipFromAddress `json:"shipFromAddress,omitempty"`
 	// The date that this transaction occurred, for accounting purposes. Accounting date will typically correspond to the invoice date. This is used to determine which tax return the transaction belongs to.
 	AccountingDate *string `json:"accountingDate,omitempty"`
-	// The time that this transaction occurred, for accounting purposes. If accountingDate is not provided, accountingTime is required to compute an accounting date for the transaction.
+	// The time that this transaction occurred, for accounting purposes. If `accountingDate` is not provided, `accountingTime` is required to compute an accounting date for the transaction.
 	AccountingTime *time.Time `json:"accountingTime,omitempty"`
-	// A “tz database” string used to compute an accounting date from the request's accountingTime. The request cannot provide both an accountingDate and an accountingTimeZone. If accountingTime is provided without specifying an accountingTimeZone, the time zone configured on the seller account will be used.
+	// A “tz database” string used to compute an accounting date from the request's `accountingTime`. The request cannot provide both an `accountingDate` and an `accountingTimeZone`. If `accountingTime` is provided without specifying an `accountingTimeZone`, the time zone configured on the seller account will be used.
 	AccountingTimeZone *string `json:"accountingTimeZone,omitempty"`
-	// The date to use for tax calculations. If omitted, Anrok will use the the minimum of the accounting date and two days in the future.
+	// The date to use for tax calculations. If omitted, Anrok will use the the accounting date.
 	TaxDate *string `json:"taxDate,omitempty"`
+	// The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate. - If customerId is provided without customerName, that customer object must   already exist in Anrok. - If both customerId and customerName are provided, the customer object will   be created if it is not already present. - Customer IDs are unique across the entire seller account. 
+	CustomerId *string `json:"customerId,omitempty"`
 	// The ID of the new transaction. This must be unique across the entire seller account. This is typically the billing system's invoice ID with some prefix to disambiguate different systems.
 	Id string `json:"id"`
 }
+
+type _CreateOrUpdateTransaction CreateOrUpdateTransaction
 
 // NewCreateOrUpdateTransaction instantiates a new CreateOrUpdateTransaction object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateOrUpdateTransaction(lineItems []TransactionLineItem, currencyCode string, customerAddress CreateEphemeralTransactionCustomerAddress, id string) *CreateOrUpdateTransaction {
+func NewCreateOrUpdateTransaction(lineItems []TransactionLineItem, currencyCode string, customerAddress TransactionCustomerAddress, id string) *CreateOrUpdateTransaction {
 	this := CreateOrUpdateTransaction{}
 	this.LineItems = lineItems
 	this.CurrencyCode = currencyCode
@@ -112,9 +119,9 @@ func (o *CreateOrUpdateTransaction) SetCurrencyCode(v string) {
 }
 
 // GetCustomerAddress returns the CustomerAddress field value
-func (o *CreateOrUpdateTransaction) GetCustomerAddress() CreateEphemeralTransactionCustomerAddress {
+func (o *CreateOrUpdateTransaction) GetCustomerAddress() TransactionCustomerAddress {
 	if o == nil {
-		var ret CreateEphemeralTransactionCustomerAddress
+		var ret TransactionCustomerAddress
 		return ret
 	}
 
@@ -123,7 +130,7 @@ func (o *CreateOrUpdateTransaction) GetCustomerAddress() CreateEphemeralTransact
 
 // GetCustomerAddressOk returns a tuple with the CustomerAddress field value
 // and a boolean to check if the value has been set.
-func (o *CreateOrUpdateTransaction) GetCustomerAddressOk() (*CreateEphemeralTransactionCustomerAddress, bool) {
+func (o *CreateOrUpdateTransaction) GetCustomerAddressOk() (*TransactionCustomerAddress, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -131,40 +138,8 @@ func (o *CreateOrUpdateTransaction) GetCustomerAddressOk() (*CreateEphemeralTran
 }
 
 // SetCustomerAddress sets field value
-func (o *CreateOrUpdateTransaction) SetCustomerAddress(v CreateEphemeralTransactionCustomerAddress) {
+func (o *CreateOrUpdateTransaction) SetCustomerAddress(v TransactionCustomerAddress) {
 	o.CustomerAddress = v
-}
-
-// GetCustomerId returns the CustomerId field value if set, zero value otherwise.
-func (o *CreateOrUpdateTransaction) GetCustomerId() string {
-	if o == nil || IsNil(o.CustomerId) {
-		var ret string
-		return ret
-	}
-	return *o.CustomerId
-}
-
-// GetCustomerIdOk returns a tuple with the CustomerId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *CreateOrUpdateTransaction) GetCustomerIdOk() (*string, bool) {
-	if o == nil || IsNil(o.CustomerId) {
-		return nil, false
-	}
-	return o.CustomerId, true
-}
-
-// HasCustomerId returns a boolean if a field has been set.
-func (o *CreateOrUpdateTransaction) HasCustomerId() bool {
-	if o != nil && !IsNil(o.CustomerId) {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomerId gets a reference to the given string and assigns it to the CustomerId field.
-func (o *CreateOrUpdateTransaction) SetCustomerId(v string) {
-	o.CustomerId = &v
 }
 
 // GetCustomerName returns the CustomerName field value if set, zero value otherwise.
@@ -229,6 +204,38 @@ func (o *CreateOrUpdateTransaction) HasCustomerTaxIds() bool {
 // SetCustomerTaxIds gets a reference to the given []CustomerTaxId and assigns it to the CustomerTaxIds field.
 func (o *CreateOrUpdateTransaction) SetCustomerTaxIds(v []CustomerTaxId) {
 	o.CustomerTaxIds = v
+}
+
+// GetShipFromAddress returns the ShipFromAddress field value if set, zero value otherwise.
+func (o *CreateOrUpdateTransaction) GetShipFromAddress() TransactionShipFromAddress {
+	if o == nil || IsNil(o.ShipFromAddress) {
+		var ret TransactionShipFromAddress
+		return ret
+	}
+	return *o.ShipFromAddress
+}
+
+// GetShipFromAddressOk returns a tuple with the ShipFromAddress field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateTransaction) GetShipFromAddressOk() (*TransactionShipFromAddress, bool) {
+	if o == nil || IsNil(o.ShipFromAddress) {
+		return nil, false
+	}
+	return o.ShipFromAddress, true
+}
+
+// HasShipFromAddress returns a boolean if a field has been set.
+func (o *CreateOrUpdateTransaction) HasShipFromAddress() bool {
+	if o != nil && !IsNil(o.ShipFromAddress) {
+		return true
+	}
+
+	return false
+}
+
+// SetShipFromAddress gets a reference to the given TransactionShipFromAddress and assigns it to the ShipFromAddress field.
+func (o *CreateOrUpdateTransaction) SetShipFromAddress(v TransactionShipFromAddress) {
+	o.ShipFromAddress = &v
 }
 
 // GetAccountingDate returns the AccountingDate field value if set, zero value otherwise.
@@ -359,6 +366,38 @@ func (o *CreateOrUpdateTransaction) SetTaxDate(v string) {
 	o.TaxDate = &v
 }
 
+// GetCustomerId returns the CustomerId field value if set, zero value otherwise.
+func (o *CreateOrUpdateTransaction) GetCustomerId() string {
+	if o == nil || IsNil(o.CustomerId) {
+		var ret string
+		return ret
+	}
+	return *o.CustomerId
+}
+
+// GetCustomerIdOk returns a tuple with the CustomerId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateTransaction) GetCustomerIdOk() (*string, bool) {
+	if o == nil || IsNil(o.CustomerId) {
+		return nil, false
+	}
+	return o.CustomerId, true
+}
+
+// HasCustomerId returns a boolean if a field has been set.
+func (o *CreateOrUpdateTransaction) HasCustomerId() bool {
+	if o != nil && !IsNil(o.CustomerId) {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomerId gets a reference to the given string and assigns it to the CustomerId field.
+func (o *CreateOrUpdateTransaction) SetCustomerId(v string) {
+	o.CustomerId = &v
+}
+
 // GetId returns the Id field value
 func (o *CreateOrUpdateTransaction) GetId() string {
 	if o == nil {
@@ -396,14 +435,14 @@ func (o CreateOrUpdateTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize["lineItems"] = o.LineItems
 	toSerialize["currencyCode"] = o.CurrencyCode
 	toSerialize["customerAddress"] = o.CustomerAddress
-	if !IsNil(o.CustomerId) {
-		toSerialize["customerId"] = o.CustomerId
-	}
 	if !IsNil(o.CustomerName) {
 		toSerialize["customerName"] = o.CustomerName
 	}
 	if !IsNil(o.CustomerTaxIds) {
 		toSerialize["customerTaxIds"] = o.CustomerTaxIds
+	}
+	if !IsNil(o.ShipFromAddress) {
+		toSerialize["shipFromAddress"] = o.ShipFromAddress
 	}
 	if !IsNil(o.AccountingDate) {
 		toSerialize["accountingDate"] = o.AccountingDate
@@ -417,8 +456,51 @@ func (o CreateOrUpdateTransaction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TaxDate) {
 		toSerialize["taxDate"] = o.TaxDate
 	}
+	if !IsNil(o.CustomerId) {
+		toSerialize["customerId"] = o.CustomerId
+	}
 	toSerialize["id"] = o.Id
 	return toSerialize, nil
+}
+
+func (o *CreateOrUpdateTransaction) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"lineItems",
+		"currencyCode",
+		"customerAddress",
+		"id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varCreateOrUpdateTransaction := _CreateOrUpdateTransaction{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCreateOrUpdateTransaction)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CreateOrUpdateTransaction(varCreateOrUpdateTransaction)
+
+	return err
 }
 
 type NullableCreateOrUpdateTransaction struct {

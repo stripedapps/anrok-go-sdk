@@ -17,64 +17,37 @@ import (
 	"fmt"
 )
 
-// checks if the CustomerTaxId type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CustomerTaxId{}
+// checks if the ValidateTaxIdCustomerTaxIdsInner type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ValidateTaxIdCustomerTaxIdsInner{}
 
-// CustomerTaxId The customer VAT registration number for a non-US country
-type CustomerTaxId struct {
-	// This setting is purely metadata and does not affect tax calculation.
-	Type string `json:"type"`
-	// The customer VAT registration number for a non-US country
+// ValidateTaxIdCustomerTaxIdsInner struct for ValidateTaxIdCustomerTaxIdsInner
+type ValidateTaxIdCustomerTaxIdsInner struct {
+	// The tax ID to validate.
 	Value string `json:"value"`
 }
 
-type _CustomerTaxId CustomerTaxId
+type _ValidateTaxIdCustomerTaxIdsInner ValidateTaxIdCustomerTaxIdsInner
 
-// NewCustomerTaxId instantiates a new CustomerTaxId object
+// NewValidateTaxIdCustomerTaxIdsInner instantiates a new ValidateTaxIdCustomerTaxIdsInner object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCustomerTaxId(type_ string, value string) *CustomerTaxId {
-	this := CustomerTaxId{}
-	this.Type = type_
+func NewValidateTaxIdCustomerTaxIdsInner(value string) *ValidateTaxIdCustomerTaxIdsInner {
+	this := ValidateTaxIdCustomerTaxIdsInner{}
 	this.Value = value
 	return &this
 }
 
-// NewCustomerTaxIdWithDefaults instantiates a new CustomerTaxId object
+// NewValidateTaxIdCustomerTaxIdsInnerWithDefaults instantiates a new ValidateTaxIdCustomerTaxIdsInner object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCustomerTaxIdWithDefaults() *CustomerTaxId {
-	this := CustomerTaxId{}
+func NewValidateTaxIdCustomerTaxIdsInnerWithDefaults() *ValidateTaxIdCustomerTaxIdsInner {
+	this := ValidateTaxIdCustomerTaxIdsInner{}
 	return &this
 }
 
-// GetType returns the Type field value
-func (o *CustomerTaxId) GetType() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Type
-}
-
-// GetTypeOk returns a tuple with the Type field value
-// and a boolean to check if the value has been set.
-func (o *CustomerTaxId) GetTypeOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Type, true
-}
-
-// SetType sets field value
-func (o *CustomerTaxId) SetType(v string) {
-	o.Type = v
-}
-
 // GetValue returns the Value field value
-func (o *CustomerTaxId) GetValue() string {
+func (o *ValidateTaxIdCustomerTaxIdsInner) GetValue() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -85,7 +58,7 @@ func (o *CustomerTaxId) GetValue() string {
 
 // GetValueOk returns a tuple with the Value field value
 // and a boolean to check if the value has been set.
-func (o *CustomerTaxId) GetValueOk() (*string, bool) {
+func (o *ValidateTaxIdCustomerTaxIdsInner) GetValueOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -93,11 +66,11 @@ func (o *CustomerTaxId) GetValueOk() (*string, bool) {
 }
 
 // SetValue sets field value
-func (o *CustomerTaxId) SetValue(v string) {
+func (o *ValidateTaxIdCustomerTaxIdsInner) SetValue(v string) {
 	o.Value = v
 }
 
-func (o CustomerTaxId) MarshalJSON() ([]byte, error) {
+func (o ValidateTaxIdCustomerTaxIdsInner) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -105,19 +78,17 @@ func (o CustomerTaxId) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CustomerTaxId) ToMap() (map[string]interface{}, error) {
+func (o ValidateTaxIdCustomerTaxIdsInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["type"] = o.Type
 	toSerialize["value"] = o.Value
 	return toSerialize, nil
 }
 
-func (o *CustomerTaxId) UnmarshalJSON(data []byte) (err error) {
+func (o *ValidateTaxIdCustomerTaxIdsInner) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"type",
 		"value",
 	}
 
@@ -135,53 +106,53 @@ func (o *CustomerTaxId) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCustomerTaxId := _CustomerTaxId{}
+	varValidateTaxIdCustomerTaxIdsInner := _ValidateTaxIdCustomerTaxIdsInner{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCustomerTaxId)
+	err = decoder.Decode(&varValidateTaxIdCustomerTaxIdsInner)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CustomerTaxId(varCustomerTaxId)
+	*o = ValidateTaxIdCustomerTaxIdsInner(varValidateTaxIdCustomerTaxIdsInner)
 
 	return err
 }
 
-type NullableCustomerTaxId struct {
-	value *CustomerTaxId
+type NullableValidateTaxIdCustomerTaxIdsInner struct {
+	value *ValidateTaxIdCustomerTaxIdsInner
 	isSet bool
 }
 
-func (v NullableCustomerTaxId) Get() *CustomerTaxId {
+func (v NullableValidateTaxIdCustomerTaxIdsInner) Get() *ValidateTaxIdCustomerTaxIdsInner {
 	return v.value
 }
 
-func (v *NullableCustomerTaxId) Set(val *CustomerTaxId) {
+func (v *NullableValidateTaxIdCustomerTaxIdsInner) Set(val *ValidateTaxIdCustomerTaxIdsInner) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCustomerTaxId) IsSet() bool {
+func (v NullableValidateTaxIdCustomerTaxIdsInner) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCustomerTaxId) Unset() {
+func (v *NullableValidateTaxIdCustomerTaxIdsInner) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCustomerTaxId(val *CustomerTaxId) *NullableCustomerTaxId {
-	return &NullableCustomerTaxId{value: val, isSet: true}
+func NewNullableValidateTaxIdCustomerTaxIdsInner(val *ValidateTaxIdCustomerTaxIdsInner) *NullableValidateTaxIdCustomerTaxIdsInner {
+	return &NullableValidateTaxIdCustomerTaxIdsInner{value: val, isSet: true}
 }
 
-func (v NullableCustomerTaxId) MarshalJSON() ([]byte, error) {
+func (v NullableValidateTaxIdCustomerTaxIdsInner) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCustomerTaxId) UnmarshalJSON(src []byte) error {
+func (v *NullableValidateTaxIdCustomerTaxIdsInner) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -15,33 +15,33 @@ import (
 	"encoding/json"
 )
 
-// checks if the CreateTransactionCannotUpdate type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateTransactionCannotUpdate{}
+// checks if the NotTaxedReasonReason type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &NotTaxedReasonReason{}
 
-// CreateTransactionCannotUpdate Error updating transaction
-type CreateTransactionCannotUpdate struct {
+// NotTaxedReasonReason The detailed reason for an exemption. Only set when the type is 'exempt'.
+type NotTaxedReasonReason struct {
 	Type *string `json:"type,omitempty"`
 }
 
-// NewCreateTransactionCannotUpdate instantiates a new CreateTransactionCannotUpdate object
+// NewNotTaxedReasonReason instantiates a new NotTaxedReasonReason object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateTransactionCannotUpdate() *CreateTransactionCannotUpdate {
-	this := CreateTransactionCannotUpdate{}
+func NewNotTaxedReasonReason() *NotTaxedReasonReason {
+	this := NotTaxedReasonReason{}
 	return &this
 }
 
-// NewCreateTransactionCannotUpdateWithDefaults instantiates a new CreateTransactionCannotUpdate object
+// NewNotTaxedReasonReasonWithDefaults instantiates a new NotTaxedReasonReason object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateTransactionCannotUpdateWithDefaults() *CreateTransactionCannotUpdate {
-	this := CreateTransactionCannotUpdate{}
+func NewNotTaxedReasonReasonWithDefaults() *NotTaxedReasonReason {
+	this := NotTaxedReasonReason{}
 	return &this
 }
 
 // GetType returns the Type field value if set, zero value otherwise.
-func (o *CreateTransactionCannotUpdate) GetType() string {
+func (o *NotTaxedReasonReason) GetType() string {
 	if o == nil || IsNil(o.Type) {
 		var ret string
 		return ret
@@ -51,7 +51,7 @@ func (o *CreateTransactionCannotUpdate) GetType() string {
 
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateTransactionCannotUpdate) GetTypeOk() (*string, bool) {
+func (o *NotTaxedReasonReason) GetTypeOk() (*string, bool) {
 	if o == nil || IsNil(o.Type) {
 		return nil, false
 	}
@@ -59,7 +59,7 @@ func (o *CreateTransactionCannotUpdate) GetTypeOk() (*string, bool) {
 }
 
 // HasType returns a boolean if a field has been set.
-func (o *CreateTransactionCannotUpdate) HasType() bool {
+func (o *NotTaxedReasonReason) HasType() bool {
 	if o != nil && !IsNil(o.Type) {
 		return true
 	}
@@ -68,11 +68,11 @@ func (o *CreateTransactionCannotUpdate) HasType() bool {
 }
 
 // SetType gets a reference to the given string and assigns it to the Type field.
-func (o *CreateTransactionCannotUpdate) SetType(v string) {
+func (o *NotTaxedReasonReason) SetType(v string) {
 	o.Type = &v
 }
 
-func (o CreateTransactionCannotUpdate) MarshalJSON() ([]byte, error) {
+func (o NotTaxedReasonReason) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -80,7 +80,7 @@ func (o CreateTransactionCannotUpdate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateTransactionCannotUpdate) ToMap() (map[string]interface{}, error) {
+func (o NotTaxedReasonReason) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
@@ -88,38 +88,38 @@ func (o CreateTransactionCannotUpdate) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableCreateTransactionCannotUpdate struct {
-	value *CreateTransactionCannotUpdate
+type NullableNotTaxedReasonReason struct {
+	value *NotTaxedReasonReason
 	isSet bool
 }
 
-func (v NullableCreateTransactionCannotUpdate) Get() *CreateTransactionCannotUpdate {
+func (v NullableNotTaxedReasonReason) Get() *NotTaxedReasonReason {
 	return v.value
 }
 
-func (v *NullableCreateTransactionCannotUpdate) Set(val *CreateTransactionCannotUpdate) {
+func (v *NullableNotTaxedReasonReason) Set(val *NotTaxedReasonReason) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateTransactionCannotUpdate) IsSet() bool {
+func (v NullableNotTaxedReasonReason) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateTransactionCannotUpdate) Unset() {
+func (v *NullableNotTaxedReasonReason) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateTransactionCannotUpdate(val *CreateTransactionCannotUpdate) *NullableCreateTransactionCannotUpdate {
-	return &NullableCreateTransactionCannotUpdate{value: val, isSet: true}
+func NewNullableNotTaxedReasonReason(val *NotTaxedReasonReason) *NullableNotTaxedReasonReason {
+	return &NullableNotTaxedReasonReason{value: val, isSet: true}
 }
 
-func (v NullableCreateTransactionCannotUpdate) MarshalJSON() ([]byte, error) {
+func (v NullableNotTaxedReasonReason) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateTransactionCannotUpdate) UnmarshalJSON(src []byte) error {
+func (v *NullableNotTaxedReasonReason) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

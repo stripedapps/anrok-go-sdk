@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -27,7 +27,7 @@ type ProductMappingsAPIService service
 type ApiProductIdMappingsAddRequest struct {
 	ctx context.Context
 	ApiService *ProductMappingsAPIService
-	integrationId interface{}
+	integrationId string
 	productIdMappingsAddRequest *ProductIdMappingsAddRequest
 }
 
@@ -43,13 +43,13 @@ func (r ApiProductIdMappingsAddRequest) Execute() (map[string]interface{}, *http
 /*
 ProductIdMappingsAdd Add product mapping
 
-Adds a Product ID mapping for this integration.
+Adds a product ID mapping for this integration.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param integrationId Your unique integration ID.
  @return ApiProductIdMappingsAddRequest
 */
-func (a *ProductMappingsAPIService) ProductIdMappingsAdd(ctx context.Context, integrationId interface{}) ApiProductIdMappingsAddRequest {
+func (a *ProductMappingsAPIService) ProductIdMappingsAdd(ctx context.Context, integrationId string) ApiProductIdMappingsAddRequest {
 	return ApiProductIdMappingsAddRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -134,6 +134,16 @@ func (a *ProductMappingsAPIService) ProductIdMappingsAddExecute(r ApiProductIdMa
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -152,7 +162,7 @@ func (a *ProductMappingsAPIService) ProductIdMappingsAddExecute(r ApiProductIdMa
 type ApiProductIdMappingsListRequest struct {
 	ctx context.Context
 	ApiService *ProductMappingsAPIService
-	integrationId interface{}
+	integrationId string
 	body *map[string]interface{}
 }
 
@@ -174,7 +184,7 @@ Lists all Product ID mappings for this integration.
  @param integrationId Your unique integration ID.
  @return ApiProductIdMappingsListRequest
 */
-func (a *ProductMappingsAPIService) ProductIdMappingsList(ctx context.Context, integrationId interface{}) ApiProductIdMappingsListRequest {
+func (a *ProductMappingsAPIService) ProductIdMappingsList(ctx context.Context, integrationId string) ApiProductIdMappingsListRequest {
 	return ApiProductIdMappingsListRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -258,6 +268,16 @@ func (a *ProductMappingsAPIService) ProductIdMappingsListExecute(r ApiProductIdM
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -27,7 +27,7 @@ type CustomerCertificatesAPIService service
 type ApiCertificatesArchiveRequest struct {
 	ctx context.Context
 	ApiService *CustomerCertificatesAPIService
-	certificateId interface{}
+	certificateId string
 	body *map[string]interface{}
 }
 
@@ -36,7 +36,7 @@ func (r ApiCertificatesArchiveRequest) Body(body map[string]interface{}) ApiCert
 	return r
 }
 
-func (r ApiCertificatesArchiveRequest) Execute() (*http.Response, error) {
+func (r ApiCertificatesArchiveRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.CertificatesArchiveExecute(r)
 }
 
@@ -49,7 +49,7 @@ This endpoint is used to archive/invalidate a customer certificate.
  @param certificateId ID of the certificate you want to archive.
  @return ApiCertificatesArchiveRequest
 */
-func (a *CustomerCertificatesAPIService) CertificatesArchive(ctx context.Context, certificateId interface{}) ApiCertificatesArchiveRequest {
+func (a *CustomerCertificatesAPIService) CertificatesArchive(ctx context.Context, certificateId string) ApiCertificatesArchiveRequest {
 	return ApiCertificatesArchiveRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -58,16 +58,18 @@ func (a *CustomerCertificatesAPIService) CertificatesArchive(ctx context.Context
 }
 
 // Execute executes the request
-func (a *CustomerCertificatesAPIService) CertificatesArchiveExecute(r ApiCertificatesArchiveRequest) (*http.Response, error) {
+//  @return map[string]interface{}
+func (a *CustomerCertificatesAPIService) CertificatesArchiveExecute(r ApiCertificatesArchiveRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "CustomerCertificatesAPIService.CertificatesArchive")
 	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/v1/seller/certificates/id:{certificateId}/archive"
@@ -77,7 +79,7 @@ func (a *CustomerCertificatesAPIService) CertificatesArchiveExecute(r ApiCertifi
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.body == nil {
-		return nil, reportError("body is required and must be specified")
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -101,19 +103,19 @@ func (a *CustomerCertificatesAPIService) CertificatesArchiveExecute(r ApiCertifi
 	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return nil, err
+		return localVarReturnValue, nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -126,16 +128,35 @@ func (a *CustomerCertificatesAPIService) CertificatesArchiveExecute(r ApiCertifi
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		return localVarHTTPResponse, newErr
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarHTTPResponse, nil
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
 type ApiCertificatesCreateRequest struct {
@@ -254,6 +275,16 @@ func (a *CustomerCertificatesAPIService) CertificatesCreateExecute(r ApiCertific
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

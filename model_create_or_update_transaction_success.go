@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -20,9 +20,14 @@ var _ MappedNullable = &CreateOrUpdateTransactionSuccess{}
 
 // CreateOrUpdateTransactionSuccess struct for CreateOrUpdateTransactionSuccess
 type CreateOrUpdateTransactionSuccess struct {
-	// The total tax amount to collect from the customer, in the smallest denomination of the currency (e.g. cents or pennies)
+	// The total tax amount to collect from the customer, in the smallest denomination of the currency (e.g. cents or pennies).
 	TaxAmountToCollect *int64 `json:"taxAmountToCollect,omitempty"`
+	// The tax amount to collect, pre-tax amount, and taxes by jurisdiction for each line item. Line items are returned in the same order they are received.
 	LineItems []CreateEphemeralTransactionSuccessLineItemsInner `json:"lineItems,omitempty"`
+	// The total pre-tax amount for the transaction, in the smallest denomination of the currency (e.g. cents or pennies).
+	PreTaxAmount *string `json:"preTaxAmount,omitempty"`
+	// For each jurisdiction, a summary of the reasons that the line items are not taxed, or null if some items are taxed.
+	JurisSummaries []CreateEphemeralTransactionSuccessJurisSummariesInner `json:"jurisSummaries,omitempty"`
 	// The transaction version
 	Version *int32 `json:"version,omitempty"`
 }
@@ -108,6 +113,70 @@ func (o *CreateOrUpdateTransactionSuccess) SetLineItems(v []CreateEphemeralTrans
 	o.LineItems = v
 }
 
+// GetPreTaxAmount returns the PreTaxAmount field value if set, zero value otherwise.
+func (o *CreateOrUpdateTransactionSuccess) GetPreTaxAmount() string {
+	if o == nil || IsNil(o.PreTaxAmount) {
+		var ret string
+		return ret
+	}
+	return *o.PreTaxAmount
+}
+
+// GetPreTaxAmountOk returns a tuple with the PreTaxAmount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateTransactionSuccess) GetPreTaxAmountOk() (*string, bool) {
+	if o == nil || IsNil(o.PreTaxAmount) {
+		return nil, false
+	}
+	return o.PreTaxAmount, true
+}
+
+// HasPreTaxAmount returns a boolean if a field has been set.
+func (o *CreateOrUpdateTransactionSuccess) HasPreTaxAmount() bool {
+	if o != nil && !IsNil(o.PreTaxAmount) {
+		return true
+	}
+
+	return false
+}
+
+// SetPreTaxAmount gets a reference to the given string and assigns it to the PreTaxAmount field.
+func (o *CreateOrUpdateTransactionSuccess) SetPreTaxAmount(v string) {
+	o.PreTaxAmount = &v
+}
+
+// GetJurisSummaries returns the JurisSummaries field value if set, zero value otherwise.
+func (o *CreateOrUpdateTransactionSuccess) GetJurisSummaries() []CreateEphemeralTransactionSuccessJurisSummariesInner {
+	if o == nil || IsNil(o.JurisSummaries) {
+		var ret []CreateEphemeralTransactionSuccessJurisSummariesInner
+		return ret
+	}
+	return o.JurisSummaries
+}
+
+// GetJurisSummariesOk returns a tuple with the JurisSummaries field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateTransactionSuccess) GetJurisSummariesOk() ([]CreateEphemeralTransactionSuccessJurisSummariesInner, bool) {
+	if o == nil || IsNil(o.JurisSummaries) {
+		return nil, false
+	}
+	return o.JurisSummaries, true
+}
+
+// HasJurisSummaries returns a boolean if a field has been set.
+func (o *CreateOrUpdateTransactionSuccess) HasJurisSummaries() bool {
+	if o != nil && !IsNil(o.JurisSummaries) {
+		return true
+	}
+
+	return false
+}
+
+// SetJurisSummaries gets a reference to the given []CreateEphemeralTransactionSuccessJurisSummariesInner and assigns it to the JurisSummaries field.
+func (o *CreateOrUpdateTransactionSuccess) SetJurisSummaries(v []CreateEphemeralTransactionSuccessJurisSummariesInner) {
+	o.JurisSummaries = v
+}
+
 // GetVersion returns the Version field value if set, zero value otherwise.
 func (o *CreateOrUpdateTransactionSuccess) GetVersion() int32 {
 	if o == nil || IsNil(o.Version) {
@@ -155,6 +224,12 @@ func (o CreateOrUpdateTransactionSuccess) ToMap() (map[string]interface{}, error
 	}
 	if !IsNil(o.LineItems) {
 		toSerialize["lineItems"] = o.LineItems
+	}
+	if !IsNil(o.PreTaxAmount) {
+		toSerialize["preTaxAmount"] = o.PreTaxAmount
+	}
+	if !IsNil(o.JurisSummaries) {
+		toSerialize["jurisSummaries"] = o.JurisSummaries
 	}
 	if !IsNil(o.Version) {
 		toSerialize["version"] = o.Version
