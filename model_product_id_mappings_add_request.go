@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -13,6 +13,8 @@ package openapi
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ProductIdMappingsAddRequest type satisfies the MappedNullable interface at compile time
@@ -20,13 +22,15 @@ var _ MappedNullable = &ProductIdMappingsAddRequest{}
 
 // ProductIdMappingsAddRequest struct for ProductIdMappingsAddRequest
 type ProductIdMappingsAddRequest struct {
-	// Source Product ID from billing system.
+	// Source product ID from billing system.
 	SourceId string `json:"sourceId"`
-	// Target Product ID on Anrok. This product must already exist in Anrok.
+	// Target product ID on Anrok. This product must already exist in Anrok.
 	TargetId string `json:"targetId"`
-	// Whether this request should override an existing Source ID mapping
+	// Whether this request should override an existing `sourceId` mapping.
 	ShouldOverwrite *bool `json:"shouldOverwrite,omitempty"`
 }
+
+type _ProductIdMappingsAddRequest ProductIdMappingsAddRequest
 
 // NewProductIdMappingsAddRequest instantiates a new ProductIdMappingsAddRequest object
 // This constructor will assign default values to properties that have it defined,
@@ -147,6 +151,44 @@ func (o ProductIdMappingsAddRequest) ToMap() (map[string]interface{}, error) {
 		toSerialize["shouldOverwrite"] = o.ShouldOverwrite
 	}
 	return toSerialize, nil
+}
+
+func (o *ProductIdMappingsAddRequest) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"sourceId",
+		"targetId",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varProductIdMappingsAddRequest := _ProductIdMappingsAddRequest{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varProductIdMappingsAddRequest)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ProductIdMappingsAddRequest(varProductIdMappingsAddRequest)
+
+	return err
 }
 
 type NullableProductIdMappingsAddRequest struct {

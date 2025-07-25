@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -119,6 +119,17 @@ func (a *TransactionsAPIService) TransactionsCreateEphemeralExecute(r ApiTransac
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v CreateTransactionCannotComputeTaxAmount
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -129,6 +140,16 @@ func (a *TransactionsAPIService) TransactionsCreateEphemeralExecute(r ApiTransac
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -148,15 +169,15 @@ func (a *TransactionsAPIService) TransactionsCreateEphemeralExecute(r ApiTransac
 type ApiTransactionsCreateNegationRequest struct {
 	ctx context.Context
 	ApiService *TransactionsAPIService
-	transactionsCreateRefundRequest *TransactionsCreateRefundRequest
+	transactionsCreateNegationRequest *TransactionsCreateNegationRequest
 }
 
-func (r ApiTransactionsCreateNegationRequest) TransactionsCreateRefundRequest(transactionsCreateRefundRequest TransactionsCreateRefundRequest) ApiTransactionsCreateNegationRequest {
-	r.transactionsCreateRefundRequest = &transactionsCreateRefundRequest
+func (r ApiTransactionsCreateNegationRequest) TransactionsCreateNegationRequest(transactionsCreateNegationRequest TransactionsCreateNegationRequest) ApiTransactionsCreateNegationRequest {
+	r.transactionsCreateNegationRequest = &transactionsCreateNegationRequest
 	return r
 }
 
-func (r ApiTransactionsCreateNegationRequest) Execute() (*http.Response, error) {
+func (r ApiTransactionsCreateNegationRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.TransactionsCreateNegationExecute(r)
 }
 
@@ -176,16 +197,18 @@ func (a *TransactionsAPIService) TransactionsCreateNegation(ctx context.Context)
 }
 
 // Execute executes the request
-func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransactionsCreateNegationRequest) (*http.Response, error) {
+//  @return map[string]interface{}
+func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransactionsCreateNegationRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsAPIService.TransactionsCreateNegation")
 	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/v1/seller/transactions/createNegation"
@@ -193,8 +216,8 @@ func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransact
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.transactionsCreateRefundRequest == nil {
-		return nil, reportError("transactionsCreateRefundRequest is required and must be specified")
+	if r.transactionsCreateNegationRequest == nil {
+		return localVarReturnValue, nil, reportError("transactionsCreateNegationRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -215,22 +238,22 @@ func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransact
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.transactionsCreateRefundRequest
+	localVarPostBody = r.transactionsCreateNegationRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return nil, err
+		return localVarReturnValue, nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -238,10 +261,51 @@ func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransact
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		return localVarHTTPResponse, newErr
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v InlineObject
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarHTTPResponse, nil
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
 type ApiTransactionsCreateOrUpdateRequest struct {
@@ -262,7 +326,7 @@ func (r ApiTransactionsCreateOrUpdateRequest) Execute() (*CreateOrUpdateTransact
 /*
 TransactionsCreateOrUpdate Create or update transaction
 
-Given the details of an invoice, calculate sales tax and save it as a “transaction” in Anrok. Saved transactions are used by Anrok to file sales tax returns and monitor sales thresholds.
+Given the details of an invoice, calculate sales tax and save it as a transaction in Anrok. Saved transactions are used by Anrok to file sales tax returns and monitor sales thresholds.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiTransactionsCreateOrUpdateRequest
@@ -339,6 +403,17 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v TransactionsCreateOrUpdate409Response
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -349,6 +424,16 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -365,112 +450,10 @@ func (a *TransactionsAPIService) TransactionsCreateOrUpdateExecute(r ApiTransact
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiTransactionsCreateRefundRequest struct {
-	ctx context.Context
-	ApiService *TransactionsAPIService
-	transactionsCreateRefundRequest *TransactionsCreateRefundRequest
-}
-
-func (r ApiTransactionsCreateRefundRequest) TransactionsCreateRefundRequest(transactionsCreateRefundRequest TransactionsCreateRefundRequest) ApiTransactionsCreateRefundRequest {
-	r.transactionsCreateRefundRequest = &transactionsCreateRefundRequest
-	return r
-}
-
-func (r ApiTransactionsCreateRefundRequest) Execute() (*http.Response, error) {
-	return r.ApiService.TransactionsCreateRefundExecute(r)
-}
-
-/*
-TransactionsCreateRefund Create refund
-
-[Deprecated - use createNegation instead] Creates a new transaction that is the exact inverse of the given transaction. The sale prices and tax amounts will add up to zero.
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiTransactionsCreateRefundRequest
-
-Deprecated
-*/
-func (a *TransactionsAPIService) TransactionsCreateRefund(ctx context.Context) ApiTransactionsCreateRefundRequest {
-	return ApiTransactionsCreateRefundRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-// Deprecated
-func (a *TransactionsAPIService) TransactionsCreateRefundExecute(r ApiTransactionsCreateRefundRequest) (*http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsAPIService.TransactionsCreateRefund")
-	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1/seller/transactions/createRefund"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.transactionsCreateRefundRequest == nil {
-		return nil, reportError("transactionsCreateRefundRequest is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.transactionsCreateRefundRequest
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		return localVarHTTPResponse, newErr
-	}
-
-	return localVarHTTPResponse, nil
-}
-
 type ApiTransactionsVoidRequest struct {
 	ctx context.Context
 	ApiService *TransactionsAPIService
-	transactionId interface{}
+	transactionId string
 	transactionsVoidRequest *TransactionsVoidRequest
 }
 
@@ -479,20 +462,20 @@ func (r ApiTransactionsVoidRequest) TransactionsVoidRequest(transactionsVoidRequ
 	return r
 }
 
-func (r ApiTransactionsVoidRequest) Execute() (*http.Response, error) {
+func (r ApiTransactionsVoidRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.TransactionsVoidExecute(r)
 }
 
 /*
 TransactionsVoid Void transaction
 
-Mark a previously-created transaction as “void”. It will no longer be included in returns or sales totals.
+Mark a previously-created transaction as void. It will no longer be included in returns or sales totals.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param transactionId ID of the transaction you want to void.
  @return ApiTransactionsVoidRequest
 */
-func (a *TransactionsAPIService) TransactionsVoid(ctx context.Context, transactionId interface{}) ApiTransactionsVoidRequest {
+func (a *TransactionsAPIService) TransactionsVoid(ctx context.Context, transactionId string) ApiTransactionsVoidRequest {
 	return ApiTransactionsVoidRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -501,16 +484,18 @@ func (a *TransactionsAPIService) TransactionsVoid(ctx context.Context, transacti
 }
 
 // Execute executes the request
-func (a *TransactionsAPIService) TransactionsVoidExecute(r ApiTransactionsVoidRequest) (*http.Response, error) {
+//  @return map[string]interface{}
+func (a *TransactionsAPIService) TransactionsVoidExecute(r ApiTransactionsVoidRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsAPIService.TransactionsVoid")
 	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/v1/seller/transactions/id:{transactionId}/void"
@@ -520,7 +505,7 @@ func (a *TransactionsAPIService) TransactionsVoidExecute(r ApiTransactionsVoidRe
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.transactionsVoidRequest == nil {
-		return nil, reportError("transactionsVoidRequest is required and must be specified")
+		return localVarReturnValue, nil, reportError("transactionsVoidRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -544,19 +529,19 @@ func (a *TransactionsAPIService) TransactionsVoidExecute(r ApiTransactionsVoidRe
 	localVarPostBody = r.transactionsVoidRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return nil, err
+		return localVarReturnValue, nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -569,14 +554,33 @@ func (a *TransactionsAPIService) TransactionsVoidExecute(r ApiTransactionsVoidRe
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
+				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarHTTPResponse, newErr
+			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-		return localVarHTTPResponse, newErr
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarHTTPResponse, nil
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }

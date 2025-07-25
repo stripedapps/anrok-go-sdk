@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -13,6 +13,8 @@ package openapi
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the CustomerCertificate type satisfies the MappedNullable interface at compile time
@@ -20,19 +22,22 @@ var _ MappedNullable = &CustomerCertificate{}
 
 // CustomerCertificate struct for CustomerCertificate
 type CustomerCertificate struct {
-	// The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate. - If customerId is provided without customerName, that customer object must already exist in Anrok. - If both customerId and customerName are provided, the customer object will be created if it is not already present. - Customer IDs are unique across the entire seller account. 
+	// The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate. - If customerId is provided without customerName, that customer object must   already exist in Anrok. - If both customerId and customerName are provided, the customer object will   be created if it is not already present. - Customer IDs are unique across the entire seller account. 
 	CustomerId string `json:"customerId"`
-	// The name of the customer
+	// The name of the customer. This is used for display purposes only.
 	CustomerName *string `json:"customerName,omitempty"`
 	// Effective date of certificate
 	EffectiveDateBegin string `json:"effectiveDateBegin"`
-	// Certificate exemption number
+	// Certificate exemption number. This is used for display purposes only.
 	ExemptionNumber *string `json:"exemptionNumber,omitempty"`
-	// Optional internal notes
+	// Optional internal notes.
 	Notes *string `json:"notes,omitempty"`
 	CertificateFile CustomerCertificateFile `json:"certificateFile"`
+	// Jurisdictions for which certificate applies
 	Jurises []CustomerCertificateJuris `json:"jurises"`
 }
+
+type _CustomerCertificate CustomerCertificate
 
 // NewCustomerCertificate instantiates a new CustomerCertificate object
 // This constructor will assign default values to properties that have it defined,
@@ -271,6 +276,46 @@ func (o CustomerCertificate) ToMap() (map[string]interface{}, error) {
 	toSerialize["certificateFile"] = o.CertificateFile
 	toSerialize["jurises"] = o.Jurises
 	return toSerialize, nil
+}
+
+func (o *CustomerCertificate) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"customerId",
+		"effectiveDateBegin",
+		"certificateFile",
+		"jurises",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varCustomerCertificate := _CustomerCertificate{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCustomerCertificate)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CustomerCertificate(varCustomerCertificate)
+
+	return err
 }
 
 type NullableCustomerCertificate struct {

@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -20,8 +20,14 @@ var _ MappedNullable = &CreateEphemeralTransactionSuccessLineItemsInner{}
 
 // CreateEphemeralTransactionSuccessLineItemsInner struct for CreateEphemeralTransactionSuccessLineItemsInner
 type CreateEphemeralTransactionSuccessLineItemsInner struct {
-	// The tax amount to collect for the line item, in the smallest denomination of the currency (e.g. cents or pennies)
+	// Identifier for the line item that was provided in the request. If no identifier was provided, this is null.
+	Id NullableString `json:"id,omitempty"`
+	// The tax amount to collect for the line item, in the smallest denomination of the currency (e.g. cents or pennies).
 	TaxAmountToCollect *int64 `json:"taxAmountToCollect,omitempty"`
+	// The pre-tax amount for the line item, in the smallest denomination of the currency (e.g. cents or pennies).
+	PreTaxAmount *string `json:"preTaxAmount,omitempty"`
+	// For each jurisdiction, either a list of taxes for the line item, or a reason that the line item is not taxed.
+	Jurises []CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner `json:"jurises,omitempty"`
 }
 
 // NewCreateEphemeralTransactionSuccessLineItemsInner instantiates a new CreateEphemeralTransactionSuccessLineItemsInner object
@@ -39,6 +45,48 @@ func NewCreateEphemeralTransactionSuccessLineItemsInner() *CreateEphemeralTransa
 func NewCreateEphemeralTransactionSuccessLineItemsInnerWithDefaults() *CreateEphemeralTransactionSuccessLineItemsInner {
 	this := CreateEphemeralTransactionSuccessLineItemsInner{}
 	return &this
+}
+
+// GetId returns the Id field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetId() string {
+	if o == nil || IsNil(o.Id.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.Id.Get()
+}
+
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.Id.Get(), o.Id.IsSet()
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) HasId() bool {
+	if o != nil && o.Id.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetId gets a reference to the given NullableString and assigns it to the Id field.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) SetId(v string) {
+	o.Id.Set(&v)
+}
+// SetIdNil sets the value for Id to be an explicit nil
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) SetIdNil() {
+	o.Id.Set(nil)
+}
+
+// UnsetId ensures that no value is present for Id, not even an explicit nil
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) UnsetId() {
+	o.Id.Unset()
 }
 
 // GetTaxAmountToCollect returns the TaxAmountToCollect field value if set, zero value otherwise.
@@ -73,6 +121,70 @@ func (o *CreateEphemeralTransactionSuccessLineItemsInner) SetTaxAmountToCollect(
 	o.TaxAmountToCollect = &v
 }
 
+// GetPreTaxAmount returns the PreTaxAmount field value if set, zero value otherwise.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetPreTaxAmount() string {
+	if o == nil || IsNil(o.PreTaxAmount) {
+		var ret string
+		return ret
+	}
+	return *o.PreTaxAmount
+}
+
+// GetPreTaxAmountOk returns a tuple with the PreTaxAmount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetPreTaxAmountOk() (*string, bool) {
+	if o == nil || IsNil(o.PreTaxAmount) {
+		return nil, false
+	}
+	return o.PreTaxAmount, true
+}
+
+// HasPreTaxAmount returns a boolean if a field has been set.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) HasPreTaxAmount() bool {
+	if o != nil && !IsNil(o.PreTaxAmount) {
+		return true
+	}
+
+	return false
+}
+
+// SetPreTaxAmount gets a reference to the given string and assigns it to the PreTaxAmount field.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) SetPreTaxAmount(v string) {
+	o.PreTaxAmount = &v
+}
+
+// GetJurises returns the Jurises field value if set, zero value otherwise.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetJurises() []CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner {
+	if o == nil || IsNil(o.Jurises) {
+		var ret []CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner
+		return ret
+	}
+	return o.Jurises
+}
+
+// GetJurisesOk returns a tuple with the Jurises field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) GetJurisesOk() ([]CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner, bool) {
+	if o == nil || IsNil(o.Jurises) {
+		return nil, false
+	}
+	return o.Jurises, true
+}
+
+// HasJurises returns a boolean if a field has been set.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) HasJurises() bool {
+	if o != nil && !IsNil(o.Jurises) {
+		return true
+	}
+
+	return false
+}
+
+// SetJurises gets a reference to the given []CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner and assigns it to the Jurises field.
+func (o *CreateEphemeralTransactionSuccessLineItemsInner) SetJurises(v []CreateEphemeralTransactionSuccessLineItemsInnerJurisesInner) {
+	o.Jurises = v
+}
+
 func (o CreateEphemeralTransactionSuccessLineItemsInner) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -83,8 +195,17 @@ func (o CreateEphemeralTransactionSuccessLineItemsInner) MarshalJSON() ([]byte, 
 
 func (o CreateEphemeralTransactionSuccessLineItemsInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Id.IsSet() {
+		toSerialize["id"] = o.Id.Get()
+	}
 	if !IsNil(o.TaxAmountToCollect) {
 		toSerialize["taxAmountToCollect"] = o.TaxAmountToCollect
+	}
+	if !IsNil(o.PreTaxAmount) {
+		toSerialize["preTaxAmount"] = o.PreTaxAmount
+	}
+	if !IsNil(o.Jurises) {
+		toSerialize["jurises"] = o.Jurises
 	}
 	return toSerialize, nil
 }

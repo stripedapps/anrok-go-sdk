@@ -5,47 +5,69 @@ info:
   description: |
     # API reference
 
-    The Anrok API server is accessible at “https://api.anrok.com”.
+    The Anrok API server is accessible at `https://api.anrok.com`.
 
     All requests are HTTP POSTs with JSON in the body.
 
-    Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.
+    Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.
 
     The default rate limit for a seller account is 10 API requests per second.
   license:
     name: All rights reserved
+    url: https://www.anrok.com
   termsOfService: https://www.anrok.com/privacy-terms
   title: Anrok API
+  version: "1.1"
   x-logo:
     url: https://global-uploads.webflow.com/632add85afcd1ac30aa74675/6357842d130e1f3e0e23d1fe_anrok_logo.svg
+externalDocs:
+  description: API Tutorials
+  url: https://apidocs.anrok.com/tutorials
 servers:
 - url: https://api.anrok.com
 security:
 - http: []
 tags:
-- description: Customer exemption certificates
+- description: |
+    A sales tax exemption certificate documents the exemption claimed by a purchaser
+    to legally make a tax-free purchase.
+    Certificates can be uploaded to Anrok via the Anrok UI as well as via the API.
+    See our
+    <a href="https://help-center.anrok.com/hc/en-us/articles/24861687025299-Upload-an-exemption-certificate">Help Center article</a>
+    for more information.
   name: Customer certificates
-- description: |-
-    This documentation describes how to use Anrok's Transactions API to synchronize transactions between Anrok and your billing system, as well as to calculate sales tax for new invoices. Use of this API is generally recommended for sellers with customer billing systems or workflows that prevent you from using one of our pre-built platform integrations. Sellers utilizing Stripe Subscriptions or Checkout may also use this API to calculate and add tax on initial invoices, while continuing to use Anrok's Stripe integration to manage tax for subsequent billing cycles.
+- description: |
+    This documentation describes how to use Anrok's Transactions API to synchronize transactions between Anrok and your billing system, as well as calculate sales tax for new invoices. Use of this API is generally recommended for sellers with custom billing systems or workflows that prevent you from using one of our pre-built platform integrations. Sellers utilizing Stripe Subscriptions or Checkout may also use this API to calculate and add tax on initial invoices, while continuing to use Anrok's Stripe integration to manage tax for subsequent billing cycles.
 
     # Invoice lifecycle
-    1. When an invoice is created: the billing system should call the Anrok createEphemeral endpoint to calculate the sales tax amount.
+    1. When an invoice is created: the billing system should call the `createEphemeral` endpoint to calculate the sales tax amount.
     1. When an invoice is updated: same as above.
-    1. When an invoice is finalized and ready to send to the customer: the billing system should call the Anrok createOrUpdate endpoint so that the transaction is recorded in Anrok.
+    1. When an invoice is finalized and ready to send to the customer: the billing system should call the `createOrUpdate` endpoint so that the transaction is recorded in Anrok.
     1. When an invoice is paid: Anrok does not need to be notified. Sellers are required to remit sales tax to a state upon invoice, not receipt of payment.
-    While the above covers a standard invoice lifecycle, the Transactions API also includes endpoints for exceptional states like voiding and refunding invoices, which are described below.
+
+    While the above covers a standard invoice lifecycle, the Transactions API also includes endpoints for exceptional states like voiding and negating invoices, which are described below.
   name: Transactions
-- description: "Distinct from Anrok's Transaction API, these endpoints enable you\
-    \ to manage your Product IDs in Anrok via API. You may use these endpoints to\
-    \ supplement your core integration, whether that's through our Transaction API\
-    \ or one of our partner integrations. This API is designed to support you in dynamically\
-    \ mapping new Products and viewing a comprehensive list of existing mappings.\
-    \ Because we aim to keep your product list in Anrok minimal and focused on truly\
-    \ distinct offerings, we use mappings to associate various products in your billing\
-    \ system with the equivalent products in Anrok. This API enables you to confirm\
-    \ that each product on any transaction seen by Anrok is mapped to a defined product\
-    \ and will be assessed properly for taxability calculations as a result."
+- description: |
+    Distinct from Anrok's Transaction API, these endpoints enable you to manage
+    your Product IDs in Anrok via API. You may use these endpoints to supplement
+    your core integration, whether that's through our Transaction API or one of our
+    partner integrations. This API is designed to support you in dynamically
+    mapping new Products and viewing a comprehensive list of existing mappings.
+    Because we aim to keep your product list in Anrok minimal and focused on truly
+    distinct offerings, we use mappings to associate various products in your
+    billing system with the equivalent products in Anrok. This API enables you to
+    confirm that each product on any transaction seen by Anrok is mapped to a
+    defined product and will be assessed properly for taxability calculations as a
+    result.
   name: Product mappings
+- description: "**The Anrok Tax ID Validation endpoint is a premium feature. Please\
+    \ contact hello@anrok.com for more information to enable this on your Anrok seller\
+    \ account.**\n\n\n1. Pass a customer address and an empty array of customerTaxIds:\n\
+    \t- Anrok verifies the customer address is valid for tax calculation.\n\t- Anrok\
+    \ responds with the list of customer tax IDs to collect.\n1. Collect the customer\
+    \ tax IDs and call the API endpoint again to validate them:\n\t- Anrok provides\
+    \ a list of valid tax IDs for each applicable jurisdiction.\n"
+  name: Tax ID validation
 paths:
   /v1/seller/certificates/create:
     post:
@@ -88,7 +110,7 @@ paths:
           content:
             application/json:
               example:
-                type: fileBadFormat
+                type: duplicateJurisIds
               schema:
                 $ref: '#/components/schemas/certificatesCreate_409_response'
           description: Conflict
@@ -158,27 +180,43 @@ paths:
   /v1/seller/transactions/createOrUpdate:
     post:
       description: "Given the details of an invoice, calculate sales tax and save\
-        \ it as a “transaction” in Anrok. Saved transactions are used by Anrok to\
-        \ file sales tax returns and monitor sales thresholds."
+        \ it as a transaction in Anrok. Saved transactions are used by Anrok to file\
+        \ sales tax returns and monitor sales thresholds."
       operationId: transactionsCreateOrUpdate
       requestBody:
         content:
           application/json:
             example:
               id: stripe:in_1JSW342eZvKYlo2C
-              currencyCode: USD
+              currencyCode: usd
               accountingTime: 2022-01-02T03:30:00Z
               accountingTimeZone: UTC
               lineItems:
               - id: item-1
-                productExternalId: saas-product
+                productExternalId: saas-product-1
                 amount: 15000
+                isTaxIncludedInAmount: false
+                quantity: "1"
+              - id: item-2
+                productExternalId: saas-product-2
+                amount: 31000
+                isTaxIncludedInAmount: true
+                quantity: "12.3"
+              - id: item-3
+                productExternalId: not-taxable-3
+                amount: 24000
               customerAddress:
                 country: us
-                line1: 310 S Houston St
-                city: Dallas
-                state: TX
-                zipCode: "75202"
+                line1: 1450 Cherokee St
+                city: Denver
+                region: CO
+                postalCode: "80204"
+              shipFromAddress:
+                country: us
+                line1: 230 S LaSalle St
+                city: Chicago
+                region: IL
+                postalCode: "60604"
             schema:
               $ref: '#/components/schemas/CreateOrUpdateTransaction'
         required: true
@@ -188,10 +226,53 @@ paths:
             application/json:
               example:
                 version: 1
-                taxAmountToCollect: 750
+                taxAmountToCollect: 722
                 lineItems:
-                - taxAmountToCollect: 250
-                - taxAmountToCollect: 500
+                - id: item-1
+                  taxAmountToCollect: 722
+                  preTaxAmount: "15000"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                  - name: Denver (local)
+                    taxes:
+                    - taxName: Tax
+                      taxableAmount: "15000"
+                      taxAmount: "721.5"
+                      taxRate: "0.0481"
+                    notTaxedReason: null
+                - id: item-2
+                  taxAmountToCollect: 0
+                  preTaxAmount: "29577.3304"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                  - name: Denver (local)
+                    taxes:
+                    - taxName: Tax
+                      taxableAmount: "29577.3304"
+                      taxAmount: "1422.6696"
+                      taxRate: "0.0481"
+                    notTaxedReason: null
+                - id: item-3
+                  taxAmountToCollect: 0
+                  preTaxAmount: "24000"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                preTaxAmount: "68577.3304"
+                jurisSummaries:
+                - name: Colorado
+                  notTaxedReasons:
+                  - type: productNotTaxed
+                - name: Denver (local)
+                  notTaxedReasons: null
               schema:
                 $ref: '#/components/schemas/CreateOrUpdateTransactionSuccess'
           description: OK
@@ -215,7 +296,7 @@ paths:
       - Transactions
       x-codeSamples:
       - lang: cURL
-        source: |-
+        source: |
           apiToken='sxxx/saxxx/secret.xxx'
 
           curl -X POST https://api.anrok.com/v1/seller/transactions/createOrUpdate \
@@ -223,20 +304,41 @@ paths:
             -H "Authorization: Bearer $apiToken" \
             -d '{
               "id": "stripe:in_1JSW342eZvKYlo2C",
-              "currencyCode": "USD",
+              "currencyCode": "usd",
               "accountingTime": "2022-01-02T03:30:00Z",
               "accountingTimeZone": "UTC",
               "lineItems": [{
                 "id": "item-1",
-                "productExternalId": "saas-product",
-                "amount": 15000
+                "productExternalId": "saas-product-1",
+                "amount": 15000,
+                "isTaxIncludedInAmount": false,
+                "quantity": "1"
+              },
+              {
+                "id": "item-2",
+                "productExternalId": "saas-product-2",
+                "amount": 31000,
+                "isTaxIncludedInAmount": true,
+                "quantity": "12.3"
+              },
+              {
+                "id": "item-3",
+                "productExternalId": "not-taxable-3",
+                "amount": 24000
               }],
               "customerAddress": {
                 "country": "us",
-                "line1": "310 S Houston St",
-                "city": "Dallas",
-                "state": "TX",
-                "zipCode": "75202"
+                "line1": "1450 Cherokee St",
+                "city": "Denver",
+                "region": "CO",
+                "postalCode": "80204"
+              },
+              "shipFromAddress": {
+                "country": "us",
+                "line1": "230 S LaSalle St",
+                "city": "Chicago",
+                "region": "IL",
+                "postalCode": "60604"
               }
             }'
   /v1/seller/transactions/createEphemeral:
@@ -248,35 +350,36 @@ paths:
       requestBody:
         content:
           application/json:
-            examples:
-              us:
-                summary: US customer address
-                value:
-                  currencyCode: USD
-                  accountingTime: 2022-01-02T03:30:00Z
-                  accountingTimeZone: UTC
-                  lineItems:
-                  - id: item-1
-                    productExternalId: saas-product
-                    amount: 15000
-                  customerAddress:
-                    country: us
-                    line1: 310 S Houston St
-                    city: Dallas
-                    state: TX
-                    zipCode: "75202"
-              international:
-                summary: International customer address
-                value:
-                  currencyCode: eur
-                  accountingTime: 2022-01-02T03:30:00Z
-                  accountingTimeZone: UTC
-                  lineItems:
-                  - id: item-1
-                    productExternalId: saas-product
-                    amount: 15000
-                  customerAddress:
-                    country: France
+            example:
+              currencyCode: usd
+              accountingTime: 2022-01-02T03:30:00Z
+              accountingTimeZone: UTC
+              lineItems:
+              - id: item-1
+                productExternalId: saas-product-1
+                amount: 15000
+                isTaxIncludedInAmount: false
+                quantity: "1"
+              - id: item-2
+                productExternalId: saas-product-2
+                amount: 31000
+                isTaxIncludedInAmount: true
+                quantity: "12.3"
+              - id: item-3
+                productExternalId: not-taxable-3
+                amount: 24000
+              customerAddress:
+                country: us
+                line1: 1450 Cherokee St
+                city: Denver
+                region: CO
+                postalCode: "80204"
+              shipFromAddress:
+                country: us
+                line1: 230 S LaSalle St
+                city: Chicago
+                region: IL
+                postalCode: "60604"
             schema:
               $ref: '#/components/schemas/CreateEphemeralTransaction'
         required: true
@@ -285,10 +388,53 @@ paths:
           content:
             application/json:
               example:
-                taxAmountToCollect: 750
+                taxAmountToCollect: 722
                 lineItems:
-                - taxAmountToCollect: 250
-                - taxAmountToCollect: 500
+                - id: item-1
+                  taxAmountToCollect: 722
+                  preTaxAmount: "15000"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                  - name: Denver (local)
+                    taxes:
+                    - taxName: Tax
+                      taxableAmount: "15000"
+                      taxAmount: "721.5"
+                      taxRate: "0.0481"
+                    notTaxedReason: null
+                - id: item-2
+                  taxAmountToCollect: 0
+                  preTaxAmount: "29577.3304"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                  - name: Denver (local)
+                    taxes:
+                    - taxName: Tax
+                      taxableAmount: "29577.3304"
+                      taxAmount: "1422.6696"
+                      taxRate: "0.0481"
+                    notTaxedReason: null
+                - id: item-3
+                  taxAmountToCollect: 0
+                  preTaxAmount: "24000"
+                  jurises:
+                  - name: Colorado
+                    taxes: null
+                    notTaxedReason:
+                      type: productNotTaxed
+                preTaxAmount: "68577.3304"
+                jurisSummaries:
+                - name: Colorado
+                  notTaxedReasons:
+                  - type: productNotTaxed
+                - name: Denver (local)
+                  notTaxedReasons: null
               schema:
                 $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
           description: OK
@@ -312,61 +458,49 @@ paths:
       - Transactions
       x-codeSamples:
       - lang: cURL
-        source: |-
+        source: |
           apiToken='sxxx/saxxx/secret.xxx'
 
           curl -X POST https://api.anrok.com/v1/seller/transactions/createEphemeral \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $apiToken" \
             -d '{
-              "currencyCode": "USD",
+              "currencyCode": "usd",
               "accountingTime": "2022-01-02T03:30:00Z",
               "accountingTimeZone": "UTC",
               "lineItems": [{
                 "id": "item-1",
-                "productExternalId": "saas-product",
-                "amount": 15000
+                "productExternalId": "saas-product-1",
+                "amount": 15000,
+                "isTaxIncludedInAmount": false,
+                "quantity": "1"
+              },
+              {
+                "id": "item-2",
+                "productExternalId": "saas-product-2",
+                "amount": 31000,
+                "isTaxIncludedInAmount": true,
+                "quantity": "12.3"
+              },
+              {
+                "id": "item-3",
+                "productExternalId": "not-taxable-3",
+                "amount": 24000
               }],
               "customerAddress": {
                 "country": "us",
-                "line1": "310 S Houston St",
-                "city": "Dallas",
-                "state": "TX",
-                "zipCode": "75202"
+                "line1": "1450 Cherokee St",
+                "city": "Denver",
+                "region": "CO",
+                "postalCode": "80204"
+              },
+              "shipFromAddress": {
+                "country": "us",
+                "line1": "230 S LaSalle St",
+                "city": "Chicago",
+                "region": "IL",
+                "postalCode": "60604"
               }
-            }'
-  /v1/seller/transactions/createRefund:
-    post:
-      deprecated: true
-      description: "[Deprecated - use createNegation instead] Creates a new transaction\
-        \ that is the exact inverse of the given transaction. The sale prices and\
-        \ tax amounts will add up to zero."
-      operationId: transactionsCreateRefund
-      requestBody:
-        $ref: '#/components/requestBodies/CreateNegation'
-      responses:
-        "200":
-          $ref: '#/components/responses/EmptyResponse'
-        "400":
-          $ref: '#/components/responses/CreateNegationBadRequest'
-        "409":
-          $ref: '#/components/responses/CreateNegationConflict'
-        "429":
-          $ref: '#/components/responses/RateLimit'
-      summary: Create refund
-      tags:
-      - Transactions
-      x-codeSamples:
-      - lang: cURL
-        source: |-
-          apiToken='sxxx/saxxx/secret.xxx'
-
-          curl -X POST https://api.anrok.com/v1/seller/transactions/createRefund \
-            -H 'Content-Type: application/json' \
-            -H "Authorization: Bearer $apiToken" \
-            -d '{
-              "originalTransactionId": "stripe:in_1JSW342eZvKYlo2C",
-              "newTransactionId": "stripe:in_1JSW342eZvKYlo2C_refund"
             }'
   /v1/seller/transactions/createNegation:
     post:
@@ -403,7 +537,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/TransactionId'
     post:
-      description: Mark a previously-created transaction as “void”. It will no longer
+      description: Mark a previously-created transaction as void. It will no longer
         be included in returns or sales totals.
       operationId: transactionsVoid
       parameters:
@@ -487,7 +621,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/IntegrationId'
     post:
-      description: Adds a Product ID mapping for this integration.
+      description: Adds a product ID mapping for this integration.
       operationId: productIdMappingsAdd
       parameters:
       - $ref: '#/components/parameters/IntegrationId'
@@ -521,10 +655,95 @@ paths:
       summary: Add product mapping
       tags:
       - Product mappings
+  /v1/seller/taxId/validate:
+    post:
+      description: This endpoint is used to assist in the collection and validation
+        of customer tax IDs.
+      operationId: taxIdsValidate
+      requestBody:
+        content:
+          application/json:
+            example:
+              customerAddress:
+                country: CA
+                line1: 123 Main St
+                city: Quebec City
+                region: Quebec
+                postalCode: G1P 2J6
+              customerTaxIds:
+              - value: "123456789"
+              - value: "987654321"
+            schema:
+              $ref: '#/components/schemas/ValidateTaxId'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                jurises:
+                - name: Canada (federal)
+                  taxIdNames:
+                    name: GST/HST account number
+                    abbreviation: null
+                  validTaxIds:
+                  - value: "123456789"
+                - name: Quebec
+                  taxIdNames:
+                    name: QST registration number
+                    abbreviation: null
+                  validTaxIds:
+                  - value: "987654321"
+              schema:
+                $ref: '#/components/schemas/ValidateTaxIdSuccess'
+          description: OK
+        "400":
+          content:
+            application/json:
+              examples:
+                missingRequiredProperty:
+                  summary: Missing required property
+                  value: "Request body: \"customerAddress\": Required."
+              schema:
+                type: string
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              example:
+                type: customerAddressCouldNotResolve
+              schema:
+                $ref: '#/components/schemas/taxIdsValidate_409_response'
+          description: Conflict
+        "429":
+          $ref: '#/components/responses/RateLimit'
+      summary: Validate tax IDs
+      tags:
+      - Tax ID validation
+      x-codeSamples:
+      - lang: cURL
+        source: |-
+          apiToken='sxxx/saxxx/secret.xxx'
+
+          curl -X POST https://api.anrok.com/v1/seller/taxId/validate \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $apiToken" \
+            -d '{
+              "customerAddress": {
+                "country": "CA",
+                "line1": "123 Main St",
+                "city": "Quebec City",
+                "region": "Quebec",
+                "postalCode": "G1P 2J6"
+              },
+              "customerTaxIds": [{
+                "value": "123456789"
+              }]
+            }'
 components:
   examples:
     ConflictTaxDateTooFarInFuture:
-      summary: "Since tax rates are subject to change, we don't allow future tax dates."
+      summary: Anrok accepts dates up to 31 days in the future.
       value:
         type: taxDateTooFarInFuture
     ConflictAccountingTimeZoneNotSetForSeller:
@@ -538,7 +757,8 @@ components:
       in: path
       name: certificateId
       required: true
-      schema: {}
+      schema:
+        type: string
       style: simple
     TransactionId:
       description: ID of the transaction you want to void.
@@ -546,7 +766,8 @@ components:
       in: path
       name: transactionId
       required: true
-      schema: {}
+      schema:
+        type: string
       style: simple
     IntegrationId:
       description: Your unique integration ID.
@@ -554,7 +775,8 @@ components:
       in: path
       name: integrationId
       required: true
-      schema: {}
+      schema:
+        type: string
       style: simple
   requestBodies:
     Empty:
@@ -574,20 +796,22 @@ components:
             originalTransactionId: stripe:in_1JSW342eZvKYlo2C
             newTransactionId: stripe:in_1JSW342eZvKYlo2C_refund
           schema:
-            $ref: '#/components/schemas/transactionsCreateRefund_request'
+            $ref: '#/components/schemas/transactionsCreateNegation_request'
       required: true
   responses:
     RateLimit:
       content:
         text/plain:
           example: You've exceeded your API limit of 10 per second
-          schema: {}
+          schema:
+            type: string
       description: Too Many Requests
       headers:
         Retry-After:
-          description: Number of seconds to wait for rate limit to reset
+          description: Number of seconds to wait for rate limit to reset.
           explode: false
-          schema: {}
+          schema:
+            type: integer
           style: simple
     EmptyResponse:
       content:
@@ -617,7 +841,8 @@ components:
             missingAccountingDate:
               summary: Not enough info to determine accounting date
               value: "Request body: Must specify either accountingDate or accountingTimeZone."
-          schema: {}
+          schema:
+            type: string
       description: Bad Request
     CreateNegationBadRequest:
       content:
@@ -626,7 +851,8 @@ components:
             missingRequestProperty:
               summary: Required property missing
               value: "Request body: \"newTransactionId\": Required."
-          schema: {}
+          schema:
+            type: string
       description: Bad Request
     CreateNegationConflict:
       content:
@@ -634,24 +860,20 @@ components:
           example:
             type: transactionExpectedVersionMismatch
           schema:
-            properties:
-              type:
-                enum:
-                - transactionIdNotFound
-                - transactionExpectedVersionMismatch
-                - transactionIsAlreadyANegation
-                - duplicateTransactionId
+            $ref: '#/components/schemas/inline_object'
       description: Conflict
   schemas:
     CustomerId:
       description: |
         The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate.
-        - If customerId is provided without customerName, that customer object must already exist in Anrok.
-        - If both customerId and customerName are provided, the customer object will be created if it is not already present.
+        - If customerId is provided without customerName, that customer object must
+          already exist in Anrok.
+        - If both customerId and customerName are provided, the customer object will
+          be created if it is not already present.
         - Customer IDs are unique across the entire seller account.
       type: string
     CustomerName:
-      description: The name of the customer
+      description: The name of the customer. This is used for display purposes only.
       type: string
     CustomerCertificateFile:
       example:
@@ -672,20 +894,79 @@ components:
         effectiveDateEndi: 2000-01-23
         notes: notes
         registrationId: registrationId
-        jurisId: jurisId
+        jurisId: us-AK
       properties:
         jurisId:
-          description: ID of jurisdiction
+          description: Jurisdiction ID for which this exemption should apply (US only).
+          enum:
+          - us-AK
+          - us-AL
+          - us-AR
+          - us-AS
+          - us-AZ
+          - us-CA
+          - us-CO
+          - us-CT
+          - us-DC
+          - us-DE
+          - us-FL
+          - us-GA
+          - us-GU
+          - us-HI
+          - us-IA
+          - us-ID
+          - us-IL
+          - us-IN
+          - us-KS
+          - us-KY
+          - us-LA
+          - us-MA
+          - us-MD
+          - us-ME
+          - us-MI
+          - us-MN
+          - us-MO
+          - us-MP
+          - us-MS
+          - us-MT
+          - us-NC
+          - us-ND
+          - us-NE
+          - us-NH
+          - us-NJ
+          - us-NM
+          - us-NV
+          - us-NY
+          - us-OH
+          - us-OK
+          - us-OR
+          - us-PA
+          - us-PR
+          - us-RI
+          - us-SC
+          - us-SD
+          - us-TN
+          - us-TX
+          - us-UT
+          - us-VA
+          - us-VI
+          - us-VT
+          - us-WA
+          - us-WI
+          - us-WV
+          - us-WY
           type: string
         registrationId:
-          description: Registration ID for jurisdiction
+          description: Registration ID for jurisdiction. This is used for display
+            purposes only.
           type: string
         effectiveDateEndi:
           description: Expiration date of certificate in this jurisdiction
           format: date
           type: string
         notes:
-          description: Optional internal notes
+          description: Optional internal notes. This is used for display purposes
+            only.
           type: string
       required:
       - jurisId
@@ -702,36 +983,41 @@ components:
         - effectiveDateEndi: 2000-01-23
           notes: notes
           registrationId: registrationId
-          jurisId: jurisId
+          jurisId: us-AK
         - effectiveDateEndi: 2000-01-23
           notes: notes
           registrationId: registrationId
-          jurisId: jurisId
+          jurisId: us-AK
         customerName: customerName
       properties:
         customerId:
           description: |
             The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate.
-            - If customerId is provided without customerName, that customer object must already exist in Anrok.
-            - If both customerId and customerName are provided, the customer object will be created if it is not already present.
+            - If customerId is provided without customerName, that customer object must
+              already exist in Anrok.
+            - If both customerId and customerName are provided, the customer object will
+              be created if it is not already present.
             - Customer IDs are unique across the entire seller account.
           type: string
         customerName:
-          description: The name of the customer
+          description: The name of the customer. This is used for display purposes
+            only.
           type: string
         effectiveDateBegin:
           description: Effective date of certificate
           format: date
           type: string
         exemptionNumber:
-          description: Certificate exemption number
+          description: Certificate exemption number. This is used for display purposes
+            only.
           type: string
         notes:
-          description: Optional internal notes
+          description: Optional internal notes.
           type: string
         certificateFile:
           $ref: '#/components/schemas/CustomerCertificateFile'
         jurises:
+          description: Jurisdictions for which certificate applies
           items:
             $ref: '#/components/schemas/CustomerCertificateJuris'
           type: array
@@ -743,12 +1029,14 @@ components:
     TransactionLineItem:
       example:
         amount: -2147483648
+        isTaxIncludedInAmount: true
+        quantity: quantity
         productExternalId: productExternalId
         id: id
       properties:
         id:
-          description: "Identifier for the line item. Is saved by Anrok, but not used\
-            \ for anything by Anrok."
+          description: "Optional identifier for the line item. This is saved by Anrok\
+            \ and returned in the response, but not used for anything by Anrok."
           type: string
         productExternalId:
           description: A product ID that has already been defined in the Anrok UI
@@ -757,37 +1045,50 @@ components:
           type: string
         amount:
           description: The sale price in the smallest denomination of the currency
-            (e.g. cents or pennies)
+            (e.g. cents or pennies).
           maximum: 100000000000
           minimum: -100000000000
           type: integer
+        isTaxIncludedInAmount:
+          description: Whether the line item already includes tax in the amount.
+          type: boolean
+        quantity:
+          description: "The quantity of the line item, as a string (e.g. `3` or `0.5`)."
+          type: string
       required:
       - amount
       - productExternalId
-    CustomerInternationalAddress:
+    CustomerAddress:
+      example:
+        country: country
+        city: city
+        postalCode: postalCode
+        region: region
+        line1: line1
       properties:
         country:
           description: The country's full name or 2-letter ISO code
-          type: string
           nullable: true
+          type: string
         line1:
           description: The "delivery line" of the address
-          type: string
           nullable: true
+          type: string
         city:
           description: City or town name
-          type: string
           nullable: true
+          type: string
         region:
           description: "Other principal subdivision (i.e. province, state, county)"
-          type: string
           nullable: true
+          type: string
         postalCode:
           description: Postal code
-          type: string
           nullable: true
-      title: International address format
-    CustomerUsAddress:
+          type: string
+      title: Address
+    CustomerLegacyUsOnlyAddress:
+      deprecated: true
       example:
         country: us
         line1: 123 Main St
@@ -801,23 +1102,23 @@ components:
           type: string
         line1:
           description: The "delivery line" of the address
-          type: string
           nullable: true
+          type: string
         city:
           description: The standard USPS format
-          type: string
           nullable: true
+          type: string
         state:
           description: The standard USPS format
-          type: string
           nullable: true
+          type: string
         zipCode:
           description: The standard USPS format
-          type: string
           nullable: true
+          type: string
       required:
       - country
-      title: US address format
+      title: Legacy US only address
     CustomerTaxId:
       description: The customer VAT registration number for a non-US country
       example:
@@ -836,30 +1137,10 @@ components:
       required:
       - type
       - value
-    CreateEphemeralTransaction:
-      example:
-        lineItems:
-        - amount: -2147483648
-          productExternalId: productExternalId
-          id: id
-        - amount: -2147483648
-          productExternalId: productExternalId
-          id: id
-        customerAddress: null
-        accountingDate: 2017-07-21
-        accountingTimeZone: UTC
-        customerId: customerId
-        customerTaxIds:
-        - type: genericVatNumber
-          value: value
-        - type: genericVatNumber
-          value: value
-        accountingTime: 2017-07-21T17:32:28Z
-        currencyCode: currencyCode
-        taxDate: 2017-07-21
-        customerName: customerName
+    Transaction:
       properties:
         lineItems:
+          description: The line items in the transaction.
           items:
             $ref: '#/components/schemas/TransactionLineItem'
           type: array
@@ -869,21 +1150,18 @@ components:
           minLength: 3
           type: string
         customerAddress:
-          $ref: '#/components/schemas/CreateEphemeralTransaction_customerAddress'
-        customerId:
-          description: |
-            The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate.
-            - If customerId is provided without customerName, that customer object must already exist in Anrok.
-            - If both customerId and customerName are provided, the customer object will be created if it is not already present.
-            - Customer IDs are unique across the entire seller account.
-          type: string
+          $ref: '#/components/schemas/Transaction_customerAddress'
         customerName:
-          description: The name of the customer
+          description: The name of the customer. This is used for display purposes
+            only.
           type: string
         customerTaxIds:
+          description: Tax IDs for the customer receiving the product
           items:
             $ref: '#/components/schemas/CustomerTaxId'
           type: array
+        shipFromAddress:
+          $ref: '#/components/schemas/Transaction_shipFromAddress'
         accountingDate:
           description: "The date that this transaction occurred, for accounting purposes.\
             \ Accounting date will typically correspond to the invoice date. This\
@@ -893,17 +1171,17 @@ components:
           type: string
         accountingTime:
           description: "The time that this transaction occurred, for accounting purposes.\
-            \ If accountingDate is not provided, accountingTime is required to compute\
-            \ an accounting date for the transaction."
+            \ If `accountingDate` is not provided, `accountingTime` is required to\
+            \ compute an accounting date for the transaction."
           example: 2017-07-21T17:32:28Z
           format: date-time
           type: string
         accountingTimeZone:
           description: "A “tz database” string used to compute an accounting date\
-            \ from the request's accountingTime. The request cannot provide both an\
-            \ accountingDate and an accountingTimeZone. If accountingTime is provided\
-            \ without specifying an accountingTimeZone, the time zone configured on\
-            \ the seller account will be used."
+            \ from the request's `accountingTime`. The request cannot provide both\
+            \ an `accountingDate` and an `accountingTimeZone`. If `accountingTime`\
+            \ is provided without specifying an `accountingTimeZone`, the time zone\
+            \ configured on the seller account will be used."
           enum:
           - UTC
           - America/New_York
@@ -912,10 +1190,31 @@ components:
           - America/Los_Angeles
           - America/Anchorage
           - Pacific/Honolulu
+          - Australia/Perth
+          - Australia/Adelaide
+          - Australia/Darwin
+          - Australia/Brisbane
+          - Australia/Sydney
+          - America/Halifax
+          - America/Toronto
+          - America/Winnipeg
+          - America/Regina
+          - America/Edmonton
+          - America/Vancouver
+          - Europe/Berlin
+          - Europe/Brussels
+          - Europe/Dublin
+          - Europe/Helsinki
+          - Europe/London
+          - Europe/Paris
+          - Europe/Rome
+          - Europe/Stockholm
+          - Asia/Tokyo
+          - Asia/Singapore
           type: string
         taxDate:
           description: "The date to use for tax calculations. If omitted, Anrok will\
-            \ use the the minimum of the accounting date and two days in the future."
+            \ use the the accounting date."
           example: 2017-07-21
           format: date
           type: string
@@ -925,8 +1224,10 @@ components:
       - lineItems
     CreateOrUpdateTransaction:
       allOf:
-      - $ref: '#/components/schemas/CreateEphemeralTransaction'
+      - $ref: '#/components/schemas/Transaction'
       - properties:
+          customerId:
+            $ref: '#/components/schemas/CustomerId'
           id:
             description: The ID of the new transaction. This must be unique across
               the entire seller account. This is typically the billing system's invoice
@@ -934,46 +1235,280 @@ components:
             type: string
         required:
         - id
+      example:
+        lineItems:
+        - amount: -2147483648
+          isTaxIncludedInAmount: true
+          quantity: quantity
+          productExternalId: productExternalId
+          id: id
+        - amount: -2147483648
+          isTaxIncludedInAmount: true
+          quantity: quantity
+          productExternalId: productExternalId
+          id: id
+        customerAddress:
+          country: country
+          city: city
+          postalCode: postalCode
+          region: region
+          line1: line1
+        accountingDate: 2017-07-21
+        shipFromAddress:
+          country: country
+          city: city
+          postalCode: postalCode
+          region: region
+          line1: line1
+        accountingTimeZone: UTC
+        customerTaxIds:
+        - type: genericVatNumber
+          value: value
+        - type: genericVatNumber
+          value: value
+        customerId: null
+        accountingTime: 2017-07-21T17:32:28Z
+        id: id
+        currencyCode: currencyCode
+        taxDate: 2017-07-21
+        customerName: customerName
+    NotTaxedReason:
+      example:
+        reason:
+          type: reverseCharge
+        type: exempt
+      properties:
+        type:
+          description: The reason a line item is not taxed.
+          enum:
+          - exempt
+          - jurisHasNoTax
+          - notCollecting
+          - productNotTaxed
+          type: string
+        reason:
+          $ref: '#/components/schemas/NotTaxedReason_reason'
     CreateEphemeralTransactionSuccess:
       example:
         lineItems:
-        - taxAmountToCollect: 6
-        - taxAmountToCollect: 6
+        - taxAmountToCollect: 1
+          id: id
+          preTaxAmount: preTaxAmount
+          jurises:
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+        - taxAmountToCollect: 1
+          id: id
+          preTaxAmount: preTaxAmount
+          jurises:
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
         taxAmountToCollect: 0
+        jurisSummaries:
+        - notTaxedReasons:
+          - reason:
+              type: reverseCharge
+            type: exempt
+          - reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+        - notTaxedReasons:
+          - reason:
+              type: reverseCharge
+            type: exempt
+          - reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+        preTaxAmount: preTaxAmount
       properties:
         taxAmountToCollect:
           description: "The total tax amount to collect from the customer, in the\
-            \ smallest denomination of the currency (e.g. cents or pennies)"
+            \ smallest denomination of the currency (e.g. cents or pennies)."
           format: int64
           type: integer
         lineItems:
+          description: "The tax amount to collect, pre-tax amount, and taxes by jurisdiction\
+            \ for each line item. Line items are returned in the same order they are\
+            \ received."
           items:
             $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner'
           type: array
+        preTaxAmount:
+          description: "The total pre-tax amount for the transaction, in the smallest\
+            \ denomination of the currency (e.g. cents or pennies)."
+          format: Decimal
+          type: string
+        jurisSummaries:
+          description: "For each jurisdiction, a summary of the reasons that the line\
+            \ items are not taxed, or null if some items are taxed."
+          items:
+            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_jurisSummaries_inner'
+          type: array
     CreateOrUpdateTransactionSuccess:
       allOf:
-      - $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
       - properties:
           version:
             description: The transaction version
             format: int32
             type: integer
+      - $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
+      example:
+        lineItems:
+        - taxAmountToCollect: 1
+          id: id
+          preTaxAmount: preTaxAmount
+          jurises:
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+        - taxAmountToCollect: 1
+          id: id
+          preTaxAmount: preTaxAmount
+          jurises:
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+          - notTaxedReason:
+              reason:
+                type: reverseCharge
+              type: exempt
+            name: name
+            taxes:
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+            - taxableAmount: taxableAmount
+              taxRate: taxRate
+              taxAmount: taxAmount
+              taxName: taxName
+        taxAmountToCollect: 6
+        jurisSummaries:
+        - notTaxedReasons:
+          - reason:
+              type: reverseCharge
+            type: exempt
+          - reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+        - notTaxedReasons:
+          - reason:
+              type: reverseCharge
+            type: exempt
+          - reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+        preTaxAmount: preTaxAmount
+        version: 0
     CreateTransactionCannotComputeTaxAmount:
       description: Error computing tax amount to be collected
+      example:
+        type: accountingTimeZoneNotSetForSeller
       properties:
         type:
           enum:
-          - taxDateTooFarInFuture
-          - productExternalIdUnknown
-          - customerAddressCountryNotSupported
-          - customerAddressCouldNotResolve
           - accountingTimeZoneNotSetForSeller
           - accountingTimeZoneNotSupported
-          - externalServiceError
-          - customerIdNotFound
-          - taxDateTooFarInPast
           - currencyCodeNotSupported
-          - transactionFrozenForFiling
+          - customerAddressCouldNotResolve
+          - customerIdNotFound
+          - externalServiceError
+          - jurisNotFound
+          - productExternalIdUnknown
+          - productTaxCategoryNotSupportedForJuris
+          - taxDateTooFarInFuture
           type: string
     CreateTransactionCannotUpdate:
       description: Error updating transaction
@@ -982,6 +1517,99 @@ components:
           enum:
           - transactionFrozenForFiling
           type: string
+    CreateEphemeralTransaction:
+      allOf:
+      - $ref: '#/components/schemas/Transaction'
+      - properties:
+          customerId:
+            description: |
+              The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate.
+              - If customerId is provided without customerName, that customer object must
+                already exist in Anrok.
+              - Customer IDs are unique across the entire seller account.
+            type: string
+      example:
+        lineItems:
+        - amount: -2147483648
+          isTaxIncludedInAmount: true
+          quantity: quantity
+          productExternalId: productExternalId
+          id: id
+        - amount: -2147483648
+          isTaxIncludedInAmount: true
+          quantity: quantity
+          productExternalId: productExternalId
+          id: id
+        customerAddress:
+          country: country
+          city: city
+          postalCode: postalCode
+          region: region
+          line1: line1
+        accountingDate: 2017-07-21
+        shipFromAddress:
+          country: country
+          city: city
+          postalCode: postalCode
+          region: region
+          line1: line1
+        accountingTimeZone: UTC
+        customerTaxIds:
+        - type: genericVatNumber
+          value: value
+        - type: genericVatNumber
+          value: value
+        customerId: customerId
+        accountingTime: 2017-07-21T17:32:28Z
+        currencyCode: currencyCode
+        taxDate: 2017-07-21
+        customerName: customerName
+    ValidateTaxId:
+      example:
+        customerAddress:
+          country: country
+          city: city
+          postalCode: postalCode
+          region: region
+          line1: line1
+        customerTaxIds:
+        - value: value
+        - value: value
+      properties:
+        customerAddress:
+          $ref: '#/components/schemas/CustomerAddress'
+        customerTaxIds:
+          description: The tax IDs to validate.
+          items:
+            $ref: '#/components/schemas/ValidateTaxId_customerTaxIds_inner'
+          type: array
+      required:
+      - customerAddress
+      - customerTaxIds
+    ValidateTaxIdSuccess:
+      example:
+        jurises:
+        - taxIdNames:
+            name: name
+            abbreviation: abbreviation
+          validTaxIds:
+          - value: value
+          - value: value
+          name: name
+        - taxIdNames:
+            name: name
+            abbreviation: abbreviation
+          validTaxIds:
+          - value: value
+          - value: value
+          name: name
+      properties:
+        jurises:
+          description: List of applicable taxable jurisdictions that require tax ID
+            collection/validation based on the customer address.
+          items:
+            $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner'
+          type: array
     certificatesCreate_200_response:
       example:
         id: id
@@ -990,14 +1618,18 @@ components:
           description: Certificate ID
           type: string
     certificatesCreate_409_response:
+      example:
+        type: duplicateJurisIds
       properties:
         type:
           enum:
           - duplicateJurisIds
-          - fileBadFormat
           - customerIdNotFound
+          - fileTypeNotSupported
           type: string
     certificatesArchive_409_response:
+      example:
+        type: certificateIdNotFound
       properties:
         type:
           enum:
@@ -1007,13 +1639,13 @@ components:
       oneOf:
       - $ref: '#/components/schemas/CreateTransactionCannotComputeTaxAmount'
       - $ref: '#/components/schemas/CreateTransactionCannotUpdate'
-    transactionsCreateRefund_request:
+    transactionsCreateNegation_request:
       properties:
         originalTransactionId:
-          description: The ID of the transaction you want to create a refund of
+          description: The ID of the transaction you want to negate.
           type: string
         newTransactionId:
-          description: The ID for the new transaction
+          description: The ID for the new negated transaction.
           type: string
         originalTransactionExpectedVersion:
           description: The expected transaction version. The refund will fail if this
@@ -1031,6 +1663,8 @@ components:
           format: int32
           type: integer
     transactionsVoid_409_response:
+      example:
+        type: transactionIdNotFound
       properties:
         type:
           enum:
@@ -1039,6 +1673,8 @@ components:
           - transactionFrozenForFiling
           type: string
     productIdMappingsList_409_response:
+      example:
+        type: integrationIdNotFound
       properties:
         type:
           enum:
@@ -1047,21 +1683,23 @@ components:
     productIdMappingsAdd_request:
       properties:
         sourceId:
-          description: Source Product ID from billing system.
+          description: Source product ID from billing system.
           type: string
         targetId:
-          description: Target Product ID on Anrok. This product must already exist
+          description: Target product ID on Anrok. This product must already exist
             in Anrok.
           type: string
         shouldOverwrite:
           default: false
-          description: Whether this request should override an existing Source ID
-            mapping
+          description: Whether this request should override an existing `sourceId`
+            mapping.
           type: boolean
       required:
       - sourceId
       - targetId
     productIdMappingsAdd_409_response:
+      example:
+        type: integrationIdNotFound
       properties:
         type:
           enum:
@@ -1069,32 +1707,240 @@ components:
           - sourceIdAlreadyMapped
           - targetIdNotFound
           type: string
-    CreateEphemeralTransaction_customerAddress:
+    taxIdsValidate_409_response:
+      example:
+        type: customerAddressCouldNotResolve
+      properties:
+        type:
+          enum:
+          - customerAddressCouldNotResolve
+          - externalServiceError
+          - validationNotEnabled
+          - validationNotSupportedForCountry
+          type: string
+    Transaction_customerAddress:
       anyOf:
-      - $ref: '#/components/schemas/CustomerInternationalAddress'
-      - $ref: '#/components/schemas/CustomerUsAddress'
+      - $ref: '#/components/schemas/CustomerAddress'
+      - $ref: '#/components/schemas/CustomerLegacyUsOnlyAddress'
       description: "The address where the product will be delivered or used. This\
         \ address determines the taxing jurisdictions and rates for destination-based\
         \ sourcing. For SaaS companies, this is typically the billing address. All\
         \ address fields are optional: fields can be omitted or have null value, but\
         \ empty strings are not allowed. Anrok will return an error if the address\
         \ does not have enough information to determine the top-level taxing jurisdiction\
-        \ with high confidence. International is a premium feature. Please contact\
-        \ support@anrok.com for more information."
+        \ with high confidence."
+    Transaction_shipFromAddress:
+      anyOf:
+      - $ref: '#/components/schemas/CustomerAddress'
+      - $ref: '#/components/schemas/CustomerLegacyUsOnlyAddress'
+      description: Optional. The address where the product will be shipped from. Some
+        jurisdictions calculate taxes based on the ship-from address. Defaults to
+        your Anrok business address if omitted.
+    NotTaxedReason_reason:
+      description: The detailed reason for an exemption. Only set when the type is
+        'exempt'.
+      example:
+        type: reverseCharge
+      properties:
+        type:
+          enum:
+          - reverseCharge
+          - customerExempt
+          - transactionExempt
+          type: string
+    CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner_taxes_inner:
+      example:
+        taxableAmount: taxableAmount
+        taxRate: taxRate
+        taxAmount: taxAmount
+        taxName: taxName
+      properties:
+        taxName:
+          description: The name or abbreviation of the tax type (e.g. "VAT" or "Tax").
+          type: string
+        taxableAmount:
+          description: "The amount on which tax is calculated, in the smallest denomination\
+            \ of the currency (e.g. cents or pennies)."
+          format: Decimal
+          type: string
+        taxAmount:
+          description: "The amount of tax, in the smallest denomination of the currency\
+            \ (e.g. cents or pennies)."
+          format: Decimal
+          type: string
+        taxRate:
+          description: "The tax rate, between 0 and 1. Make sure to include the taxableAmount\
+            \ in your tax rate calculations."
+          format: Decimal
+          type: string
+    CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner:
+      example:
+        notTaxedReason:
+          reason:
+            type: reverseCharge
+          type: exempt
+        name: name
+        taxes:
+        - taxableAmount: taxableAmount
+          taxRate: taxRate
+          taxAmount: taxAmount
+          taxName: taxName
+        - taxableAmount: taxableAmount
+          taxRate: taxRate
+          taxAmount: taxAmount
+          taxName: taxName
+      properties:
+        name:
+          description: The name of the jurisdiction.
+          type: string
+        notTaxedReason:
+          $ref: '#/components/schemas/NotTaxedReason'
+        taxes:
+          description: "A list of taxes for the line item in the jurisdiction, or\
+            \ null if it is not taxed."
+          items:
+            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner_taxes_inner'
+          nullable: true
+          type: array
     CreateEphemeralTransactionSuccess_lineItems_inner:
       example:
-        taxAmountToCollect: 6
+        taxAmountToCollect: 1
+        id: id
+        preTaxAmount: preTaxAmount
+        jurises:
+        - notTaxedReason:
+            reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+          taxes:
+          - taxableAmount: taxableAmount
+            taxRate: taxRate
+            taxAmount: taxAmount
+            taxName: taxName
+          - taxableAmount: taxableAmount
+            taxRate: taxRate
+            taxAmount: taxAmount
+            taxName: taxName
+        - notTaxedReason:
+            reason:
+              type: reverseCharge
+            type: exempt
+          name: name
+          taxes:
+          - taxableAmount: taxableAmount
+            taxRate: taxRate
+            taxAmount: taxAmount
+            taxName: taxName
+          - taxableAmount: taxableAmount
+            taxRate: taxRate
+            taxAmount: taxAmount
+            taxName: taxName
       properties:
+        id:
+          description: "Identifier for the line item that was provided in the request.\
+            \ If no identifier was provided, this is null."
+          nullable: true
+          type: string
         taxAmountToCollect:
           description: "The tax amount to collect for the line item, in the smallest\
-            \ denomination of the currency (e.g. cents or pennies)"
+            \ denomination of the currency (e.g. cents or pennies)."
           format: int64
           type: integer
+        preTaxAmount:
+          description: "The pre-tax amount for the line item, in the smallest denomination\
+            \ of the currency (e.g. cents or pennies)."
+          format: Decimal
+          type: string
+        jurises:
+          description: "For each jurisdiction, either a list of taxes for the line\
+            \ item, or a reason that the line item is not taxed."
+          items:
+            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner'
+          type: array
+    CreateEphemeralTransactionSuccess_jurisSummaries_inner:
+      example:
+        notTaxedReasons:
+        - reason:
+            type: reverseCharge
+          type: exempt
+        - reason:
+            type: reverseCharge
+          type: exempt
+        name: name
+      properties:
+        name:
+          description: The name of the jurisdiction.
+          type: string
+        notTaxedReasons:
+          items:
+            $ref: '#/components/schemas/NotTaxedReason'
+          nullable: true
+          type: array
+    ValidateTaxId_customerTaxIds_inner:
+      example:
+        value: value
+      properties:
+        value:
+          description: The tax ID to validate.
+          type: string
+      required:
+      - value
+    ValidateTaxIdSuccess_jurises_inner_taxIdNames:
+      description: List of applicable tax IDs to collect/validate for the jurisdiction.
+      example:
+        name: name
+        abbreviation: abbreviation
+      properties:
+        name:
+          description: A user-friendly tax ID name.
+          type: string
+        abbreviation:
+          description: The tax ID abbreviation (if any).
+          nullable: true
+          type: string
+    ValidateTaxIdSuccess_jurises_inner_validTaxIds_inner:
+      example:
+        value: value
+      properties:
+        value:
+          description: The valid tax ID(s) from the request.
+          type: string
+    ValidateTaxIdSuccess_jurises_inner:
+      example:
+        taxIdNames:
+          name: name
+          abbreviation: abbreviation
+        validTaxIds:
+        - value: value
+        - value: value
+        name: name
+      properties:
+        name:
+          description: A user-friendly name for the jurisdiction.
+          type: string
+        taxIdNames:
+          $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner_taxIdNames'
+        validTaxIds:
+          description: A list of tax IDs from the API request that are valid in the
+            jurisdiction.
+          items:
+            $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner_validTaxIds_inner'
+          type: array
+    inline_object:
+      example:
+        type: transactionIdNotFound
+      properties:
+        type:
+          enum:
+          - transactionIdNotFound
+          - transactionExpectedVersionMismatch
+          - transactionIsAlreadyANegation
+          - duplicateTransactionId
+          type: string
   securitySchemes:
     http:
-      description: "The Anrok API uses API keys to authenticate requests. You can\
-        \ view and manage your API keys in [Anrok](https://app.anrok.com/-/api-keys).\
-        \ Use an Authorization header in the format `Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}`\
-        \ to authenticate Anrok API requests."
+      description: |
+        The Anrok API uses API keys to authenticate requests. You can view and manage your API keys in [Anrok](https://app.anrok.com/-/api-keys). Use an Authorization header in the format `Bearer {apiKey}` to authenticate Anrok API requests.
       scheme: Bearer
       type: http

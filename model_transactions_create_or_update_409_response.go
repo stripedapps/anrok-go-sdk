@@ -1,9 +1,9 @@
 /*
 Anrok API
 
-# API reference  The Anrok API server is accessible at “https://api.anrok.com”.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header “Authorization: Bearer {sellerId}/{apiKeyId}/secret.{apiKeySecret}”.  The default rate limit for a seller account is 10 API requests per second. 
+# API reference  The Anrok API server is accessible at `https://api.anrok.com`.  All requests are HTTP POSTs with JSON in the body.  Authentication is via an HTTP header `Authorization: Bearer {apiKey}`.  The default rate limit for a seller account is 10 API requests per second. 
 
-API version: 1.0.0
+API version: 1.1
 Contact: support@anrok.com
 */
 
@@ -14,6 +14,7 @@ package openapi
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/validator.v2"
 )
 
 // TransactionsCreateOrUpdate409Response - struct for TransactionsCreateOrUpdate409Response
@@ -48,7 +49,11 @@ func (dst *TransactionsCreateOrUpdate409Response) UnmarshalJSON(data []byte) err
 		if string(jsonCreateTransactionCannotComputeTaxAmount) == "{}" { // empty struct
 			dst.CreateTransactionCannotComputeTaxAmount = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.CreateTransactionCannotComputeTaxAmount); err != nil {
+				dst.CreateTransactionCannotComputeTaxAmount = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.CreateTransactionCannotComputeTaxAmount = nil
@@ -61,7 +66,11 @@ func (dst *TransactionsCreateOrUpdate409Response) UnmarshalJSON(data []byte) err
 		if string(jsonCreateTransactionCannotUpdate) == "{}" { // empty struct
 			dst.CreateTransactionCannotUpdate = nil
 		} else {
-			match++
+			if err = validator.Validate(dst.CreateTransactionCannotUpdate); err != nil {
+				dst.CreateTransactionCannotUpdate = nil
+			} else {
+				match++
+			}
 		}
 	} else {
 		dst.CreateTransactionCannotUpdate = nil
@@ -104,6 +113,20 @@ func (obj *TransactionsCreateOrUpdate409Response) GetActualInstance() (interface
 
 	if obj.CreateTransactionCannotUpdate != nil {
 		return obj.CreateTransactionCannotUpdate
+	}
+
+	// all schemas are nil
+	return nil
+}
+
+// Get the actual instance value
+func (obj TransactionsCreateOrUpdate409Response) GetActualInstanceValue() (interface{}) {
+	if obj.CreateTransactionCannotComputeTaxAmount != nil {
+		return *obj.CreateTransactionCannotComputeTaxAmount
+	}
+
+	if obj.CreateTransactionCannotUpdate != nil {
+		return *obj.CreateTransactionCannotUpdate
 	}
 
 	// all schemas are nil
