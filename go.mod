@@ -1,4 +1,4 @@
-module github.com/stripedapps/hubspot-go-sdk
+module github.com/stripedapps/anrok-go-sdk
 
 go 1.18
 
