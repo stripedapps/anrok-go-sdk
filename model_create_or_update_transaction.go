@@ -39,7 +39,7 @@ type CreateOrUpdateTransaction struct {
 	AccountingTime *time.Time `json:"accountingTime,omitempty"`
 	// A “tz database” string used to compute an accounting date from the request's `accountingTime`. The request cannot provide both an `accountingDate` and an `accountingTimeZone`. If `accountingTime` is provided without specifying an `accountingTimeZone`, the time zone configured on the seller account will be used.
 	AccountingTimeZone *string `json:"accountingTimeZone,omitempty"`
-	// The date to use for tax calculations. If omitted, Anrok will use the the accounting date.
+	// The date to use for tax calculations. If omitted, Anrok will use the accounting date.
 	TaxDate *string `json:"taxDate,omitempty"`
 	// The Anrok customer ID used to link transactions for the same customer and to look up tax exemption certificates for a customer. This is typically the billing system's customer ID with a prefix to disambiguate. - If customerId is provided without customerName, that customer object must   already exist in Anrok. - If both customerId and customerName are provided, the customer object will   be created if it is not already present. - Customer IDs are unique across the entire seller account. 
 	CustomerId *string `json:"customerId,omitempty"`

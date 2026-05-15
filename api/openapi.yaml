@@ -48,17 +48,13 @@ tags:
     While the above covers a standard invoice lifecycle, the Transactions API also includes endpoints for exceptional states like voiding and negating invoices, which are described below.
   name: Transactions
 - description: |
-    Distinct from Anrok's Transaction API, these endpoints enable you to manage
-    your Product IDs in Anrok via API. You may use these endpoints to supplement
-    your core integration, whether that's through our Transaction API or one of our
-    partner integrations. This API is designed to support you in dynamically
-    mapping new Products and viewing a comprehensive list of existing mappings.
-    Because we aim to keep your product list in Anrok minimal and focused on truly
-    distinct offerings, we use mappings to associate various products in your
-    billing system with the equivalent products in Anrok. This API enables you to
-    confirm that each product on any transaction seen by Anrok is mapped to a
-    defined product and will be assessed properly for taxability calculations as a
-    result.
+    The Anrok Product Mappings API endpoint allows you to dynamically map product IDs
+    for [Anrok-built billing system integrations](https://help-center.anrok.com/hc/en-us/articles/41966628275219-Anrok-integration-types#:~:text=Anrok%20API%20integration-,Anrok%2Dbuilt%20integrations,-These%20integrations%20are).
+    Note that this API endpoint is only used alongside an existing Anrok-built integration
+    and is not used for standalone product mappings. When using an Anrok-built billing
+    system integration, you can use this API endpoint to create many-to-1 mappings to
+    associate various products in your billing system with equivalent products that have
+    already been created in Anrok.
   name: Product mappings
 - description: "**The Anrok Tax ID Validation endpoint is a premium feature. Please\
     \ contact hello@anrok.com for more information to enable this on your Anrok seller\
@@ -68,6 +64,11 @@ tags:
     \ tax IDs and call the API endpoint again to validate them:\n\t- Anrok provides\
     \ a list of valid tax IDs for each applicable jurisdiction.\n"
   name: Tax ID validation
+- description: |
+    **The Filings endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.**
+
+    This endpoint can be used to fetch filings from Anrok.
+  name: Filings
 paths:
   /v1/seller/certificates/create:
     post:
@@ -87,14 +88,14 @@ paths:
               jurises:
               - jurisId: us-MA
             schema:
-              $ref: '#/components/schemas/CustomerCertificate'
+              $ref: "#/components/schemas/CustomerCertificate"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/certificatesCreate_200_response'
+                $ref: "#/components/schemas/certificatesCreate_200_response"
           description: OK
         "400":
           content:
@@ -112,10 +113,10 @@ paths:
               example:
                 type: duplicateJurisIds
               schema:
-                $ref: '#/components/schemas/certificatesCreate_409_response'
+                $ref: "#/components/schemas/certificatesCreate_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Create customer certificate
       tags:
       - Customer certificates
@@ -143,27 +144,27 @@ paths:
             }"
   /v1/seller/certificates/id:{certificateId}/archive:
     parameters:
-    - $ref: '#/components/parameters/CertificateId'
+    - $ref: "#/components/parameters/CertificateId"
     post:
       description: This endpoint is used to archive/invalidate a customer certificate.
       operationId: certificatesArchive
       parameters:
-      - $ref: '#/components/parameters/CertificateId'
+      - $ref: "#/components/parameters/CertificateId"
       requestBody:
-        $ref: '#/components/requestBodies/Empty'
+        $ref: "#/components/requestBodies/Empty"
       responses:
         "200":
-          $ref: '#/components/responses/EmptyResponse'
+          $ref: "#/components/responses/EmptyResponse"
         "409":
           content:
             application/json:
               example:
                 type: certificateIdNotFound
               schema:
-                $ref: '#/components/schemas/certificatesArchive_409_response'
+                $ref: "#/components/schemas/certificatesArchive_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Archive customer certificate
       tags:
       - Customer certificates
@@ -218,7 +219,7 @@ paths:
                 region: IL
                 postalCode: "60604"
             schema:
-              $ref: '#/components/schemas/CreateOrUpdateTransaction'
+              $ref: "#/components/schemas/CreateOrUpdateTransaction"
         required: true
       responses:
         "200":
@@ -274,23 +275,27 @@ paths:
                 - name: Denver (local)
                   notTaxedReasons: null
               schema:
-                $ref: '#/components/schemas/CreateOrUpdateTransactionSuccess'
+                $ref: "#/components/schemas/CreateOrUpdateTransactionSuccess"
           description: OK
         "400":
-          $ref: '#/components/responses/CreateTransactionBadRequest'
+          $ref: "#/components/responses/CreateTransactionBadRequest"
         "409":
           content:
             application/json:
               examples:
                 taxDateTooFarInFuture:
-                  $ref: '#/components/examples/ConflictTaxDateTooFarInFuture'
+                  $ref: "#/components/examples/ConflictTaxDateTooFarInFuture"
+                taxDateTooFarInPast:
+                  $ref: "#/components/examples/ConflictTaxDateTooFarInPast"
                 accoutingTimeZoneNotSetForSeller:
-                  $ref: '#/components/examples/ConflictAccountingTimeZoneNotSetForSeller'
+                  $ref: "#/components/examples/ConflictAccountingTimeZoneNotSetForSeller"
+                productExternalIdUnknown:
+                  $ref: "#/components/examples/ConflictProductExternalIdUnknown"
               schema:
-                $ref: '#/components/schemas/transactionsCreateOrUpdate_409_response'
+                $ref: "#/components/schemas/transactionsCreateOrUpdate_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Create or update transaction
       tags:
       - Transactions
@@ -381,7 +386,7 @@ paths:
                 region: IL
                 postalCode: "60604"
             schema:
-              $ref: '#/components/schemas/CreateEphemeralTransaction'
+              $ref: "#/components/schemas/CreateEphemeralTransaction"
         required: true
       responses:
         "200":
@@ -436,23 +441,27 @@ paths:
                 - name: Denver (local)
                   notTaxedReasons: null
               schema:
-                $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
+                $ref: "#/components/schemas/CreateEphemeralTransactionSuccess"
           description: OK
         "400":
-          $ref: '#/components/responses/CreateTransactionBadRequest'
+          $ref: "#/components/responses/CreateTransactionBadRequest"
         "409":
           content:
             application/json:
               examples:
                 taxDateTooFarInFuture:
-                  $ref: '#/components/examples/ConflictTaxDateTooFarInFuture'
+                  $ref: "#/components/examples/ConflictTaxDateTooFarInFuture"
+                taxDateTooFarInPast:
+                  $ref: "#/components/examples/ConflictTaxDateTooFarInPast"
                 accoutingTimeZoneNotSetForSeller:
-                  $ref: '#/components/examples/ConflictAccountingTimeZoneNotSetForSeller'
+                  $ref: "#/components/examples/ConflictAccountingTimeZoneNotSetForSeller"
+                productExternalIdUnknown:
+                  $ref: "#/components/examples/ConflictProductExternalIdUnknown"
               schema:
-                $ref: '#/components/schemas/CreateTransactionCannotComputeTaxAmount'
+                $ref: "#/components/schemas/CreateTransactionCannotComputeTaxAmount"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Create ephemeral transaction
       tags:
       - Transactions
@@ -508,16 +517,16 @@ paths:
         transaction. The sale prices and tax amounts will add up to zero.
       operationId: transactionsCreateNegation
       requestBody:
-        $ref: '#/components/requestBodies/CreateNegation'
+        $ref: "#/components/requestBodies/CreateNegation"
       responses:
         "200":
-          $ref: '#/components/responses/EmptyResponse'
+          $ref: "#/components/responses/EmptyResponse"
         "400":
-          $ref: '#/components/responses/CreateNegationBadRequest'
+          $ref: "#/components/responses/CreateNegationBadRequest"
         "409":
-          $ref: '#/components/responses/CreateNegationConflict'
+          $ref: "#/components/responses/CreateNegationConflict"
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Create negation
       tags:
       - Transactions
@@ -535,13 +544,13 @@ paths:
             }'
   /v1/seller/transactions/id:{transactionId}/void:
     parameters:
-    - $ref: '#/components/parameters/TransactionId'
+    - $ref: "#/components/parameters/TransactionId"
     post:
       description: Mark a previously-created transaction as void. It will no longer
         be included in returns or sales totals.
       operationId: transactionsVoid
       parameters:
-      - $ref: '#/components/parameters/TransactionId'
+      - $ref: "#/components/parameters/TransactionId"
       requestBody:
         content:
           application/json:
@@ -554,21 +563,21 @@ paths:
                 value:
                   transactionExpectedVersion: 1
             schema:
-              $ref: '#/components/schemas/transactionsVoid_request'
+              $ref: "#/components/schemas/transactionsVoid_request"
         required: true
       responses:
         "200":
-          $ref: '#/components/responses/EmptyResponse'
+          $ref: "#/components/responses/EmptyResponse"
         "409":
           content:
             application/json:
               example:
                 type: transactionIdNotFound
               schema:
-                $ref: '#/components/schemas/transactionsVoid_409_response'
+                $ref: "#/components/schemas/transactionsVoid_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Void transaction
       tags:
       - Transactions
@@ -581,16 +590,50 @@ paths:
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $apiToken" \
             -d '{}'
+  /v1/seller/transactions/list:
+    post:
+      description: |
+        Lists transactions in Anrok. These can be filtered by the time they were last modified or by the filing they are associated with.
+        This endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.
+      operationId: transactionsList
+      requestBody:
+        $ref: "#/components/requestBodies/ListTransactions"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListTransactionsSuccess"
+        "400":
+          $ref: "#/components/responses/ListTransactionsBadRequest"
+        "409":
+          $ref: "#/components/responses/ListTransactionsConflict"
+        "429":
+          $ref: "#/components/responses/RateLimit"
+      summary: List transactions
+      tags:
+      - Transactions
+      x-codeSamples:
+      - lang: cURL
+        source: |
+          apiToken='sxxx/saxxx/secret.xxx'
+
+          curl -X POST https://api.anrok.com/v1/seller/transactions/list \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $apiToken" \
+            -d '{
+              "filter": {
+                  "type": "lastModifiedAfter",
+                  "value": "2025-08-08T16:00:00.000Z"
+              }
+            }'
   /v1/seller/integrations/id:{integrationId}/productIdMapping/list:
     parameters:
-    - $ref: '#/components/parameters/IntegrationId'
+    - $ref: "#/components/parameters/IntegrationId"
     post:
       description: Lists all Product ID mappings for this integration.
       operationId: productIdMappingsList
       parameters:
-      - $ref: '#/components/parameters/IntegrationId'
+      - $ref: "#/components/parameters/IntegrationId"
       requestBody:
-        $ref: '#/components/requestBodies/Empty'
+        $ref: "#/components/requestBodies/Empty"
       responses:
         "200":
           content:
@@ -610,21 +653,21 @@ paths:
               example:
                 type: integrationIdNotFound
               schema:
-                $ref: '#/components/schemas/productIdMappingsList_409_response'
+                $ref: "#/components/schemas/productIdMappingsList_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: List product mappings
       tags:
       - Product mappings
   /v1/seller/integrations/id:{integrationId}/productIdMapping/add:
     parameters:
-    - $ref: '#/components/parameters/IntegrationId'
+    - $ref: "#/components/parameters/IntegrationId"
     post:
       description: Adds a product ID mapping for this integration.
       operationId: productIdMappingsAdd
       parameters:
-      - $ref: '#/components/parameters/IntegrationId'
+      - $ref: "#/components/parameters/IntegrationId"
       requestBody:
         content:
           application/json:
@@ -632,7 +675,7 @@ paths:
               sourceId: billing system ID
               targetId: anrok ID
             schema:
-              $ref: '#/components/schemas/productIdMappingsAdd_request'
+              $ref: "#/components/schemas/productIdMappingsAdd_request"
         required: true
       responses:
         "200":
@@ -648,10 +691,10 @@ paths:
               example:
                 type: targetIdNotFound
               schema:
-                $ref: '#/components/schemas/productIdMappingsAdd_409_response'
+                $ref: "#/components/schemas/productIdMappingsAdd_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Add product mapping
       tags:
       - Product mappings
@@ -674,7 +717,7 @@ paths:
               - value: "123456789"
               - value: "987654321"
             schema:
-              $ref: '#/components/schemas/ValidateTaxId'
+              $ref: "#/components/schemas/ValidateTaxId"
         required: true
       responses:
         "200":
@@ -695,7 +738,7 @@ paths:
                   validTaxIds:
                   - value: "987654321"
               schema:
-                $ref: '#/components/schemas/ValidateTaxIdSuccess'
+                $ref: "#/components/schemas/ValidateTaxIdSuccess"
           description: OK
         "400":
           content:
@@ -713,10 +756,10 @@ paths:
               example:
                 type: customerAddressCouldNotResolve
               schema:
-                $ref: '#/components/schemas/taxIdsValidate_409_response'
+                $ref: "#/components/schemas/taxIdsValidate_409_response"
           description: Conflict
         "429":
-          $ref: '#/components/responses/RateLimit'
+          $ref: "#/components/responses/RateLimit"
       summary: Validate tax IDs
       tags:
       - Tax ID validation
@@ -740,16 +783,59 @@ paths:
                 "value": "123456789"
               }]
             }'
+  /v1/seller/filings/list:
+    post:
+      description: |
+        Lists filings in Anrok. These can be filtered by the jurisdiction ID and the filing period end date.
+        This endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.
+      operationId: filingsList
+      requestBody:
+        $ref: "#/components/requestBodies/ListFilings"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListFilingsSuccess"
+        "400":
+          $ref: "#/components/responses/ListFilingsBadRequest"
+        "409":
+          $ref: "#/components/responses/ListFilingsConflict"
+        "429":
+          $ref: "#/components/responses/RateLimit"
+      summary: List filings
+      tags:
+      - Filings
+      x-codeSamples:
+      - lang: cURL
+        source: |
+          apiToken='sxxx/saxxx/secret.xxx'
+
+          curl -X POST https://api.anrok.com/v1/seller/filings/list \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $apiToken" \
+            -d '{
+              "filter": {
+                  "jurisId": "us-MA",
+                  "periodEndDateRangeInclusive": "2025-01..2025-03"
+              }
+            }'
 components:
   examples:
     ConflictTaxDateTooFarInFuture:
       summary: Anrok accepts dates up to 31 days in the future.
       value:
         type: taxDateTooFarInFuture
+    ConflictTaxDateTooFarInPast:
+      summary: "Anrok only accepts dates on or after Jan 1, 1999."
+      value:
+        type: taxDateTooFarInPast
     ConflictAccountingTimeZoneNotSetForSeller:
       summary: Cannot determine accounting date from accountingTime without time zone
       value:
         type: accountingTimeZoneNotSetForSeller
+    ConflictProductExternalIdUnknown:
+      summary: Product IDs must have already been configured in Anrok
+      value:
+        type: productExternalIdUnknown
+        productExternalId: my-new-product-id
   parameters:
     CertificateId:
       description: ID of the certificate you want to archive.
@@ -796,7 +882,58 @@ components:
             originalTransactionId: stripe:in_1JSW342eZvKYlo2C
             newTransactionId: stripe:in_1JSW342eZvKYlo2C_refund
           schema:
-            $ref: '#/components/schemas/transactionsCreateNegation_request'
+            $ref: "#/components/schemas/transactionsCreateNegation_request"
+      required: true
+    ListTransactions:
+      content:
+        application/json:
+          examples:
+            lastModifiedAfter:
+              summary: Filter transactions by last modified after
+              value:
+                type: lastModifiedAfter
+                value: 2025-01-01T00:00:00Z
+            filingInfo:
+              summary: Filter transactions by filing info
+              value:
+                type: filingInfo
+                value:
+                  filingAssociationStatus: associated
+                  jurisId: us-MA
+                  jurisFilingId: 2025-01
+            cursor:
+              summary: Cursor-based pagination
+              value:
+                cursor: eyJleGFtcGxlIjoidGhpcyBpcyBhbiBleGFtcGxlIGN1cnNvciJ9
+                limit: 5
+          schema:
+            $ref: "#/components/schemas/transactionsList_request"
+      required: true
+    ListFilings:
+      content:
+        application/json:
+          examples:
+            jurisIdFilter:
+              summary: Filter filings by juris
+              value:
+                jurisId: us-MA
+            periodEndDateRangeInclusiveFilter:
+              summary: Filter filings by filing period end date range
+              value:
+                periodEndDateRangeInclusive: 2025-01..2025-03
+            jurisIdAndPeriodEndDateRangeInclusiveFilter:
+              summary: Filter filings by jurisdiction ID and filing period end date
+                range
+              value:
+                jurisId: us-MA
+                periodEndDateRangeInclusive: 2025-01..2025-03
+            cursor:
+              summary: Cursor-based pagination
+              value:
+                cursor: eyJleGFtcGxlIjoidGhpcyBpcyBhbiBleGFtcGxlIGN1cnNvciJ9
+                limit: 5
+          schema:
+            $ref: "#/components/schemas/filingsList_request"
       required: true
   responses:
     RateLimit:
@@ -860,7 +997,96 @@ components:
           example:
             type: transactionExpectedVersionMismatch
           schema:
-            $ref: '#/components/schemas/inline_object'
+            $ref: "#/components/schemas/inline_object"
+      description: Conflict
+    ListTransactionsSuccess:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/inline_object_1"
+      description: OK
+    ListTransactionsBadRequest:
+      content:
+        text/plain:
+          examples:
+            invalidFilterProvided:
+              summary: Invalid filter
+              value: "Request body: \"filter\": Invalid input."
+            invalidLastModifiedAfterFilterValueProvided:
+              summary: Invalid lastModifiedAfter filter value
+              value: "Request body: \"filter\": \"value\": Invalid format; expecting\
+                \ \"YYYY-MM-DDTHH:mm:ss.dddZ\"."
+            invalidFilingInfoFilterValueProvided:
+              summary: Invalid filingInfo filter value
+              value: "Request body: \"filter\": \"value\": \"jurisId\": Invalid juris\
+                \ ID: \"invalid-juris-id\"."
+            invalidLimitProvided:
+              summary: Invalid limit
+              value: "Request body: \"limit\": Number must be less than or equal to\
+                \ 20."
+            cursorAndFilterBothProvided:
+              summary: Cursor and filter cannot both be provided
+              value: "Request body: cursor and filter cannot both be provided."
+          schema:
+            type: string
+      description: Bad Request
+    ListTransactionsConflict:
+      content:
+        application/json:
+          examples:
+            invalidCursor:
+              summary: Invalid cursor
+              value:
+                type: invalidCursor
+            listTransactionsApiNotEnabled:
+              summary: List transactions API not enabled
+              value:
+                type: listTransactionsApiNotEnabled
+          schema:
+            $ref: "#/components/schemas/inline_object_2"
+      description: Conflict
+    ListFilingsSuccess:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/inline_object_3"
+      description: OK
+    ListFilingsBadRequest:
+      content:
+        text/plain:
+          examples:
+            invalidJurisIdProvided:
+              summary: Invalid juris ID
+              value: "Request body: \"filter\": \"jurisId\": Invalid juris ID: \"\
+                fake-juris-id\""
+            invalidPeriodEndDateRangeInclusiveProvided:
+              summary: Invalid period end date range
+              value: "Request body: \"filter\": \"periodEndDateRangeInclusive\": Invalid\
+                \ period end date range: begin date comes after end date."
+            invalidLimitProvided:
+              summary: Invalid limit
+              value: "Request body: \"limit\": Number must be less than or equal to\
+                \ 100."
+            cursorAndFilterBothProvided:
+              summary: Cursor and filter cannot both be provided
+              value: "Request body: cursor and filter cannot both be provided."
+          schema:
+            type: string
+      description: Bad Request
+    ListFilingsConflict:
+      content:
+        application/json:
+          examples:
+            invalidCursor:
+              summary: Invalid cursor
+              value:
+                type: invalidCursor
+            listFilingsApiNotEnabled:
+              summary: List filings API not enabled
+              value:
+                type: listFilingsApiNotEnabled
+          schema:
+            $ref: "#/components/schemas/inline_object_4"
       description: Conflict
   schemas:
     CustomerId:
@@ -1015,11 +1241,11 @@ components:
           description: Optional internal notes.
           type: string
         certificateFile:
-          $ref: '#/components/schemas/CustomerCertificateFile'
+          $ref: "#/components/schemas/CustomerCertificateFile"
         jurises:
           description: Jurisdictions for which certificate applies
           items:
-            $ref: '#/components/schemas/CustomerCertificateJuris'
+            $ref: "#/components/schemas/CustomerCertificateJuris"
           type: array
       required:
       - certificateFile
@@ -1142,7 +1368,7 @@ components:
         lineItems:
           description: The line items in the transaction.
           items:
-            $ref: '#/components/schemas/TransactionLineItem'
+            $ref: "#/components/schemas/TransactionLineItem"
           type: array
         currencyCode:
           description: Three letter ISO currency code (case insensitive).
@@ -1150,7 +1376,7 @@ components:
           minLength: 3
           type: string
         customerAddress:
-          $ref: '#/components/schemas/Transaction_customerAddress'
+          $ref: "#/components/schemas/Transaction_customerAddress"
         customerName:
           description: The name of the customer. This is used for display purposes
             only.
@@ -1158,10 +1384,10 @@ components:
         customerTaxIds:
           description: Tax IDs for the customer receiving the product
           items:
-            $ref: '#/components/schemas/CustomerTaxId'
+            $ref: "#/components/schemas/CustomerTaxId"
           type: array
         shipFromAddress:
-          $ref: '#/components/schemas/Transaction_shipFromAddress'
+          $ref: "#/components/schemas/Transaction_shipFromAddress"
         accountingDate:
           description: "The date that this transaction occurred, for accounting purposes.\
             \ Accounting date will typically correspond to the invoice date. This\
@@ -1214,7 +1440,7 @@ components:
           type: string
         taxDate:
           description: "The date to use for tax calculations. If omitted, Anrok will\
-            \ use the the accounting date."
+            \ use the accounting date."
           example: 2017-07-21
           format: date
           type: string
@@ -1224,10 +1450,10 @@ components:
       - lineItems
     CreateOrUpdateTransaction:
       allOf:
-      - $ref: '#/components/schemas/Transaction'
+      - $ref: "#/components/schemas/Transaction"
       - properties:
           customerId:
-            $ref: '#/components/schemas/CustomerId'
+            $ref: "#/components/schemas/CustomerId"
           id:
             description: The ID of the new transaction. This must be unique across
               the entire seller account. This is typically the billing system's invoice
@@ -1287,7 +1513,7 @@ components:
           - productNotTaxed
           type: string
         reason:
-          $ref: '#/components/schemas/NotTaxedReason_reason'
+          $ref: "#/components/schemas/NotTaxedReason_reason"
     CreateEphemeralTransactionSuccess:
       example:
         lineItems:
@@ -1295,10 +1521,7 @@ components:
           id: id
           preTaxAmount: preTaxAmount
           jurises:
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1309,10 +1532,7 @@ components:
               taxRate: taxRate
               taxAmount: taxAmount
               taxName: taxName
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1327,10 +1547,7 @@ components:
           id: id
           preTaxAmount: preTaxAmount
           jurises:
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1341,10 +1558,7 @@ components:
               taxRate: taxRate
               taxAmount: taxAmount
               taxName: taxName
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1385,7 +1599,7 @@ components:
             \ for each line item. Line items are returned in the same order they are\
             \ received."
           items:
-            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner'
+            $ref: "#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner"
           type: array
         preTaxAmount:
           description: "The total pre-tax amount for the transaction, in the smallest\
@@ -1396,7 +1610,7 @@ components:
           description: "For each jurisdiction, a summary of the reasons that the line\
             \ items are not taxed, or null if some items are taxed."
           items:
-            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_jurisSummaries_inner'
+            $ref: "#/components/schemas/CreateEphemeralTransactionSuccess_jurisSummaries_inner"
           type: array
     CreateOrUpdateTransactionSuccess:
       allOf:
@@ -1405,17 +1619,14 @@ components:
             description: The transaction version
             format: int32
             type: integer
-      - $ref: '#/components/schemas/CreateEphemeralTransactionSuccess'
+      - $ref: "#/components/schemas/CreateEphemeralTransactionSuccess"
       example:
         lineItems:
         - taxAmountToCollect: 1
           id: id
           preTaxAmount: preTaxAmount
           jurises:
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1426,10 +1637,7 @@ components:
               taxRate: taxRate
               taxAmount: taxAmount
               taxName: taxName
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1444,10 +1652,7 @@ components:
           id: id
           preTaxAmount: preTaxAmount
           jurises:
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1458,10 +1663,7 @@ components:
               taxRate: taxRate
               taxAmount: taxAmount
               taxName: taxName
-          - notTaxedReason:
-              reason:
-                type: reverseCharge
-              type: exempt
+          - notTaxedReason: ""
             name: name
             taxes:
             - taxableAmount: taxableAmount
@@ -1495,6 +1697,7 @@ components:
     CreateTransactionCannotComputeTaxAmount:
       description: Error computing tax amount to be collected
       example:
+        productExternalId: productExternalId
         type: accountingTimeZoneNotSetForSeller
       properties:
         type:
@@ -1509,6 +1712,11 @@ components:
           - productExternalIdUnknown
           - productTaxCategoryNotSupportedForJuris
           - taxDateTooFarInFuture
+          - taxDateTooFarInPast
+          type: string
+        productExternalId:
+          description: The product external ID that was not configured in Anrok. Only
+            set if type is 'productExternalIdUnknown'.
           type: string
     CreateTransactionCannotUpdate:
       description: Error updating transaction
@@ -1519,7 +1727,7 @@ components:
           type: string
     CreateEphemeralTransaction:
       allOf:
-      - $ref: '#/components/schemas/Transaction'
+      - $ref: "#/components/schemas/Transaction"
       - properties:
           customerId:
             description: |
@@ -1564,24 +1772,642 @@ components:
         currencyCode: currencyCode
         taxDate: 2017-07-21
         customerName: customerName
+    LastModifiedAfterFilter:
+      properties:
+        type:
+          enum:
+          - lastModifiedAfter
+          type: string
+        value:
+          description: Only return transactions that were last modified after this
+            time in Anrok. Must be an ISO 8601 date-time in UTC.
+          example: 2025-01-01T00:00:00Z
+          format: date-time
+          type: string
+    FilingInfoFilter:
+      properties:
+        type:
+          enum:
+          - filingInfo
+          type: string
+        value:
+          $ref: "#/components/schemas/FilingInfoFilter_value"
+    CommonTransactionProperties:
+      properties:
+        id:
+          description: The ID of the transaction.
+          example: stripe:in_1JSW342eZvKYlo2C
+          type: string
+        anrokCreatedTime:
+          description: The timestamp when the transaction was created in Anrok.
+          example: 2025-01-01T00:00:00Z
+          format: date-time
+          type: string
+        anrokModifiedTime:
+          description: The timesstamp when the transaction was last modified in Anrok.
+          example: 2025-01-02T18:00:00Z
+          format: date-time
+          type: string
+        sourceBillingSystem:
+          $ref: "#/components/schemas/CommonTransactionProperties_sourceBillingSystem"
+    TaxAmountDue:
+      description: The tax amount due in the smallest denomination of the currency
+        (e.g. cents or pennies).
+      properties:
+        inclusive:
+          description: The inclusive tax amount in the smallest denomination of the
+            currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        exclusive:
+          description: The exclusive tax amount in the smallest denomination of the
+            currency (e.g. cents or pennies).
+          example: "10.00"
+          format: Decimal
+          type: string
+        total:
+          description: The total tax amount in the smallest denomination of the currency
+            (e.g. cents or pennies).
+          example: "110.00"
+          format: Decimal
+          type: string
+    JurisSummary:
+      description: Summary of the tax amount due and tax ID validation for a jurisdiction.
+      properties:
+        id:
+          description: The ID of the jurisdiction.
+          example: us-TX
+          type: string
+        name:
+          description: The name of the jurisdiction.
+          example: Texas
+          type: string
+        preTaxAmount:
+          description: The pre-tax amount in the smallest denomination of the currency
+            (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        taxAmountDue:
+          $ref: "#/components/schemas/TaxAmountDue"
+        taxIdValidation:
+          $ref: "#/components/schemas/JurisSummary_taxIdValidation"
+    LineItemJurisTax:
+      description: Taxes for a line item for a jurisdiction or region.
+      properties:
+        id:
+          description: The ID of the jurisdiction or region.
+          example: "4109000"
+          type: string
+        name:
+          description: The name of the jurisdiction or region.
+          example: Hill County
+          type: string
+        nonTaxableAmount:
+          description: The non-taxable amount of the line item in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        exemptions:
+          items:
+            $ref: "#/components/schemas/LineItemJurisTax_exemptions_inner"
+          type: array
+        taxableAmount:
+          description: The taxable amount of the line item in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        rate:
+          description: The tax rate.
+          example: "0.05"
+          format: Decimal
+          nullable: true
+          type: string
+        taxAmount:
+          $ref: "#/components/schemas/LineItemJurisTax_taxAmount"
+    LineItem:
+      description: Line item details
+      properties:
+        id:
+          description: "The ID of the line item in the source billing system, if available."
+          example: li_1234567890
+          nullable: true
+          type: string
+        product:
+          $ref: "#/components/schemas/LineItem_product"
+        quantity:
+          description: The quantity of the line item.
+          example: "1"
+          format: Decimal
+          nullable: true
+          type: string
+        unitPrice:
+          description: The unit price of the line item in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          nullable: true
+          type: string
+        inputAmount:
+          description: The input amount of the line item in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: 10000
+          format: int64
+          type: integer
+        preTaxAmount:
+          description: The pre-tax amount of the line item in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        taxAmountDue:
+          $ref: "#/components/schemas/TaxAmountDue"
+        jurises:
+          items:
+            $ref: "#/components/schemas/LineItem_jurises_inner"
+          type: array
+    NormalTransactionBody:
+      example:
+        lineItems:
+        - id: li_1234567890
+          product:
+            internalId: sp3hgz76gve3
+            externalId: PLU1
+            name: Product 1
+            productTaxCategory:
+              type: standard
+              id: saasBusiness
+              name: "SaaS - General, B2B"
+          quantity: null
+          unitPrice: null
+          inputAmount: 39800
+          preTaxAmount: "39800"
+          taxAmountDue:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+          jurises:
+          - id: us-TX
+            name: Texas
+            calc:
+              isRemitting: true
+              taxes:
+              - id: ""
+                name: Texas
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.0625"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "1990"
+              - id: "4109000"
+                name: Hill County
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.005"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "159.2"
+              - id: "2109108"
+                name: Aquilla
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.01"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "318.4"
+        - id: li_1234567890
+          product:
+            internalId: sp3hgz76gve3
+            externalId: PLU1
+            name: Product 1
+            productTaxCategory:
+              type: standard
+              id: saasBusiness
+              name: "SaaS - General, B2B"
+          quantity: null
+          unitPrice: null
+          inputAmount: 39800
+          preTaxAmount: "39800"
+          taxAmountDue:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+          jurises:
+          - id: us-TX
+            name: Texas
+            calc:
+              isRemitting: true
+              taxes:
+              - id: ""
+                name: Texas
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.0625"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "1990"
+              - id: "4109000"
+                name: Hill County
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.005"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "159.2"
+              - id: "2109108"
+                name: Aquilla
+                nonTaxableAmount: "7960"
+                exemptions: []
+                taxableAmount: "31840"
+                rate: "0.01"
+                taxAmount:
+                  inclusive: "0"
+                  exclusive: "318.4"
+        accountingDate: 2025-01-01
+        addresses:
+        - address:
+            city: null
+            line1: null
+            region: TX
+            country: US
+            postalCode: "10101"
+        - address:
+            city: null
+            line1: null
+            region: TX
+            country: US
+            postalCode: "10101"
+        taxAmountDue:
+          inclusive: "0"
+          exclusive: "2467.6"
+          total: "2467.6"
+        taxAmountAdded:
+          expected: 2468
+          seen: 2468
+        invoiceTotalAmountExpected: 42268
+        jurisSummaries:
+        - id: us-TX
+          name: Texas
+          preTaxAmount: "39800"
+          taxAmountDue:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+          taxIdValidation:
+            processedTaxIds:
+            - taxId: "1234567890"
+              isValid: true
+        - id: us-TX
+          name: Texas
+          preTaxAmount: "39800"
+          taxAmountDue:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+          taxIdValidation:
+            processedTaxIds:
+            - taxId: "1234567890"
+              isValid: true
+        inputAmount: 39800
+        preTaxAmount: "39800"
+        taxDate: 2025-01-01
+        currencyCode: currencyCode
+        customer:
+          name: John Doe
+          id: cus_1234567890
+      properties:
+        accountingDate:
+          description: "The date that this transaction occurred, for accounting purposes."
+          example: 2025-01-01
+          format: date
+          type: string
+        taxDate:
+          description: The date to use for tax calculations.
+          example: 2025-01-01
+          format: date
+          type: string
+        currencyCode:
+          description: Three letter ISO currency code (case insensitive).
+          maxLength: 3
+          minLength: 3
+          type: string
+        customer:
+          $ref: "#/components/schemas/NormalTransactionBody_customer"
+        addresses:
+          items:
+            $ref: "#/components/schemas/NormalTransactionBody_addresses_inner"
+          type: array
+        inputAmount:
+          description: The input amount in the smallest denomination of the currency
+            (e.g. cents or pennies).
+          example: 39800
+          format: int64
+          type: integer
+        preTaxAmount:
+          description: The pre-tax amount in the smallest denomination of the currency
+            (e.g. cents or pennies).
+          example: "39800"
+          format: Decimal
+          type: string
+        taxAmountDue:
+          allOf:
+          - $ref: "#/components/schemas/TaxAmountDue"
+          example:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+        taxAmountAdded:
+          $ref: "#/components/schemas/NormalTransactionBody_taxAmountAdded"
+        invoiceTotalAmountExpected:
+          description: The expected total amount of the invoice in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: 42268
+          format: int64
+          type: integer
+        jurisSummaries:
+          items:
+            allOf:
+            - $ref: "#/components/schemas/JurisSummary"
+            example:
+              id: us-TX
+              name: Texas
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              taxIdValidation:
+                processedTaxIds:
+                - taxId: "1234567890"
+                  isValid: true
+          type: array
+        lineItems:
+          items:
+            allOf:
+            - $ref: "#/components/schemas/LineItem"
+            example:
+              id: li_1234567890
+              product:
+                internalId: sp3hgz76gve3
+                externalId: PLU1
+                name: Product 1
+                productTaxCategory:
+                  type: standard
+                  id: saasBusiness
+                  name: "SaaS - General, B2B"
+              quantity: null
+              unitPrice: null
+              inputAmount: 39800
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              jurises:
+              - id: us-TX
+                name: Texas
+                calc:
+                  isRemitting: true
+                  taxes:
+                  - id: ""
+                    name: Texas
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.0625"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "1990"
+                  - id: "4109000"
+                    name: Hill County
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.005"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "159.2"
+                  - id: "2109108"
+                    name: Aquilla
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.01"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "318.4"
+          type: array
+    NormalTransactionResponse:
+      allOf:
+      - properties:
+          type:
+            enum:
+            - normal
+            type: string
+      - $ref: "#/components/schemas/CommonTransactionProperties"
+      - properties:
+          body:
+            $ref: "#/components/schemas/NormalTransactionBody"
+      description: Normal transaction
+      example:
+        sourceBillingSystem:
+          name: name
+          integrationId: si5kec86tpyt
+          invoiceId: in_1JSW342eZvKYlo2C
+        anrokCreatedTime: 2025-01-01T00:00:00Z
+        anrokModifiedTime: 2025-01-02T18:00:00Z
+        id: stripe:in_1JSW342eZvKYlo2C
+        type: normal
+        body:
+          lineItems:
+          - id: li_1234567890
+            product:
+              internalId: sp3hgz76gve3
+              externalId: PLU1
+              name: Product 1
+              productTaxCategory:
+                type: standard
+                id: saasBusiness
+                name: "SaaS - General, B2B"
+            quantity: null
+            unitPrice: null
+            inputAmount: 39800
+            preTaxAmount: "39800"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            jurises:
+            - id: us-TX
+              name: Texas
+              calc:
+                isRemitting: true
+                taxes:
+                - id: ""
+                  name: Texas
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.0625"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "1990"
+                - id: "4109000"
+                  name: Hill County
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.005"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "159.2"
+                - id: "2109108"
+                  name: Aquilla
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.01"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "318.4"
+          - id: li_1234567890
+            product:
+              internalId: sp3hgz76gve3
+              externalId: PLU1
+              name: Product 1
+              productTaxCategory:
+                type: standard
+                id: saasBusiness
+                name: "SaaS - General, B2B"
+            quantity: null
+            unitPrice: null
+            inputAmount: 39800
+            preTaxAmount: "39800"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            jurises:
+            - id: us-TX
+              name: Texas
+              calc:
+                isRemitting: true
+                taxes:
+                - id: ""
+                  name: Texas
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.0625"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "1990"
+                - id: "4109000"
+                  name: Hill County
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.005"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "159.2"
+                - id: "2109108"
+                  name: Aquilla
+                  nonTaxableAmount: "7960"
+                  exemptions: []
+                  taxableAmount: "31840"
+                  rate: "0.01"
+                  taxAmount:
+                    inclusive: "0"
+                    exclusive: "318.4"
+          accountingDate: 2025-01-01
+          addresses:
+          - address:
+              city: null
+              line1: null
+              region: TX
+              country: US
+              postalCode: "10101"
+          - address:
+              city: null
+              line1: null
+              region: TX
+              country: US
+              postalCode: "10101"
+          taxAmountDue:
+            inclusive: "0"
+            exclusive: "2467.6"
+            total: "2467.6"
+          taxAmountAdded:
+            expected: 2468
+            seen: 2468
+          invoiceTotalAmountExpected: 42268
+          jurisSummaries:
+          - id: us-TX
+            name: Texas
+            preTaxAmount: "39800"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            taxIdValidation:
+              processedTaxIds:
+              - taxId: "1234567890"
+                isValid: true
+          - id: us-TX
+            name: Texas
+            preTaxAmount: "39800"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            taxIdValidation:
+              processedTaxIds:
+              - taxId: "1234567890"
+                isValid: true
+          inputAmount: 39800
+          preTaxAmount: "39800"
+          taxDate: 2025-01-01
+          currencyCode: currencyCode
+          customer:
+            name: John Doe
+            id: cus_1234567890
+    VoidedTransactionResponse:
+      allOf:
+      - properties:
+          type:
+            enum:
+            - void
+            type: string
+      - $ref: "#/components/schemas/CommonTransactionProperties"
+      description: Voided transaction
     ValidateTaxId:
       example:
-        customerAddress:
-          country: country
-          city: city
-          postalCode: postalCode
-          region: region
-          line1: line1
+        customerAddress: ""
         customerTaxIds:
         - value: value
         - value: value
       properties:
         customerAddress:
-          $ref: '#/components/schemas/CustomerAddress'
+          allOf:
+          - $ref: "#/components/schemas/CustomerAddress"
+          description: The customer address. This address determines the applicable
+            taxable jurisdictions for the customer. If the provided address cannot
+            be resolved to a taxable jurisdiction with high confidence Anrok will
+            return customerAddressCouldNotResolve.
         customerTaxIds:
           description: The tax IDs to validate.
           items:
-            $ref: '#/components/schemas/ValidateTaxId_customerTaxIds_inner'
+            $ref: "#/components/schemas/ValidateTaxId_customerTaxIds_inner"
           type: array
       required:
       - customerAddress
@@ -1608,7 +2434,7 @@ components:
           description: List of applicable taxable jurisdictions that require tax ID
             collection/validation based on the customer address.
           items:
-            $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner'
+            $ref: "#/components/schemas/ValidateTaxIdSuccess_jurises_inner"
           type: array
     certificatesCreate_200_response:
       example:
@@ -1637,8 +2463,8 @@ components:
           type: string
     transactionsCreateOrUpdate_409_response:
       oneOf:
-      - $ref: '#/components/schemas/CreateTransactionCannotComputeTaxAmount'
-      - $ref: '#/components/schemas/CreateTransactionCannotUpdate'
+      - $ref: "#/components/schemas/CreateTransactionCannotComputeTaxAmount"
+      - $ref: "#/components/schemas/CreateTransactionCannotUpdate"
     transactionsCreateNegation_request:
       properties:
         originalTransactionId:
@@ -1671,6 +2497,27 @@ components:
           - transactionIdNotFound
           - transactionExpectedVersionMismatch
           - transactionFrozenForFiling
+          type: string
+    transactionsList_request_filter:
+      description: The filter to apply to the returned transactions.
+      oneOf:
+      - $ref: "#/components/schemas/LastModifiedAfterFilter"
+      - $ref: "#/components/schemas/FilingInfoFilter"
+    transactionsList_request:
+      properties:
+        filter:
+          $ref: "#/components/schemas/transactionsList_request_filter"
+        limit:
+          default: 10
+          description: The maximum number of transactions to return.
+          format: int32
+          maximum: 20
+          minimum: 1
+          type: integer
+        cursor:
+          description: The cursor to use for pagination. This is the value of the
+            `nextCursor` field returned from the previous page.
+          example: eyJleGFtcGxlIjoidGhpcyBpcyBhbiBleGFtcGxlIGN1cnNvciJ9
           type: string
     productIdMappingsList_409_response:
       example:
@@ -1718,10 +2565,34 @@ components:
           - validationNotEnabled
           - validationNotSupportedForCountry
           type: string
+    filingsList_request_filter:
+      description: The filter to apply to the returned filings.
+      properties:
+        jurisId:
+          description: The jurisdiction to filter by.
+          type: string
+        periodEndDateRangeInclusive:
+          description: The filing period end date range to filter by.
+          type: string
+    filingsList_request:
+      properties:
+        filter:
+          $ref: "#/components/schemas/filingsList_request_filter"
+        limit:
+          default: 10
+          description: The maximum number of filings to return.
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+        cursor:
+          description: The cursor to use for pagination. This is the value of the
+            `nextCursor` field returned from the previous page.
+          type: string
     Transaction_customerAddress:
       anyOf:
-      - $ref: '#/components/schemas/CustomerAddress'
-      - $ref: '#/components/schemas/CustomerLegacyUsOnlyAddress'
+      - $ref: "#/components/schemas/CustomerAddress"
+      - $ref: "#/components/schemas/CustomerLegacyUsOnlyAddress"
       description: "The address where the product will be delivered or used. This\
         \ address determines the taxing jurisdictions and rates for destination-based\
         \ sourcing. For SaaS companies, this is typically the billing address. All\
@@ -1731,8 +2602,8 @@ components:
         \ with high confidence."
     Transaction_shipFromAddress:
       anyOf:
-      - $ref: '#/components/schemas/CustomerAddress'
-      - $ref: '#/components/schemas/CustomerLegacyUsOnlyAddress'
+      - $ref: "#/components/schemas/CustomerAddress"
+      - $ref: "#/components/schemas/CustomerLegacyUsOnlyAddress"
       description: Optional. The address where the product will be shipped from. Some
         jurisdictions calculate taxes based on the ship-from address. Defaults to
         your Anrok business address if omitted.
@@ -1775,10 +2646,7 @@ components:
           type: string
     CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner:
       example:
-        notTaxedReason:
-          reason:
-            type: reverseCharge
-          type: exempt
+        notTaxedReason: ""
         name: name
         taxes:
         - taxableAmount: taxableAmount
@@ -1794,12 +2662,16 @@ components:
           description: The name of the jurisdiction.
           type: string
         notTaxedReason:
-          $ref: '#/components/schemas/NotTaxedReason'
+          allOf:
+          - $ref: "#/components/schemas/NotTaxedReason"
+          description: "A reason that the line item is not taxed, or null if it is\
+            \ taxed."
+          nullable: true
         taxes:
           description: "A list of taxes for the line item in the jurisdiction, or\
             \ null if it is not taxed."
           items:
-            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner_taxes_inner'
+            $ref: "#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner_taxes_inner"
           nullable: true
           type: array
     CreateEphemeralTransactionSuccess_lineItems_inner:
@@ -1808,10 +2680,7 @@ components:
         id: id
         preTaxAmount: preTaxAmount
         jurises:
-        - notTaxedReason:
-            reason:
-              type: reverseCharge
-            type: exempt
+        - notTaxedReason: ""
           name: name
           taxes:
           - taxableAmount: taxableAmount
@@ -1822,10 +2691,7 @@ components:
             taxRate: taxRate
             taxAmount: taxAmount
             taxName: taxName
-        - notTaxedReason:
-            reason:
-              type: reverseCharge
-            type: exempt
+        - notTaxedReason: ""
           name: name
           taxes:
           - taxableAmount: taxableAmount
@@ -1856,7 +2722,7 @@ components:
           description: "For each jurisdiction, either a list of taxes for the line\
             \ item, or a reason that the line item is not taxed."
           items:
-            $ref: '#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner'
+            $ref: "#/components/schemas/CreateEphemeralTransactionSuccess_lineItems_inner_jurises_inner"
           type: array
     CreateEphemeralTransactionSuccess_jurisSummaries_inner:
       example:
@@ -1873,10 +2739,204 @@ components:
           description: The name of the jurisdiction.
           type: string
         notTaxedReasons:
+          description: "A list of the distinct reasons that the line items are not\
+            \ taxed, or null if some items are taxed."
           items:
-            $ref: '#/components/schemas/NotTaxedReason'
+            $ref: "#/components/schemas/NotTaxedReason"
           nullable: true
           type: array
+    FilingInfoFilter_value:
+      description: Only return transactions that are associated with the specified
+        filing.
+      properties:
+        filingAssociationStatus:
+          enum:
+          - associated
+          type: string
+        jurisId:
+          type: string
+        jurisFilingId:
+          type: string
+    CommonTransactionProperties_sourceBillingSystem:
+      description: "The billing system that the transaction originated from, if any."
+      example:
+        name: name
+        integrationId: si5kec86tpyt
+        invoiceId: in_1JSW342eZvKYlo2C
+      properties:
+        name:
+          type: string
+        integrationId:
+          example: si5kec86tpyt
+          type: string
+        invoiceId:
+          example: in_1JSW342eZvKYlo2C
+          type: string
+    JurisSummary_taxIdValidation_processedTaxIds_inner:
+      properties:
+        taxId:
+          description: The tax ID.
+          example: "1234567890"
+          type: string
+        isValid:
+          description: Whether the tax ID is valid.
+          type: boolean
+    JurisSummary_taxIdValidation:
+      properties:
+        processedTaxIds:
+          description: The tax IDs that were processed.
+          items:
+            $ref: "#/components/schemas/JurisSummary_taxIdValidation_processedTaxIds_inner"
+          type: array
+    LineItemJurisTax_exemptions_inner:
+      properties:
+        reason:
+          description: The reason for the exemption.
+          enum:
+          - reverseCharge
+          - customerExempt
+          - transactionExempt
+          type: string
+        amount:
+          description: The amount of the exemption in the smallest denomination of
+            the currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+    LineItemJurisTax_taxAmount:
+      description: The tax amount of the line item in the smallest denomination of
+        the currency (e.g. cents or pennies).
+      properties:
+        inclusive:
+          description: The inclusive tax amount in the smallest denomination of the
+            currency (e.g. cents or pennies).
+          example: "100.00"
+          format: Decimal
+          type: string
+        exclusive:
+          description: The exclusive tax amount in the smallest denomination of the
+            currency (e.g. cents or pennies).
+          example: "10.00"
+          format: Decimal
+          type: string
+    LineItem_product_productTaxCategory:
+      description: The tax category of the product.
+      properties:
+        type:
+          description: The type of the product tax category.
+          enum:
+          - standard
+          - custom
+          type: string
+        id:
+          description: The ID of the product tax category.
+          example: saasBusiness
+          type: string
+        name:
+          description: The name of the product tax category.
+          example: "SaaS - General, B2B"
+          type: string
+    LineItem_product:
+      properties:
+        internalId:
+          description: The internal ID of the product.
+          example: saas-product-1
+          type: string
+        externalId:
+          description: The external ID of the product.
+          example: product-1234567890
+          type: string
+        name:
+          description: The name of the product.
+          example: Product 1
+          type: string
+        productTaxCategory:
+          $ref: "#/components/schemas/LineItem_product_productTaxCategory"
+    TaxCalcRemitting:
+      properties:
+        isRemitting:
+          description: Whether the seller is remitting tax to the jurisdiction.
+          enum:
+          - true
+          type: boolean
+        taxes:
+          description: The taxes for each line item for the jurisdiction.
+          items:
+            $ref: "#/components/schemas/LineItemJurisTax"
+          type: array
+      title: TaxCalcRemitting
+    TaxCalcIfWereRemitting:
+      properties:
+        isRemitting:
+          description: Whether the seller is remitting tax to the jurisdiction.
+          enum:
+          - false
+          type: boolean
+        taxesIfWereRemitting:
+          description: The taxes for each line item for the jurisdiction if the seller
+            were remitting tax.
+          items:
+            $ref: "#/components/schemas/LineItemJurisTax"
+          type: array
+      title: TaxCalcIfWereRemitting
+    LineItem_jurises_inner_calc:
+      oneOf:
+      - $ref: "#/components/schemas/TaxCalcRemitting"
+      - $ref: "#/components/schemas/TaxCalcIfWereRemitting"
+    LineItem_jurises_inner:
+      properties:
+        name:
+          description: The name of the jurisdiction.
+          example: Texas
+          type: string
+        id:
+          description: The ID of the jurisdiction.
+          example: us-TX
+          type: string
+        calc:
+          $ref: "#/components/schemas/LineItem_jurises_inner_calc"
+    NormalTransactionBody_customer:
+      example:
+        name: John Doe
+        id: cus_1234567890
+      properties:
+        id:
+          description: The Anrok customer ID.
+          example: cus_1234567890
+          type: string
+        name:
+          description: The name of the customer.
+          example: John Doe
+          nullable: true
+          type: string
+    NormalTransactionBody_addresses_inner:
+      example:
+        address:
+          city: null
+          line1: null
+          region: TX
+          country: US
+          postalCode: "10101"
+      properties:
+        address:
+          $ref: "#/components/schemas/CustomerAddress"
+    NormalTransactionBody_taxAmountAdded:
+      example:
+        expected: 2468
+        seen: 2468
+      properties:
+        expected:
+          description: The expected tax amount to add in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: 2468
+          format: int64
+          type: integer
+        seen:
+          description: The tax amount that Anrok saw was added in the smallest denomination
+            of the currency (e.g. cents or pennies).
+          example: 2468
+          format: int64
+          type: integer
     ValidateTaxId_customerTaxIds_inner:
       example:
         value: value
@@ -1920,12 +2980,12 @@ components:
           description: A user-friendly name for the jurisdiction.
           type: string
         taxIdNames:
-          $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner_taxIdNames'
+          $ref: "#/components/schemas/ValidateTaxIdSuccess_jurises_inner_taxIdNames"
         validTaxIds:
           description: A list of tax IDs from the API request that are valid in the
             jurisdiction.
           items:
-            $ref: '#/components/schemas/ValidateTaxIdSuccess_jurises_inner_validTaxIds_inner'
+            $ref: "#/components/schemas/ValidateTaxIdSuccess_jurises_inner_validTaxIds_inner"
           type: array
     inline_object:
       example:
@@ -1937,6 +2997,451 @@ components:
           - transactionExpectedVersionMismatch
           - transactionIsAlreadyANegation
           - duplicateTransactionId
+          type: string
+    inline_object_1_transactions_inner:
+      oneOf:
+      - $ref: "#/components/schemas/NormalTransactionResponse"
+      - $ref: "#/components/schemas/VoidedTransactionResponse"
+    inline_object_1:
+      example:
+        nextCursor: nextCursor
+        hasMore: true
+        transactions:
+        - sourceBillingSystem:
+            name: name
+            integrationId: si5kec86tpyt
+            invoiceId: in_1JSW342eZvKYlo2C
+          anrokCreatedTime: 2025-01-01T00:00:00Z
+          anrokModifiedTime: 2025-01-02T18:00:00Z
+          id: stripe:in_1JSW342eZvKYlo2C
+          type: normal
+          body:
+            lineItems:
+            - id: li_1234567890
+              product:
+                internalId: sp3hgz76gve3
+                externalId: PLU1
+                name: Product 1
+                productTaxCategory:
+                  type: standard
+                  id: saasBusiness
+                  name: "SaaS - General, B2B"
+              quantity: null
+              unitPrice: null
+              inputAmount: 39800
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              jurises:
+              - id: us-TX
+                name: Texas
+                calc:
+                  isRemitting: true
+                  taxes:
+                  - id: ""
+                    name: Texas
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.0625"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "1990"
+                  - id: "4109000"
+                    name: Hill County
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.005"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "159.2"
+                  - id: "2109108"
+                    name: Aquilla
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.01"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "318.4"
+            - id: li_1234567890
+              product:
+                internalId: sp3hgz76gve3
+                externalId: PLU1
+                name: Product 1
+                productTaxCategory:
+                  type: standard
+                  id: saasBusiness
+                  name: "SaaS - General, B2B"
+              quantity: null
+              unitPrice: null
+              inputAmount: 39800
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              jurises:
+              - id: us-TX
+                name: Texas
+                calc:
+                  isRemitting: true
+                  taxes:
+                  - id: ""
+                    name: Texas
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.0625"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "1990"
+                  - id: "4109000"
+                    name: Hill County
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.005"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "159.2"
+                  - id: "2109108"
+                    name: Aquilla
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.01"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "318.4"
+            accountingDate: 2025-01-01
+            addresses:
+            - address:
+                city: null
+                line1: null
+                region: TX
+                country: US
+                postalCode: "10101"
+            - address:
+                city: null
+                line1: null
+                region: TX
+                country: US
+                postalCode: "10101"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            taxAmountAdded:
+              expected: 2468
+              seen: 2468
+            invoiceTotalAmountExpected: 42268
+            jurisSummaries:
+            - id: us-TX
+              name: Texas
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              taxIdValidation:
+                processedTaxIds:
+                - taxId: "1234567890"
+                  isValid: true
+            - id: us-TX
+              name: Texas
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              taxIdValidation:
+                processedTaxIds:
+                - taxId: "1234567890"
+                  isValid: true
+            inputAmount: 39800
+            preTaxAmount: "39800"
+            taxDate: 2025-01-01
+            currencyCode: currencyCode
+            customer:
+              name: John Doe
+              id: cus_1234567890
+        - sourceBillingSystem:
+            name: name
+            integrationId: si5kec86tpyt
+            invoiceId: in_1JSW342eZvKYlo2C
+          anrokCreatedTime: 2025-01-01T00:00:00Z
+          anrokModifiedTime: 2025-01-02T18:00:00Z
+          id: stripe:in_1JSW342eZvKYlo2C
+          type: normal
+          body:
+            lineItems:
+            - id: li_1234567890
+              product:
+                internalId: sp3hgz76gve3
+                externalId: PLU1
+                name: Product 1
+                productTaxCategory:
+                  type: standard
+                  id: saasBusiness
+                  name: "SaaS - General, B2B"
+              quantity: null
+              unitPrice: null
+              inputAmount: 39800
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              jurises:
+              - id: us-TX
+                name: Texas
+                calc:
+                  isRemitting: true
+                  taxes:
+                  - id: ""
+                    name: Texas
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.0625"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "1990"
+                  - id: "4109000"
+                    name: Hill County
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.005"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "159.2"
+                  - id: "2109108"
+                    name: Aquilla
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.01"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "318.4"
+            - id: li_1234567890
+              product:
+                internalId: sp3hgz76gve3
+                externalId: PLU1
+                name: Product 1
+                productTaxCategory:
+                  type: standard
+                  id: saasBusiness
+                  name: "SaaS - General, B2B"
+              quantity: null
+              unitPrice: null
+              inputAmount: 39800
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              jurises:
+              - id: us-TX
+                name: Texas
+                calc:
+                  isRemitting: true
+                  taxes:
+                  - id: ""
+                    name: Texas
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.0625"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "1990"
+                  - id: "4109000"
+                    name: Hill County
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.005"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "159.2"
+                  - id: "2109108"
+                    name: Aquilla
+                    nonTaxableAmount: "7960"
+                    exemptions: []
+                    taxableAmount: "31840"
+                    rate: "0.01"
+                    taxAmount:
+                      inclusive: "0"
+                      exclusive: "318.4"
+            accountingDate: 2025-01-01
+            addresses:
+            - address:
+                city: null
+                line1: null
+                region: TX
+                country: US
+                postalCode: "10101"
+            - address:
+                city: null
+                line1: null
+                region: TX
+                country: US
+                postalCode: "10101"
+            taxAmountDue:
+              inclusive: "0"
+              exclusive: "2467.6"
+              total: "2467.6"
+            taxAmountAdded:
+              expected: 2468
+              seen: 2468
+            invoiceTotalAmountExpected: 42268
+            jurisSummaries:
+            - id: us-TX
+              name: Texas
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              taxIdValidation:
+                processedTaxIds:
+                - taxId: "1234567890"
+                  isValid: true
+            - id: us-TX
+              name: Texas
+              preTaxAmount: "39800"
+              taxAmountDue:
+                inclusive: "0"
+                exclusive: "2467.6"
+                total: "2467.6"
+              taxIdValidation:
+                processedTaxIds:
+                - taxId: "1234567890"
+                  isValid: true
+            inputAmount: 39800
+            preTaxAmount: "39800"
+            taxDate: 2025-01-01
+            currencyCode: currencyCode
+            customer:
+              name: John Doe
+              id: cus_1234567890
+      properties:
+        transactions:
+          description: The list of transactions.
+          items:
+            $ref: "#/components/schemas/inline_object_1_transactions_inner"
+          type: array
+        nextCursor:
+          description: The cursor to use for pagination.
+          type: string
+        hasMore:
+          description: Whether there are more transactions to fetch.
+          type: boolean
+    inline_object_2:
+      example:
+        type: invalidCursor
+      properties:
+        type:
+          enum:
+          - invalidCursor
+          - listTransactionsApiNotEnabled
+          type: string
+    inline_object_3_filings_inner_period:
+      description: The period of the filing.
+      example:
+        endInclusive: 2000-01-23
+        begin: 2000-01-23
+      properties:
+        begin:
+          description: The beginning date of the filing period.
+          format: date
+          type: string
+        endInclusive:
+          description: The end date of the filing period (inclusive).
+          format: date
+          type: string
+    inline_object_3_filings_inner:
+      example:
+        period:
+          endInclusive: 2000-01-23
+          begin: 2000-01-23
+        jurisFilingId: jurisFilingId
+        name: name
+        isAutomaticallyUpdatedForTransactionChanges: true
+        isFiled: true
+        jurisId: jurisId
+      properties:
+        jurisId:
+          description: The ID of the jurisdiction.
+          type: string
+        jurisFilingId:
+          description: The ID of the filing. This is a unique identifier for the filing
+            within the jurisdiction.
+          type: string
+        name:
+          description: The name of the filing.
+          type: string
+        isAutomaticallyUpdatedForTransactionChanges:
+          description: "Whether the filing is automatically updated based on transaction\
+            \ changes. This is determined based on the status of the filing. For example,\
+            \ a transaction may be automatically added to or removed from a filing\
+            \ if the transaction's accounting date changes while the filing is \"\
+            open\". However, the filing is not automatically updated if the filing\
+            \ is locked for seller review. The filing may still be updated manually\
+            \ if this field is true."
+          type: boolean
+        isFiled:
+          description: Whether the filing has been filed.
+          type: boolean
+        period:
+          $ref: "#/components/schemas/inline_object_3_filings_inner_period"
+    inline_object_3:
+      example:
+        nextCursor: nextCursor
+        filings:
+        - period:
+            endInclusive: 2000-01-23
+            begin: 2000-01-23
+          jurisFilingId: jurisFilingId
+          name: name
+          isAutomaticallyUpdatedForTransactionChanges: true
+          isFiled: true
+          jurisId: jurisId
+        - period:
+            endInclusive: 2000-01-23
+            begin: 2000-01-23
+          jurisFilingId: jurisFilingId
+          name: name
+          isAutomaticallyUpdatedForTransactionChanges: true
+          isFiled: true
+          jurisId: jurisId
+        hasMore: true
+      properties:
+        filings:
+          description: The list of filings.
+          items:
+            $ref: "#/components/schemas/inline_object_3_filings_inner"
+          type: array
+        nextCursor:
+          description: The cursor to use for pagination.
+          type: string
+        hasMore:
+          description: Whether there are more filings to fetch.
+          type: boolean
+    inline_object_4:
+      example:
+        type: invalidCursor
+      properties:
+        type:
+          enum:
+          - invalidCursor
+          - listFilingsApiNotEnabled
           type: string
   securitySchemes:
     http:

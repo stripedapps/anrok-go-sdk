@@ -21,6 +21,8 @@ var _ MappedNullable = &CreateTransactionCannotComputeTaxAmount{}
 // CreateTransactionCannotComputeTaxAmount Error computing tax amount to be collected
 type CreateTransactionCannotComputeTaxAmount struct {
 	Type *string `json:"type,omitempty"`
+	// The product external ID that was not configured in Anrok. Only set if type is 'productExternalIdUnknown'.
+	ProductExternalId *string `json:"productExternalId,omitempty"`
 }
 
 // NewCreateTransactionCannotComputeTaxAmount instantiates a new CreateTransactionCannotComputeTaxAmount object
@@ -72,6 +74,38 @@ func (o *CreateTransactionCannotComputeTaxAmount) SetType(v string) {
 	o.Type = &v
 }
 
+// GetProductExternalId returns the ProductExternalId field value if set, zero value otherwise.
+func (o *CreateTransactionCannotComputeTaxAmount) GetProductExternalId() string {
+	if o == nil || IsNil(o.ProductExternalId) {
+		var ret string
+		return ret
+	}
+	return *o.ProductExternalId
+}
+
+// GetProductExternalIdOk returns a tuple with the ProductExternalId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateTransactionCannotComputeTaxAmount) GetProductExternalIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ProductExternalId) {
+		return nil, false
+	}
+	return o.ProductExternalId, true
+}
+
+// HasProductExternalId returns a boolean if a field has been set.
+func (o *CreateTransactionCannotComputeTaxAmount) HasProductExternalId() bool {
+	if o != nil && !IsNil(o.ProductExternalId) {
+		return true
+	}
+
+	return false
+}
+
+// SetProductExternalId gets a reference to the given string and assigns it to the ProductExternalId field.
+func (o *CreateTransactionCannotComputeTaxAmount) SetProductExternalId(v string) {
+	o.ProductExternalId = &v
+}
+
 func (o CreateTransactionCannotComputeTaxAmount) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -84,6 +118,9 @@ func (o CreateTransactionCannotComputeTaxAmount) ToMap() (map[string]interface{}
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
+	}
+	if !IsNil(o.ProductExternalId) {
+		toSerialize["productExternalId"] = o.ProductExternalId
 	}
 	return toSerialize, nil
 }
