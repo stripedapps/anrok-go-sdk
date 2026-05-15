@@ -39,7 +39,7 @@ type Transaction struct {
 	AccountingTime *time.Time `json:"accountingTime,omitempty"`
 	// A “tz database” string used to compute an accounting date from the request's `accountingTime`. The request cannot provide both an `accountingDate` and an `accountingTimeZone`. If `accountingTime` is provided without specifying an `accountingTimeZone`, the time zone configured on the seller account will be used.
 	AccountingTimeZone *string `json:"accountingTimeZone,omitempty"`
-	// The date to use for tax calculations. If omitted, Anrok will use the the accounting date.
+	// The date to use for tax calculations. If omitted, Anrok will use the accounting date.
 	TaxDate *string `json:"taxDate,omitempty"`
 }
 

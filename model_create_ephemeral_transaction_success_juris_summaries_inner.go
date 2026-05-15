@@ -22,6 +22,7 @@ var _ MappedNullable = &CreateEphemeralTransactionSuccessJurisSummariesInner{}
 type CreateEphemeralTransactionSuccessJurisSummariesInner struct {
 	// The name of the jurisdiction.
 	Name *string `json:"name,omitempty"`
+	// A list of the distinct reasons that the line items are not taxed, or null if some items are taxed.
 	NotTaxedReasons []NotTaxedReason `json:"notTaxedReasons,omitempty"`
 }
 
