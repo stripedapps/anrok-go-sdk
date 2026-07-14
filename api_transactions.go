@@ -273,7 +273,7 @@ func (a *TransactionsAPIService) TransactionsCreateNegationExecute(r ApiTransact
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v InlineObject
+			var v InlineObject2
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -461,7 +461,7 @@ func (r ApiTransactionsListRequest) TransactionsListRequest(transactionsListRequ
 	return r
 }
 
-func (r ApiTransactionsListRequest) Execute() (*InlineObject1, *http.Response, error) {
+func (r ApiTransactionsListRequest) Execute() (*InlineObject3, *http.Response, error) {
 	return r.ApiService.TransactionsListExecute(r)
 }
 
@@ -483,13 +483,13 @@ func (a *TransactionsAPIService) TransactionsList(ctx context.Context) ApiTransa
 }
 
 // Execute executes the request
-//  @return InlineObject1
-func (a *TransactionsAPIService) TransactionsListExecute(r ApiTransactionsListRequest) (*InlineObject1, *http.Response, error) {
+//  @return InlineObject3
+func (a *TransactionsAPIService) TransactionsListExecute(r ApiTransactionsListRequest) (*InlineObject3, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *InlineObject1
+		localVarReturnValue  *InlineObject3
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsAPIService.TransactionsList")
@@ -559,7 +559,7 @@ func (a *TransactionsAPIService) TransactionsListExecute(r ApiTransactionsListRe
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v InlineObject2
+			var v InlineObject4
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

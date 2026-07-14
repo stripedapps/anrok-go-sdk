@@ -32,6 +32,8 @@ type CustomerCertificate struct {
 	ExemptionNumber *string `json:"exemptionNumber,omitempty"`
 	// Optional internal notes.
 	Notes *string `json:"notes,omitempty"`
+	// The type of exemption the certificate represents. If omitted or null, no type is recorded.  - `agricultural`: agricultural use. - `directPay`: direct pay permit. - `educational`: educational institution. - `energy`: energy-related exemption. - `governmentFederal`: federal government entity. - `governmentOther`: other government entity. - `governmentState`: state government entity. - `healthcare`: healthcare organization. - `manufacturing`: used in manufacturing. - `nativeAmericanTribal`: Native American tribal entity. - `nonprofit`: nonprofit organization. - `other`: other exemption type. - `religious`: religious organization. - `resale`: purchased for resale. - `researchDevelopment`: research and development use. 
+	Type NullableString `json:"type,omitempty"`
 	CertificateFile CustomerCertificateFile `json:"certificateFile"`
 	// Jurisdictions for which certificate applies
 	Jurises []CustomerCertificateJuris `json:"jurises"`
@@ -204,6 +206,48 @@ func (o *CustomerCertificate) SetNotes(v string) {
 	o.Notes = &v
 }
 
+// GetType returns the Type field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CustomerCertificate) GetType() string {
+	if o == nil || IsNil(o.Type.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.Type.Get()
+}
+
+// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CustomerCertificate) GetTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.Type.Get(), o.Type.IsSet()
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *CustomerCertificate) HasType() bool {
+	if o != nil && o.Type.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetType gets a reference to the given NullableString and assigns it to the Type field.
+func (o *CustomerCertificate) SetType(v string) {
+	o.Type.Set(&v)
+}
+// SetTypeNil sets the value for Type to be an explicit nil
+func (o *CustomerCertificate) SetTypeNil() {
+	o.Type.Set(nil)
+}
+
+// UnsetType ensures that no value is present for Type, not even an explicit nil
+func (o *CustomerCertificate) UnsetType() {
+	o.Type.Unset()
+}
+
 // GetCertificateFile returns the CertificateFile field value
 func (o *CustomerCertificate) GetCertificateFile() CustomerCertificateFile {
 	if o == nil {
@@ -272,6 +316,9 @@ func (o CustomerCertificate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Notes) {
 		toSerialize["notes"] = o.Notes
+	}
+	if o.Type.IsSet() {
+		toSerialize["type"] = o.Type.Get()
 	}
 	toSerialize["certificateFile"] = o.CertificateFile
 	toSerialize["jurises"] = o.Jurises

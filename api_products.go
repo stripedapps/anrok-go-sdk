@@ -21,63 +21,61 @@ import (
 )
 
 
-// FilingsAPIService FilingsAPI service
-type FilingsAPIService service
+// ProductsAPIService ProductsAPI service
+type ProductsAPIService service
 
-type ApiFilingsListRequest struct {
+type ApiProductTaxCategoriesListRequest struct {
 	ctx context.Context
-	ApiService *FilingsAPIService
-	filingsListRequest *FilingsListRequest
+	ApiService *ProductsAPIService
+	body *map[string]interface{}
 }
 
-func (r ApiFilingsListRequest) FilingsListRequest(filingsListRequest FilingsListRequest) ApiFilingsListRequest {
-	r.filingsListRequest = &filingsListRequest
+func (r ApiProductTaxCategoriesListRequest) Body(body map[string]interface{}) ApiProductTaxCategoriesListRequest {
+	r.body = &body
 	return r
 }
 
-func (r ApiFilingsListRequest) Execute() (*InlineObject5, *http.Response, error) {
-	return r.ApiService.FilingsListExecute(r)
+func (r ApiProductTaxCategoriesListRequest) Execute() (*ProductTaxCategoriesList200Response, *http.Response, error) {
+	return r.ApiService.ProductTaxCategoriesListExecute(r)
 }
 
 /*
-FilingsList List filings
+ProductTaxCategoriesList List product tax categories
 
-Lists filings in Anrok. These can be filtered by the jurisdiction ID and the filing period end date.
-This endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.
-
+Lists all product tax categories (PTCs) that are available on the seller account. This includes the standard PTCs that Anrok has enabled for the seller as well as any custom PTCs that have been created on the seller account. The returned IDs may be used as the `taxCategoryId` when creating a product.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiFilingsListRequest
+ @return ApiProductTaxCategoriesListRequest
 */
-func (a *FilingsAPIService) FilingsList(ctx context.Context) ApiFilingsListRequest {
-	return ApiFilingsListRequest{
+func (a *ProductsAPIService) ProductTaxCategoriesList(ctx context.Context) ApiProductTaxCategoriesListRequest {
+	return ApiProductTaxCategoriesListRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return InlineObject5
-func (a *FilingsAPIService) FilingsListExecute(r ApiFilingsListRequest) (*InlineObject5, *http.Response, error) {
+//  @return ProductTaxCategoriesList200Response
+func (a *ProductsAPIService) ProductTaxCategoriesListExecute(r ApiProductTaxCategoriesListRequest) (*ProductTaxCategoriesList200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *InlineObject5
+		localVarReturnValue  *ProductTaxCategoriesList200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FilingsAPIService.FilingsList")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductsAPIService.ProductTaxCategoriesList")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/seller/filings/list"
+	localVarPath := localBasePath + "/v1/seller/productTaxCategories/list"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.filingsListRequest == nil {
-		return localVarReturnValue, nil, reportError("filingsListRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -98,7 +96,127 @@ func (a *FilingsAPIService) FilingsListExecute(r ApiFilingsListRequest) (*Inline
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.filingsListRequest
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiProductsCreateRequest struct {
+	ctx context.Context
+	ApiService *ProductsAPIService
+	createProduct *CreateProduct
+}
+
+func (r ApiProductsCreateRequest) CreateProduct(createProduct CreateProduct) ApiProductsCreateRequest {
+	r.createProduct = &createProduct
+	return r
+}
+
+func (r ApiProductsCreateRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.ProductsCreateExecute(r)
+}
+
+/*
+ProductsCreate Create product
+
+Creates a new product in Anrok, given a unique external ID and a product tax category (PTC) which determines the product's taxability in each jurisdiction.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiProductsCreateRequest
+*/
+func (a *ProductsAPIService) ProductsCreate(ctx context.Context) ApiProductsCreateRequest {
+	return ApiProductsCreateRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return map[string]interface{}
+func (a *ProductsAPIService) ProductsCreateExecute(r ApiProductsCreateRequest) (map[string]interface{}, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductsAPIService.ProductsCreate")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1/seller/products/create"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.createProduct == nil {
+		return localVarReturnValue, nil, reportError("createProduct is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.createProduct
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -133,7 +251,7 @@ func (a *FilingsAPIService) FilingsListExecute(r ApiFilingsListRequest) (*Inline
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v InlineObject6
+			var v ProductsCreate409Response
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -168,68 +286,62 @@ func (a *FilingsAPIService) FilingsListExecute(r ApiFilingsListRequest) (*Inline
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiFilingsListTransactionIdsRequest struct {
+type ApiProductsGetRequest struct {
 	ctx context.Context
-	ApiService *FilingsAPIService
-	jurisId string
-	jurisFilingId string
-	filingsListTransactionIdsRequest *FilingsListTransactionIdsRequest
+	ApiService *ProductsAPIService
+	externalId string
+	body *map[string]interface{}
 }
 
-func (r ApiFilingsListTransactionIdsRequest) FilingsListTransactionIdsRequest(filingsListTransactionIdsRequest FilingsListTransactionIdsRequest) ApiFilingsListTransactionIdsRequest {
-	r.filingsListTransactionIdsRequest = &filingsListTransactionIdsRequest
+func (r ApiProductsGetRequest) Body(body map[string]interface{}) ApiProductsGetRequest {
+	r.body = &body
 	return r
 }
 
-func (r ApiFilingsListTransactionIdsRequest) Execute() (*InlineObject7, *http.Response, error) {
-	return r.ApiService.FilingsListTransactionIdsExecute(r)
+func (r ApiProductsGetRequest) Execute() (*ProductsGet200Response, *http.Response, error) {
+	return r.ApiService.ProductsGetExecute(r)
 }
 
 /*
-FilingsListTransactionIds List filing transaction IDs
+ProductsGet Get product
 
-Lists the IDs of the transactions included in a filing, ordered by the transaction's accounting date.
-This endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.
-
+Looks up a product in Anrok by its external ID. Returns the product's external ID, tax category, name, and description.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param jurisId The ID of the jurisdiction of the filing.
- @param jurisFilingId The ID of the filing. This is a unique identifier for the filing within the jurisdiction.
- @return ApiFilingsListTransactionIdsRequest
+ @param externalId The external ID of the product.
+ @return ApiProductsGetRequest
 */
-func (a *FilingsAPIService) FilingsListTransactionIds(ctx context.Context, jurisId string, jurisFilingId string) ApiFilingsListTransactionIdsRequest {
-	return ApiFilingsListTransactionIdsRequest{
+func (a *ProductsAPIService) ProductsGet(ctx context.Context, externalId string) ApiProductsGetRequest {
+	return ApiProductsGetRequest{
 		ApiService: a,
 		ctx: ctx,
-		jurisId: jurisId,
-		jurisFilingId: jurisFilingId,
+		externalId: externalId,
 	}
 }
 
 // Execute executes the request
-//  @return InlineObject7
-func (a *FilingsAPIService) FilingsListTransactionIdsExecute(r ApiFilingsListTransactionIdsRequest) (*InlineObject7, *http.Response, error) {
+//  @return ProductsGet200Response
+func (a *ProductsAPIService) ProductsGetExecute(r ApiProductsGetRequest) (*ProductsGet200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *InlineObject7
+		localVarReturnValue  *ProductsGet200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FilingsAPIService.FilingsListTransactionIds")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductsAPIService.ProductsGet")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/seller/filings/id:{jurisId}/id:{jurisFilingId}/listTransactionIds"
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisId"+"}", url.PathEscape(parameterValueToString(r.jurisId, "jurisId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisFilingId"+"}", url.PathEscape(parameterValueToString(r.jurisFilingId, "jurisFilingId")), -1)
+	localVarPath := localBasePath + "/v1/seller/products/externalId:{externalId}/get"
+	localVarPath = strings.Replace(localVarPath, "{"+"externalId"+"}", url.PathEscape(parameterValueToString(r.externalId, "externalId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.filingsListTransactionIdsRequest == nil {
-		return localVarReturnValue, nil, reportError("filingsListTransactionIdsRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -250,7 +362,7 @@ func (a *FilingsAPIService) FilingsListTransactionIdsExecute(r ApiFilingsListTra
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.filingsListTransactionIdsRequest
+	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -273,19 +385,8 @@ func (a *FilingsAPIService) FilingsListTransactionIdsExecute(r ApiFilingsListTra
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v string
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v InlineObject8
+			var v ProductsGet409Response
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -320,69 +421,59 @@ func (a *FilingsAPIService) FilingsListTransactionIdsExecute(r ApiFilingsListTra
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiFilingsListTransactionsWithConversionRatesRequest struct {
+type ApiProductsListRequest struct {
 	ctx context.Context
-	ApiService *FilingsAPIService
-	jurisId string
-	jurisFilingId string
-	filingsListTransactionsWithConversionRatesRequest *FilingsListTransactionsWithConversionRatesRequest
+	ApiService *ProductsAPIService
+	productsListRequest *ProductsListRequest
 }
 
-func (r ApiFilingsListTransactionsWithConversionRatesRequest) FilingsListTransactionsWithConversionRatesRequest(filingsListTransactionsWithConversionRatesRequest FilingsListTransactionsWithConversionRatesRequest) ApiFilingsListTransactionsWithConversionRatesRequest {
-	r.filingsListTransactionsWithConversionRatesRequest = &filingsListTransactionsWithConversionRatesRequest
+func (r ApiProductsListRequest) ProductsListRequest(productsListRequest ProductsListRequest) ApiProductsListRequest {
+	r.productsListRequest = &productsListRequest
 	return r
 }
 
-func (r ApiFilingsListTransactionsWithConversionRatesRequest) Execute() (*InlineObject9, *http.Response, error) {
-	return r.ApiService.FilingsListTransactionsWithConversionRatesExecute(r)
+func (r ApiProductsListRequest) Execute() (*InlineObject11, *http.Response, error) {
+	return r.ApiService.ProductsListExecute(r)
 }
 
 /*
-FilingsListTransactionsWithConversionRates List filing transactions with conversion rates
+ProductsList List products
 
-Lists the transactions included in a filing, each with the conversion rate from the transaction currency to the filing currency.
-Rates may change until the filing has been finalized, so it's recommended to only use this endpoint after finalization.
-This endpoint is a premium feature. Please contact hello@anrok.com for more information to enable this on your seller account.
+Lists the products on your seller account, in descending order of creation time.
 
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param jurisId The ID of the jurisdiction of the filing.
- @param jurisFilingId The ID of the filing. This is a unique identifier for the filing within the jurisdiction.
- @return ApiFilingsListTransactionsWithConversionRatesRequest
+ @return ApiProductsListRequest
 */
-func (a *FilingsAPIService) FilingsListTransactionsWithConversionRates(ctx context.Context, jurisId string, jurisFilingId string) ApiFilingsListTransactionsWithConversionRatesRequest {
-	return ApiFilingsListTransactionsWithConversionRatesRequest{
+func (a *ProductsAPIService) ProductsList(ctx context.Context) ApiProductsListRequest {
+	return ApiProductsListRequest{
 		ApiService: a,
 		ctx: ctx,
-		jurisId: jurisId,
-		jurisFilingId: jurisFilingId,
 	}
 }
 
 // Execute executes the request
-//  @return InlineObject9
-func (a *FilingsAPIService) FilingsListTransactionsWithConversionRatesExecute(r ApiFilingsListTransactionsWithConversionRatesRequest) (*InlineObject9, *http.Response, error) {
+//  @return InlineObject11
+func (a *ProductsAPIService) ProductsListExecute(r ApiProductsListRequest) (*InlineObject11, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *InlineObject9
+		localVarReturnValue  *InlineObject11
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FilingsAPIService.FilingsListTransactionsWithConversionRates")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ProductsAPIService.ProductsList")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/seller/filings/id:{jurisId}/id:{jurisFilingId}/listTransactionsWithConversionRates"
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisId"+"}", url.PathEscape(parameterValueToString(r.jurisId, "jurisId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisFilingId"+"}", url.PathEscape(parameterValueToString(r.jurisFilingId, "jurisFilingId")), -1)
+	localVarPath := localBasePath + "/v1/seller/products/list"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.filingsListTransactionsWithConversionRatesRequest == nil {
-		return localVarReturnValue, nil, reportError("filingsListTransactionsWithConversionRatesRequest is required and must be specified")
+	if r.productsListRequest == nil {
+		return localVarReturnValue, nil, reportError("productsListRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -403,7 +494,7 @@ func (a *FilingsAPIService) FilingsListTransactionsWithConversionRatesExecute(r 
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.filingsListTransactionsWithConversionRatesRequest
+	localVarPostBody = r.productsListRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -438,164 +529,7 @@ func (a *FilingsAPIService) FilingsListTransactionsWithConversionRatesExecute(r 
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v InlineObject10
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v string
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiFilingsRemoveTransactionsRequest struct {
-	ctx context.Context
-	ApiService *FilingsAPIService
-	jurisId string
-	jurisFilingId string
-	filingsRemoveTransactionsRequest *FilingsRemoveTransactionsRequest
-}
-
-func (r ApiFilingsRemoveTransactionsRequest) FilingsRemoveTransactionsRequest(filingsRemoveTransactionsRequest FilingsRemoveTransactionsRequest) ApiFilingsRemoveTransactionsRequest {
-	r.filingsRemoveTransactionsRequest = &filingsRemoveTransactionsRequest
-	return r
-}
-
-func (r ApiFilingsRemoveTransactionsRequest) Execute() (*FilingsRemoveTransactions200Response, *http.Response, error) {
-	return r.ApiService.FilingsRemoveTransactionsExecute(r)
-}
-
-/*
-FilingsRemoveTransactions Remove transactions from a filing
-
-Removes the given transactions from a filing, identified by its jurisdiction ID and filing ID.
-
-Idempotent: transaction IDs that aren't currently associated with this filing (already removed,
-unknown, or associated with a different filing) are reported with a `notFound` error rather than
-failing the request, so retrying the same request is safe.
-
-A maximum of 100 transaction IDs may be removed per request. To remove more, make multiple requests.
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param jurisId The ID of the jurisdiction of the filing.
- @param jurisFilingId The ID of the filing. This is a unique identifier for the filing within the jurisdiction.
- @return ApiFilingsRemoveTransactionsRequest
-*/
-func (a *FilingsAPIService) FilingsRemoveTransactions(ctx context.Context, jurisId string, jurisFilingId string) ApiFilingsRemoveTransactionsRequest {
-	return ApiFilingsRemoveTransactionsRequest{
-		ApiService: a,
-		ctx: ctx,
-		jurisId: jurisId,
-		jurisFilingId: jurisFilingId,
-	}
-}
-
-// Execute executes the request
-//  @return FilingsRemoveTransactions200Response
-func (a *FilingsAPIService) FilingsRemoveTransactionsExecute(r ApiFilingsRemoveTransactionsRequest) (*FilingsRemoveTransactions200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *FilingsRemoveTransactions200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "FilingsAPIService.FilingsRemoveTransactions")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1/seller/filings/id:{jurisId}/id:{jurisFilingId}/removeTransactions"
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisId"+"}", url.PathEscape(parameterValueToString(r.jurisId, "jurisId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"jurisFilingId"+"}", url.PathEscape(parameterValueToString(r.jurisFilingId, "jurisFilingId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.filingsRemoveTransactionsRequest == nil {
-		return localVarReturnValue, nil, reportError("filingsRemoveTransactionsRequest is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.filingsRemoveTransactionsRequest
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v string
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v FilingsRemoveTransactions409Response
+			var v CustomersList409Response
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

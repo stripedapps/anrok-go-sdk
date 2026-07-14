@@ -50,11 +50,17 @@ type APIClient struct {
 
 	// API Services
 
+	AddressResolutionAPI *AddressResolutionAPIService
+
 	CustomerCertificatesAPI *CustomerCertificatesAPIService
+
+	CustomersAPI *CustomersAPIService
 
 	FilingsAPI *FilingsAPIService
 
 	ProductMappingsAPI *ProductMappingsAPIService
+
+	ProductsAPI *ProductsAPIService
 
 	TaxIDValidationAPI *TaxIDValidationAPIService
 
@@ -77,9 +83,12 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
+	c.AddressResolutionAPI = (*AddressResolutionAPIService)(&c.common)
 	c.CustomerCertificatesAPI = (*CustomerCertificatesAPIService)(&c.common)
+	c.CustomersAPI = (*CustomersAPIService)(&c.common)
 	c.FilingsAPI = (*FilingsAPIService)(&c.common)
 	c.ProductMappingsAPI = (*ProductMappingsAPIService)(&c.common)
+	c.ProductsAPI = (*ProductsAPIService)(&c.common)
 	c.TaxIDValidationAPI = (*TaxIDValidationAPIService)(&c.common)
 	c.TransactionsAPI = (*TransactionsAPIService)(&c.common)
 
@@ -505,7 +514,10 @@ func addFile(w *multipart.Writer, fieldName, path string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	err = file.Close()
+	if err != nil {
+		return err
+	}
 
 	part, err := w.CreateFormFile(fieldName, filepath.Base(path))
 	if err != nil {

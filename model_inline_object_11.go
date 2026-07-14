@@ -17,68 +17,68 @@ import (
 	"fmt"
 )
 
-// checks if the InlineObject1 type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &InlineObject1{}
+// checks if the InlineObject11 type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &InlineObject11{}
 
-// InlineObject1 struct for InlineObject1
-type InlineObject1 struct {
-	// The list of certificates.
-	Certificates []CustomerCertificateResponse `json:"certificates"`
+// InlineObject11 struct for InlineObject11
+type InlineObject11 struct {
+	// The list of products, in descending order of creation time (`createdTime`).
+	Products []ProductResponse `json:"products"`
 	// The cursor to use to fetch the next page of results. Null if there are no more pages.
 	NextCursor NullableString `json:"nextCursor"`
-	// Whether there are more certificates available beyond this page.
+	// Whether there are more products available beyond this page.
 	HasMore bool `json:"hasMore"`
 }
 
-type _InlineObject1 InlineObject1
+type _InlineObject11 InlineObject11
 
-// NewInlineObject1 instantiates a new InlineObject1 object
+// NewInlineObject11 instantiates a new InlineObject11 object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInlineObject1(certificates []CustomerCertificateResponse, nextCursor NullableString, hasMore bool) *InlineObject1 {
-	this := InlineObject1{}
-	this.Certificates = certificates
+func NewInlineObject11(products []ProductResponse, nextCursor NullableString, hasMore bool) *InlineObject11 {
+	this := InlineObject11{}
+	this.Products = products
 	this.NextCursor = nextCursor
 	this.HasMore = hasMore
 	return &this
 }
 
-// NewInlineObject1WithDefaults instantiates a new InlineObject1 object
+// NewInlineObject11WithDefaults instantiates a new InlineObject11 object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewInlineObject1WithDefaults() *InlineObject1 {
-	this := InlineObject1{}
+func NewInlineObject11WithDefaults() *InlineObject11 {
+	this := InlineObject11{}
 	return &this
 }
 
-// GetCertificates returns the Certificates field value
-func (o *InlineObject1) GetCertificates() []CustomerCertificateResponse {
+// GetProducts returns the Products field value
+func (o *InlineObject11) GetProducts() []ProductResponse {
 	if o == nil {
-		var ret []CustomerCertificateResponse
+		var ret []ProductResponse
 		return ret
 	}
 
-	return o.Certificates
+	return o.Products
 }
 
-// GetCertificatesOk returns a tuple with the Certificates field value
+// GetProductsOk returns a tuple with the Products field value
 // and a boolean to check if the value has been set.
-func (o *InlineObject1) GetCertificatesOk() ([]CustomerCertificateResponse, bool) {
+func (o *InlineObject11) GetProductsOk() ([]ProductResponse, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.Certificates, true
+	return o.Products, true
 }
 
-// SetCertificates sets field value
-func (o *InlineObject1) SetCertificates(v []CustomerCertificateResponse) {
-	o.Certificates = v
+// SetProducts sets field value
+func (o *InlineObject11) SetProducts(v []ProductResponse) {
+	o.Products = v
 }
 
 // GetNextCursor returns the NextCursor field value
 // If the value is explicit nil, the zero value for string will be returned
-func (o *InlineObject1) GetNextCursor() string {
+func (o *InlineObject11) GetNextCursor() string {
 	if o == nil || o.NextCursor.Get() == nil {
 		var ret string
 		return ret
@@ -90,7 +90,7 @@ func (o *InlineObject1) GetNextCursor() string {
 // GetNextCursorOk returns a tuple with the NextCursor field value
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *InlineObject1) GetNextCursorOk() (*string, bool) {
+func (o *InlineObject11) GetNextCursorOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -98,12 +98,12 @@ func (o *InlineObject1) GetNextCursorOk() (*string, bool) {
 }
 
 // SetNextCursor sets field value
-func (o *InlineObject1) SetNextCursor(v string) {
+func (o *InlineObject11) SetNextCursor(v string) {
 	o.NextCursor.Set(&v)
 }
 
 // GetHasMore returns the HasMore field value
-func (o *InlineObject1) GetHasMore() bool {
+func (o *InlineObject11) GetHasMore() bool {
 	if o == nil {
 		var ret bool
 		return ret
@@ -114,7 +114,7 @@ func (o *InlineObject1) GetHasMore() bool {
 
 // GetHasMoreOk returns a tuple with the HasMore field value
 // and a boolean to check if the value has been set.
-func (o *InlineObject1) GetHasMoreOk() (*bool, bool) {
+func (o *InlineObject11) GetHasMoreOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -122,11 +122,11 @@ func (o *InlineObject1) GetHasMoreOk() (*bool, bool) {
 }
 
 // SetHasMore sets field value
-func (o *InlineObject1) SetHasMore(v bool) {
+func (o *InlineObject11) SetHasMore(v bool) {
 	o.HasMore = v
 }
 
-func (o InlineObject1) MarshalJSON() ([]byte, error) {
+func (o InlineObject11) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -134,20 +134,20 @@ func (o InlineObject1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o InlineObject1) ToMap() (map[string]interface{}, error) {
+func (o InlineObject11) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["certificates"] = o.Certificates
+	toSerialize["products"] = o.Products
 	toSerialize["nextCursor"] = o.NextCursor.Get()
 	toSerialize["hasMore"] = o.HasMore
 	return toSerialize, nil
 }
 
-func (o *InlineObject1) UnmarshalJSON(data []byte) (err error) {
+func (o *InlineObject11) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"certificates",
+		"products",
 		"nextCursor",
 		"hasMore",
 	}
@@ -166,53 +166,53 @@ func (o *InlineObject1) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varInlineObject1 := _InlineObject1{}
+	varInlineObject11 := _InlineObject11{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInlineObject1)
+	err = decoder.Decode(&varInlineObject11)
 
 	if err != nil {
 		return err
 	}
 
-	*o = InlineObject1(varInlineObject1)
+	*o = InlineObject11(varInlineObject11)
 
 	return err
 }
 
-type NullableInlineObject1 struct {
-	value *InlineObject1
+type NullableInlineObject11 struct {
+	value *InlineObject11
 	isSet bool
 }
 
-func (v NullableInlineObject1) Get() *InlineObject1 {
+func (v NullableInlineObject11) Get() *InlineObject11 {
 	return v.value
 }
 
-func (v *NullableInlineObject1) Set(val *InlineObject1) {
+func (v *NullableInlineObject11) Set(val *InlineObject11) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableInlineObject1) IsSet() bool {
+func (v NullableInlineObject11) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableInlineObject1) Unset() {
+func (v *NullableInlineObject11) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableInlineObject1(val *InlineObject1) *NullableInlineObject1 {
-	return &NullableInlineObject1{value: val, isSet: true}
+func NewNullableInlineObject11(val *InlineObject11) *NullableInlineObject11 {
+	return &NullableInlineObject11{value: val, isSet: true}
 }
 
-func (v NullableInlineObject1) MarshalJSON() ([]byte, error) {
+func (v NullableInlineObject11) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableInlineObject1) UnmarshalJSON(src []byte) error {
+func (v *NullableInlineObject11) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
