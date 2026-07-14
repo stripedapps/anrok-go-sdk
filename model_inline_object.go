@@ -13,6 +13,8 @@ package openapi
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the InlineObject type satisfies the MappedNullable interface at compile time
@@ -20,15 +22,25 @@ var _ MappedNullable = &InlineObject{}
 
 // InlineObject struct for InlineObject
 type InlineObject struct {
-	Type *string `json:"type,omitempty"`
+	// The list of customers, in ascending customer ID order.
+	Customers []CustomerResponse `json:"customers"`
+	// The cursor to use to fetch the next page of results. Null if there are no more pages.
+	NextCursor NullableString `json:"nextCursor"`
+	// Whether there are more customers available beyond this page.
+	HasMore bool `json:"hasMore"`
 }
+
+type _InlineObject InlineObject
 
 // NewInlineObject instantiates a new InlineObject object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInlineObject() *InlineObject {
+func NewInlineObject(customers []CustomerResponse, nextCursor NullableString, hasMore bool) *InlineObject {
 	this := InlineObject{}
+	this.Customers = customers
+	this.NextCursor = nextCursor
+	this.HasMore = hasMore
 	return &this
 }
 
@@ -40,36 +52,78 @@ func NewInlineObjectWithDefaults() *InlineObject {
 	return &this
 }
 
-// GetType returns the Type field value if set, zero value otherwise.
-func (o *InlineObject) GetType() string {
-	if o == nil || IsNil(o.Type) {
+// GetCustomers returns the Customers field value
+func (o *InlineObject) GetCustomers() []CustomerResponse {
+	if o == nil {
+		var ret []CustomerResponse
+		return ret
+	}
+
+	return o.Customers
+}
+
+// GetCustomersOk returns a tuple with the Customers field value
+// and a boolean to check if the value has been set.
+func (o *InlineObject) GetCustomersOk() ([]CustomerResponse, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.Customers, true
+}
+
+// SetCustomers sets field value
+func (o *InlineObject) SetCustomers(v []CustomerResponse) {
+	o.Customers = v
+}
+
+// GetNextCursor returns the NextCursor field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *InlineObject) GetNextCursor() string {
+	if o == nil || o.NextCursor.Get() == nil {
 		var ret string
 		return ret
 	}
-	return *o.Type
+
+	return *o.NextCursor.Get()
 }
 
-// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// GetNextCursorOk returns a tuple with the NextCursor field value
 // and a boolean to check if the value has been set.
-func (o *InlineObject) GetTypeOk() (*string, bool) {
-	if o == nil || IsNil(o.Type) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *InlineObject) GetNextCursorOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Type, true
+	return o.NextCursor.Get(), o.NextCursor.IsSet()
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *InlineObject) HasType() bool {
-	if o != nil && !IsNil(o.Type) {
-		return true
+// SetNextCursor sets field value
+func (o *InlineObject) SetNextCursor(v string) {
+	o.NextCursor.Set(&v)
+}
+
+// GetHasMore returns the HasMore field value
+func (o *InlineObject) GetHasMore() bool {
+	if o == nil {
+		var ret bool
+		return ret
 	}
 
-	return false
+	return o.HasMore
 }
 
-// SetType gets a reference to the given string and assigns it to the Type field.
-func (o *InlineObject) SetType(v string) {
-	o.Type = &v
+// GetHasMoreOk returns a tuple with the HasMore field value
+// and a boolean to check if the value has been set.
+func (o *InlineObject) GetHasMoreOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.HasMore, true
+}
+
+// SetHasMore sets field value
+func (o *InlineObject) SetHasMore(v bool) {
+	o.HasMore = v
 }
 
 func (o InlineObject) MarshalJSON() ([]byte, error) {
@@ -82,10 +136,49 @@ func (o InlineObject) MarshalJSON() ([]byte, error) {
 
 func (o InlineObject) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Type) {
-		toSerialize["type"] = o.Type
-	}
+	toSerialize["customers"] = o.Customers
+	toSerialize["nextCursor"] = o.NextCursor.Get()
+	toSerialize["hasMore"] = o.HasMore
 	return toSerialize, nil
+}
+
+func (o *InlineObject) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"customers",
+		"nextCursor",
+		"hasMore",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varInlineObject := _InlineObject{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varInlineObject)
+
+	if err != nil {
+		return err
+	}
+
+	*o = InlineObject(varInlineObject)
+
+	return err
 }
 
 type NullableInlineObject struct {

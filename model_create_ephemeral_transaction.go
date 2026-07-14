@@ -30,6 +30,8 @@ type CreateEphemeralTransaction struct {
 	CustomerAddress TransactionCustomerAddress `json:"customerAddress"`
 	// The name of the customer. This is used for display purposes only.
 	CustomerName *string `json:"customerName,omitempty"`
+	// The email address of the customer. This is used for display purposes only.
+	CustomerEmailAddress *string `json:"customerEmailAddress,omitempty"`
 	// Tax IDs for the customer receiving the product
 	CustomerTaxIds []CustomerTaxId `json:"customerTaxIds,omitempty"`
 	ShipFromAddress *TransactionShipFromAddress `json:"shipFromAddress,omitempty"`
@@ -169,6 +171,38 @@ func (o *CreateEphemeralTransaction) HasCustomerName() bool {
 // SetCustomerName gets a reference to the given string and assigns it to the CustomerName field.
 func (o *CreateEphemeralTransaction) SetCustomerName(v string) {
 	o.CustomerName = &v
+}
+
+// GetCustomerEmailAddress returns the CustomerEmailAddress field value if set, zero value otherwise.
+func (o *CreateEphemeralTransaction) GetCustomerEmailAddress() string {
+	if o == nil || IsNil(o.CustomerEmailAddress) {
+		var ret string
+		return ret
+	}
+	return *o.CustomerEmailAddress
+}
+
+// GetCustomerEmailAddressOk returns a tuple with the CustomerEmailAddress field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateEphemeralTransaction) GetCustomerEmailAddressOk() (*string, bool) {
+	if o == nil || IsNil(o.CustomerEmailAddress) {
+		return nil, false
+	}
+	return o.CustomerEmailAddress, true
+}
+
+// HasCustomerEmailAddress returns a boolean if a field has been set.
+func (o *CreateEphemeralTransaction) HasCustomerEmailAddress() bool {
+	if o != nil && !IsNil(o.CustomerEmailAddress) {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomerEmailAddress gets a reference to the given string and assigns it to the CustomerEmailAddress field.
+func (o *CreateEphemeralTransaction) SetCustomerEmailAddress(v string) {
+	o.CustomerEmailAddress = &v
 }
 
 // GetCustomerTaxIds returns the CustomerTaxIds field value if set, zero value otherwise.
@@ -410,6 +444,9 @@ func (o CreateEphemeralTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize["customerAddress"] = o.CustomerAddress
 	if !IsNil(o.CustomerName) {
 		toSerialize["customerName"] = o.CustomerName
+	}
+	if !IsNil(o.CustomerEmailAddress) {
+		toSerialize["customerEmailAddress"] = o.CustomerEmailAddress
 	}
 	if !IsNil(o.CustomerTaxIds) {
 		toSerialize["customerTaxIds"] = o.CustomerTaxIds

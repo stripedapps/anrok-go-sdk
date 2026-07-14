@@ -15,70 +15,70 @@ import (
 	"encoding/json"
 )
 
-// checks if the InlineObject3 type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &InlineObject3{}
+// checks if the InlineObject5 type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &InlineObject5{}
 
-// InlineObject3 struct for InlineObject3
-type InlineObject3 struct {
-	// The list of transactions.
-	Transactions []InlineObject3TransactionsInner `json:"transactions,omitempty"`
+// InlineObject5 struct for InlineObject5
+type InlineObject5 struct {
+	// The list of filings.
+	Filings []InlineObject5FilingsInner `json:"filings,omitempty"`
 	// The cursor to use for pagination.
 	NextCursor *string `json:"nextCursor,omitempty"`
-	// Whether there are more transactions to fetch.
+	// Whether there are more filings to fetch.
 	HasMore *bool `json:"hasMore,omitempty"`
 }
 
-// NewInlineObject3 instantiates a new InlineObject3 object
+// NewInlineObject5 instantiates a new InlineObject5 object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInlineObject3() *InlineObject3 {
-	this := InlineObject3{}
+func NewInlineObject5() *InlineObject5 {
+	this := InlineObject5{}
 	return &this
 }
 
-// NewInlineObject3WithDefaults instantiates a new InlineObject3 object
+// NewInlineObject5WithDefaults instantiates a new InlineObject5 object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewInlineObject3WithDefaults() *InlineObject3 {
-	this := InlineObject3{}
+func NewInlineObject5WithDefaults() *InlineObject5 {
+	this := InlineObject5{}
 	return &this
 }
 
-// GetTransactions returns the Transactions field value if set, zero value otherwise.
-func (o *InlineObject3) GetTransactions() []InlineObject3TransactionsInner {
-	if o == nil || IsNil(o.Transactions) {
-		var ret []InlineObject3TransactionsInner
+// GetFilings returns the Filings field value if set, zero value otherwise.
+func (o *InlineObject5) GetFilings() []InlineObject5FilingsInner {
+	if o == nil || IsNil(o.Filings) {
+		var ret []InlineObject5FilingsInner
 		return ret
 	}
-	return o.Transactions
+	return o.Filings
 }
 
-// GetTransactionsOk returns a tuple with the Transactions field value if set, nil otherwise
+// GetFilingsOk returns a tuple with the Filings field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *InlineObject3) GetTransactionsOk() ([]InlineObject3TransactionsInner, bool) {
-	if o == nil || IsNil(o.Transactions) {
+func (o *InlineObject5) GetFilingsOk() ([]InlineObject5FilingsInner, bool) {
+	if o == nil || IsNil(o.Filings) {
 		return nil, false
 	}
-	return o.Transactions, true
+	return o.Filings, true
 }
 
-// HasTransactions returns a boolean if a field has been set.
-func (o *InlineObject3) HasTransactions() bool {
-	if o != nil && !IsNil(o.Transactions) {
+// HasFilings returns a boolean if a field has been set.
+func (o *InlineObject5) HasFilings() bool {
+	if o != nil && !IsNil(o.Filings) {
 		return true
 	}
 
 	return false
 }
 
-// SetTransactions gets a reference to the given []InlineObject3TransactionsInner and assigns it to the Transactions field.
-func (o *InlineObject3) SetTransactions(v []InlineObject3TransactionsInner) {
-	o.Transactions = v
+// SetFilings gets a reference to the given []InlineObject5FilingsInner and assigns it to the Filings field.
+func (o *InlineObject5) SetFilings(v []InlineObject5FilingsInner) {
+	o.Filings = v
 }
 
 // GetNextCursor returns the NextCursor field value if set, zero value otherwise.
-func (o *InlineObject3) GetNextCursor() string {
+func (o *InlineObject5) GetNextCursor() string {
 	if o == nil || IsNil(o.NextCursor) {
 		var ret string
 		return ret
@@ -88,7 +88,7 @@ func (o *InlineObject3) GetNextCursor() string {
 
 // GetNextCursorOk returns a tuple with the NextCursor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *InlineObject3) GetNextCursorOk() (*string, bool) {
+func (o *InlineObject5) GetNextCursorOk() (*string, bool) {
 	if o == nil || IsNil(o.NextCursor) {
 		return nil, false
 	}
@@ -96,7 +96,7 @@ func (o *InlineObject3) GetNextCursorOk() (*string, bool) {
 }
 
 // HasNextCursor returns a boolean if a field has been set.
-func (o *InlineObject3) HasNextCursor() bool {
+func (o *InlineObject5) HasNextCursor() bool {
 	if o != nil && !IsNil(o.NextCursor) {
 		return true
 	}
@@ -105,12 +105,12 @@ func (o *InlineObject3) HasNextCursor() bool {
 }
 
 // SetNextCursor gets a reference to the given string and assigns it to the NextCursor field.
-func (o *InlineObject3) SetNextCursor(v string) {
+func (o *InlineObject5) SetNextCursor(v string) {
 	o.NextCursor = &v
 }
 
 // GetHasMore returns the HasMore field value if set, zero value otherwise.
-func (o *InlineObject3) GetHasMore() bool {
+func (o *InlineObject5) GetHasMore() bool {
 	if o == nil || IsNil(o.HasMore) {
 		var ret bool
 		return ret
@@ -120,7 +120,7 @@ func (o *InlineObject3) GetHasMore() bool {
 
 // GetHasMoreOk returns a tuple with the HasMore field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *InlineObject3) GetHasMoreOk() (*bool, bool) {
+func (o *InlineObject5) GetHasMoreOk() (*bool, bool) {
 	if o == nil || IsNil(o.HasMore) {
 		return nil, false
 	}
@@ -128,7 +128,7 @@ func (o *InlineObject3) GetHasMoreOk() (*bool, bool) {
 }
 
 // HasHasMore returns a boolean if a field has been set.
-func (o *InlineObject3) HasHasMore() bool {
+func (o *InlineObject5) HasHasMore() bool {
 	if o != nil && !IsNil(o.HasMore) {
 		return true
 	}
@@ -137,11 +137,11 @@ func (o *InlineObject3) HasHasMore() bool {
 }
 
 // SetHasMore gets a reference to the given bool and assigns it to the HasMore field.
-func (o *InlineObject3) SetHasMore(v bool) {
+func (o *InlineObject5) SetHasMore(v bool) {
 	o.HasMore = &v
 }
 
-func (o InlineObject3) MarshalJSON() ([]byte, error) {
+func (o InlineObject5) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -149,10 +149,10 @@ func (o InlineObject3) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o InlineObject3) ToMap() (map[string]interface{}, error) {
+func (o InlineObject5) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Transactions) {
-		toSerialize["transactions"] = o.Transactions
+	if !IsNil(o.Filings) {
+		toSerialize["filings"] = o.Filings
 	}
 	if !IsNil(o.NextCursor) {
 		toSerialize["nextCursor"] = o.NextCursor
@@ -163,38 +163,38 @@ func (o InlineObject3) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableInlineObject3 struct {
-	value *InlineObject3
+type NullableInlineObject5 struct {
+	value *InlineObject5
 	isSet bool
 }
 
-func (v NullableInlineObject3) Get() *InlineObject3 {
+func (v NullableInlineObject5) Get() *InlineObject5 {
 	return v.value
 }
 
-func (v *NullableInlineObject3) Set(val *InlineObject3) {
+func (v *NullableInlineObject5) Set(val *InlineObject5) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableInlineObject3) IsSet() bool {
+func (v NullableInlineObject5) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableInlineObject3) Unset() {
+func (v *NullableInlineObject5) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableInlineObject3(val *InlineObject3) *NullableInlineObject3 {
-	return &NullableInlineObject3{value: val, isSet: true}
+func NewNullableInlineObject5(val *InlineObject5) *NullableInlineObject5 {
+	return &NullableInlineObject5{value: val, isSet: true}
 }
 
-func (v NullableInlineObject3) MarshalJSON() ([]byte, error) {
+func (v NullableInlineObject5) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableInlineObject3) UnmarshalJSON(src []byte) error {
+func (v *NullableInlineObject5) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
